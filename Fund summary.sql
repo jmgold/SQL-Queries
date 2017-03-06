@@ -14,5 +14,5 @@ FROM
     
  
 WHERE
-fund.acct_unit = '1'
+fund.acct_unit = '3'
 ;
