@@ -1,5 +1,6 @@
 ﻿
 --Reproduces fund view from the fund function in acquisitions for a specified accounting unit 
+
 SELECT
 fund.fund_code AS "FUND CODE",
 round(cast (fund.appropriation as numeric (12,2))/100, 2) AS "APPROPRIATION",
@@ -13,5 +14,5 @@ FROM
     
  
 WHERE
-fund.acct_unit = '2'
+fund.acct_unit = '1'
 ;
