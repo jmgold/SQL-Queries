@@ -1,4 +1,6 @@
-﻿( SELECT 'bib' as hold_type, bib_num, max(title) as title, bool_or(is_available) as is_available, null as
+﻿--code taken from example on Sierra mailing list
+
+( SELECT 'bib' as hold_type, bib_num, max(title) as title, bool_or(is_available) as is_available, null as
    max_holds_any_item, hold_count_bib as total_holds_all_items, hold_latest_bib, count(birl.item_record_id) as 
    items_on_bib,
 CASE WHEN count(birl.item_record_id)>0 THEN (hold_count_bib::float / count(birl.item_record_id)) ELSE
