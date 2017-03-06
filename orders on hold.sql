@@ -7,4 +7,4 @@ SELECT
 
 FROM sierra_view.order_view
 WHERE 
-	order_status_code = '1'
+	order_status_code = '2'
