@@ -1,0 +1,19 @@
+SELECT 
+  bib_view.title AS "Title",
+  bib_view.bcode2 AS "Mat Type",   
+  'b'||bib_view.record_num||'a' AS "record number",
+  SUM (item_view.year_to_date_checkout_total) AS "YTD Checkouts"
+FROM sierra_view.bib_view
+JOIN sierra_view.bib_record
+  ON bib_record.id = bib_view.id
+JOIN sierra_view.bib_record_item_record_link
+  ON bib_view.id = bib_record_item_record_link.bib_record_id
+JOIN sierra_view.item_view
+  ON bib_record_item_record_link.item_record_id = item_view.id  
+WHERE 
+  bib_record.language_code = 'chi' AND 
+  item_view.year_to_date_checkout_total > 0
+Group By bib_view.title, bib_view.bcode2, bib_view.record_num, item_view.year_to_date_checkout_total 
+ORDER BY
+  bib_view.bcode2 ASC,
+  item_view.year_to_date_checkout_total DESC;
