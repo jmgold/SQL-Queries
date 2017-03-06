@@ -1,4 +1,6 @@
-﻿SELECT
+﻿--identifies items without parents in the system
+
+SELECT
   'i'||item_view.record_num||'a'
 FROM
   sierra_view.item_view
