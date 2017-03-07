@@ -1,17 +1,11 @@
-﻿--Produces random sample of unsuppressed bib records to be imported into review file for use
+﻿--Produces random sample of item records for a specified library to be imported into a review file for use
 SELECT
-concat(
-	rm.record_type_code,
-	rm.record_num||'a'
-	)
+id2reckey(i.id)
 FROM
-sierra_view.bib_record AS b
-JOIN
-sierra_view.record_metadata AS rm
-ON
-rm.id = b.record_id
+sierra_view.item_record AS i
+-JOIN
 WHERE
-b.is_suppressed IS FALSE
+i.agency_code_num='2'
 ORDER BY
 RANDOM()
 LIMIT 1000;
