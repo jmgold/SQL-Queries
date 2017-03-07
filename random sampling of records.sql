@@ -1,4 +1,4 @@
-﻿--Produces random sample of item records for a specified libraryto be imported into a review file for use
+﻿--Produces random sample of item records for a specified library to be imported into a review file for use
 SELECT
 id2reckey(i.id)
 FROM
