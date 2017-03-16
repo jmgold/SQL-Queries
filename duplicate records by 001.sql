@@ -1,4 +1,5 @@
-﻿--Finds records that share 001 fields
+﻿-- Created by David Jones and shared over Sierra listserv 9/20/16
+-- Finds records that share 001 fields
 
 SELECT
     id2reckey(record_id) AS rid,
