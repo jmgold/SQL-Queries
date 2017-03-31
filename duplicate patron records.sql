@@ -5,7 +5,7 @@ SELECT
     id2reckey(p.id)||'a' AS pnumber,
     n.first_name || ' ' || n.middle_name || ' ' || n.last_name AS Name,
     a.addr1 AS Address,
-    -- || ' ' || a.city || ' ' || a.postal_code AS Address,
+    p.ptype_code AS ptype,
     p.barcode AS Barcode
 FROM
     sierra_view.patron_record_fullname as n
