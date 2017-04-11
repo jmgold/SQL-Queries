@@ -2,19 +2,19 @@
 
 """Create and email a list of new items
 
-Based on code presented by Gem Stone-Logan at IUG2017
-
+Author: Gem Stone-Logan
+Contact Info: gem.stone-logan@mountainview.gov or gemstonelogan@gmail.com
 """
 
 import psycopg2
 import xlsxwriter
 
 #Connecting to Sierra PostgreSQL database
-conn = psycopg2.connect("dbname='production' user='mlnjeremy' host='sierra-db.minlib.net' port='1032' password='mlnjeremy' sslmode='require'")
+conn = psycopg2.connect("dbname='iii' user='mlnjeremy' host='sierra-db.minlib.net' port='1032' password='mlnjeremy' sslmode='require'")
 
 #Opening a session and querying the database for weekly new items
 cursor = conn.cursor()
-cursor.execute("SELECT id2reckey(order_view.record_id)||'a', order_record_cmf.location_code, order_view.accounting_unit_code_num, order_view.record_creation_date_gmt FROM sierra_view.order_view JOIN sierra_view.order_record_cmf ON order_view.record_id=order_record_cmf.order_record_id WHERE order_record_cmf.location_code = 'none';")
+cursor.execute("SELECT id2reckey(order_view.record_id)||'a', order_record_cmf.location_code, order_view.accounting_unit_code_num FROM sierra_view.order_view JOIN sierra_view.order_record_cmf ON order_view.record_id=order_record_cmf.order_record_id WHERE order_record_cmf.location_code = 'none';")
 #For now, just storing the data in a variable. We'll use it later.
 rows = cursor.fetchall()
 conn.close()
@@ -33,10 +33,9 @@ eformat= workbook.add_format({'text_wrap': True, 'valign': 'top'})
 eformatlabel= workbook.add_format({'text_wrap': True, 'valign': 'top', 'bold': True})
 
 # Setting the column widths
-worksheet.set_column(0,0,10.29)
-worksheet.set_column(1,1,6.29)
-worksheet.set_column(2,2,12.71)
-worksheet.set_column(3,3,16.57)
+worksheet.set_column(0,0,14.43)
+worksheet.set_column(1,1,7.71)
+worksheet.set_column(2,2,9.57)
 
 #Inserting a header
 worksheet.set_header('orders without grids')
@@ -45,20 +44,13 @@ worksheet.set_header('orders without grids')
 worksheet.write(0,0,'Record_number', eformatlabel)
 worksheet.write(0,1,'Location', eformatlabel)
 worksheet.write(0,2,'accounting unit', eformatlabel)
-worksheet.write(0,3,'created date', eformatlabel)
 
 # Writing the report for staff to the Excel worksheet
 for rownum, row in enumerate(rows):
     worksheet.write(rownum+1,0,row[0], eformat)
     worksheet.write(rownum+1,1,row[1], eformat)
     worksheet.write(rownum+1,2,row[2], eformat)
-    worksheet.write(rownum+1,3,row[3], eformat)
-    worksheet.write(rownum+1,4,row[4], eformat)
-    worksheet.write(rownum+1,5,row[5], eformat)
-    worksheet.write(rownum+1,6,row[6], eformat)
-    worksheet.write(rownum+1,7,row[7], eformat)
-    worksheet.write(rownum+1,8,row[8], eformat)
-    worksheet.write(rownum+1,9,row[9], eformat)
+    
 
 workbook.close()
 
