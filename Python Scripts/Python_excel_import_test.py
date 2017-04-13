@@ -8,6 +8,29 @@ Contact Info: gem.stone-logan@mountainview.gov or gemstonelogan@gmail.com
 
 import psycopg2
 import xlsxwriter
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.base import MIMEBase
+from email.mime.text import MIMEText
+from email.utils import formatdate
+from email import encoders
+
+#Name of Excel File
+excelfile =  'OrdersWithoutGrids.xlsx'
+
+# These are variables for the email that will be sent.
+# Make sure to use your own library's email server (emaihost)
+emailhost = 'smtp.gmail.com'
+emailport = '587'
+emailsubject = 'Orders without grids'
+emailmessage = '''***This is an automated email***
+
+
+The weekly new report has been attached. Please take a look and let the Technology Librarian know if there are any questions about it.'''
+# Enter your own email information
+emailfrom= 'jgoldstein@minlib.net'
+# emailto can send to multiple addresses by separating emails with commas
+emailto = ['jgoldstein@minlib.net','egreenfield@minlib.net']
 
 #Connecting to Sierra PostgreSQL database
 conn = psycopg2.connect("dbname='iii' user='mlnjeremy' host='sierra-db.minlib.net' port='1032' password='mlnjeremy' sslmode='require'")
@@ -20,7 +43,7 @@ rows = cursor.fetchall()
 conn.close()
 
 #Creating the Excel file for staff
-workbook = xlsxwriter.Workbook("WeeklyNewItem.xlsx")
+workbook = xlsxwriter.Workbook(excelfile)
 worksheet = workbook.add_worksheet()
 
 
@@ -51,7 +74,25 @@ for rownum, row in enumerate(rows):
     worksheet.write(rownum+1,1,row[1], eformat)
     worksheet.write(rownum+1,2,row[2], eformat)
     
-
 workbook.close()
 
+#Creating the email message
+msg = MIMEMultipart()
+msg['From'] = emailfrom
+if type(emailto) is list:
+    msg['To'] = ', '.join(emailto)
+else:
+    msg['To'] = emailto
+msg['Date'] = formatdate(localtime = True)
+msg['Subject'] = emailsubject
+msg.attach (MIMEText(emailmessage))
+part = MIMEBase('application', "octet-stream")
+part.set_payload(open(excelfile,"rb").read())
+encoders.encode_base64(part)
+part.add_header('Content-Disposition','attachment; filename=%s' % excelfile)
+msg.attach(part)
 
+#Sending the email message
+smtp = smtplib.SMTP(emailhost, emailport)
+smtp.sendmail(emailfrom, emailto, msg.as_string())
+smtp.quit()
