@@ -65,7 +65,7 @@ mv.local_holds as "local holds",
                 ELSE mv.hold_count/(max(mv.avail_item_count) + max(mv.order_copies))*1.00
         END
         AS "Ratio",
-'http://find.minlib.net/iii/encore/record/C__Rb'||id2reckey(mv.bib_id)   AS "URL"
+'http://find.minlib.net/iii/encore/record/C__R'||id2reckey(mv.bib_id)   AS "URL"
 from sierra_view.bib_record_property brp
 JOIN mvhdholds mv
 ON mv.bib_id=brp.bib_record_id
