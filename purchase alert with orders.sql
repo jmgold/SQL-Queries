@@ -53,13 +53,47 @@ select id2reckey(mv.bib_id)||'a' AS "Record Number",
 brp.best_title AS "Title", 
 brp.best_author AS "Author", 
 brp.publish_year AS "PublicationYear",
-brp.material_code AS "MatType",
-mv.item_count as "Total item count", 
-max(mv.avail_item_count) as "available item count",
-max(mv.local_avail_item_count) as "local available item count",
-max(mv.order_copies) as "Total order copies",
-mv.hold_count as "hold count",
-mv.local_holds as "local holds",
+CASE
+    WHEN brp.material_code = '2' THEN 'Large Print'
+    WHEN brp.material_code = '3' THEN 'Periodical'
+    WHEN brp.material_code = '4' THEN 'Spoken CD'
+    WHEN brp.material_code = '5' THEN 'DVD'
+    WHEN brp.material_code = '6' THEN 'Film/Strip'
+    WHEN brp.material_code = '7' THEN 'Music Cassette'
+    WHEN brp.material_code = '8' THEN 'LP'
+    WHEN brp.material_code = '9' THEN 'Juv Book + CD'
+    WHEN brp.material_code = 'a' THEN 'Book'
+    WHEN brp.material_code = 'b' THEN 'Archival Material'
+    WHEN brp.material_code = 'c' THEN 'Music Score'
+    WHEN brp.material_code = 'e' THEN 'Map'
+    WHEN brp.material_code = 'g' THEN 'VHS'
+    WHEN brp.material_code = 'h' THEN 'Downloadable eBook'
+    WHEN brp.material_code = 'i' THEN 'Spoken Cassette'
+    WHEN brp.material_code = 'j' THEN 'Music CD'
+    WHEN brp.material_code = 'k' THEN '2D Visual Material'
+    WHEN brp.material_code = 'l' THEN 'Downloadable Video'
+    WHEN brp.material_code = 'm' THEN 'Software'
+    WHEN brp.material_code = 'n' THEN 'Console Game'
+    WHEN brp.material_code = 'o' THEN 'Kit'
+    WHEN brp.material_code = 'p' THEN 'Mixed Material'
+    WHEN brp.material_code = 'q' THEN 'Equipment'
+    WHEN brp.material_code = 'r' THEN '3D Object'
+    WHEN brp.material_code = 's' THEN 'Downloadable Audiobook'
+    WHEN brp.material_code = 't' THEN 'Manuscript'
+    WHEN brp.material_code = 'u' THEN 'Blu-ray'
+    WHEN brp.material_code = 'v' THEN 'eReader/Tablet'
+    WHEN brp.material_code = 'w' THEN 'Downloadable Music'
+    WHEN brp.material_code = 'x' THEN 'Playaway Video'
+    WHEN brp.material_code = 'y' THEN 'Online'
+    WHEN brp.material_code = 'z' THEN 'Playaway Audio'
+    ELSE 'unexpected code '||brp.material_code
+END     AS "MatType",
+mv.item_count as "TotalItemCount", 
+max(mv.avail_item_count) as "AvailableItemCount",
+max(mv.local_avail_item_count) as "LocalAvailableItemCount",
+max(mv.order_copies) as "LocalOrderCopies",
+mv.hold_count as "TotalHoldCount",
+mv.local_holds as "LocalHoldCount",
         CASE
                 WHEN max(mv.avail_item_count) + max(mv.order_copies)=0 THEN mv.hold_count
                 ELSE mv.hold_count/(max(mv.avail_item_count) + max(mv.order_copies))*1.00
@@ -71,7 +105,8 @@ JOIN mvhdholds mv
 ON mv.bib_id=brp.bib_record_id
 GROUP BY 1, 2, 3, 4, 5, 6, 10, 11, 13
 HAVING mv.local_holds > 0
---(max(mv.item_count) + max(mv.order_copies))=0
+-- Optional filter to set supply and demand ratio limit
+-- AND (max(mv.item_count) + max(mv.order_copies))=0
 --OR max(mv.hold_count)/(max(mv.item_count) + max(mv.order_copies))>=4
-ORDER BY brp.material_code, "Ratio" desc;
+ORDER BY 5, 12 desc;
 
