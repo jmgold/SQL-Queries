@@ -19,7 +19,8 @@ SELECT
 	WHEN SUBSTRING(i.location_code,4,1)='y' THEN 'YA'
 	Else 'Adult'
 	END AS "Age level",
-	count (*)
+	count (distinct(b.id)) AS "title count",
+	count (i.id) AS "item count"
 FROM
 	sierra_view.item_record				AS i
 	JOIN
@@ -30,8 +31,8 @@ FROM
 	sierra_view.bib_record_property			AS b
 	ON
 	bi.bib_record_id=b.bib_record_id
-WHERE
-	i.agency_code_num='1'
+--WHERE
+--	i.agency_code_num='1'
 	GROUP BY 1,2
 	ORDER BY 1
 ;
