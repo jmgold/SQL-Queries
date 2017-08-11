@@ -13,8 +13,9 @@ AVG(i.price) FILTER(WHERE i.price>'0') AS "AVG_Price",
 MODE() WITHIN GROUP (order by i.price) FILTER(WHERE i.price>'0') AS "MODE_Price",
 MAX(i.price) AS "MAX_Price",
 MIN(i.price) AS "MIN_Price",
-((COUNT(i.id)*(MODE() WITHIN GROUP (order by i.price) FILTER(WHERE i.price>'0')))/(NULLIF(SUM(i.checkout_total),0))) AS "Cost_Per_Circ_By_Mode_Price",
-((COUNT(i.id)*(AVG(i.price) FILTER(WHERE i.price>'0')))/(NULLIF(SUM(i.checkout_total),0))) AS "Cost_Per_Circ_By_AVG_Price"
+((COUNT(i.id)*(AVG(i.price) FILTER(WHERE i.price>'0')))/(NULLIF(SUM(i.checkout_total),0))) AS "Cost_Per_Circ_By_AVG_Price",
+((COUNT(i.id)*(MODE() WITHIN GROUP (order by i.price) FILTER(WHERE i.price>'0')))/(NULLIF(SUM(i.checkout_total),0))) AS "Cost_Per_Circ_By_Mode_Price"
+
 FROM
 --sierra_view.bib_view b
 --JOIN
