@@ -15,8 +15,8 @@ ROUND(MIN(price) FILTER(WHERE price>'0'),2) AS "MIN_Price",
 ROUND((((COUNT(id) FILTER(WHERE location_code LIKE 'wel%'))*(AVG(price) FILTER(WHERE price>'0' and price <'10000')))/(NULLIF((SUM(checkout_total) FILTER(WHERE location_code LIKE 'wel%') + SUM(renewal_total) FILTER(WHERE location_code LIKE 'wel%')),0))),2) AS "Cost_Per_Circ_By_AVG_Price",
 ROUND(((COUNT(id) FILTER(WHERE location_code LIKE 'wel%')*(MODE() WITHIN GROUP (order by price) FILTER(WHERE price>'0' and price <'10000')))/(NULLIF((SUM(checkout_total) FILTER(WHERE location_code LIKE 'wel%') + SUM(renewal_total) FILTER(WHERE location_code LIKE 'wel%')),0))),2) AS "Cost_Per_Circ_By_Mode_Price",
 round(cast(SUM(checkout_total) FILTER(WHERE location_code LIKE 'wel%') + SUM(renewal_total) FILTER(WHERE location_code LIKE 'wel%') as numeric (12,2))/cast(count (id) FILTER(WHERE location_code LIKE 'wel%') as numeric (12,2)), 2) as turnover,
-round(cast(count (*) as numeric (12,2)) / ((select cast(count (*)as numeric (12,2)) from sierra_view.item_view where location_code LIKE 'wel%')), 6) as relative_item_total,
-round(cast(SUM(checkout_total) + SUM(renewal_total) as numeric (12,2)) / ((select cast(SUM(checkout_total) + SUM(renewal_total) as numeric (12,2)) from sierra_view.item_view WHERE location_code LIKE 'wel%')), 6) as relative_circ
+round(cast(count(id) FILTER(WHERE location_code LIKE 'wel%') as numeric (12,2)) / ((select cast(count (*)as numeric (12,2)) from sierra_view.item_view where location_code LIKE 'wel%')), 6) as relative_item_total,
+round(cast(SUM(checkout_total) FILTER(WHERE location_code LIKE 'wel%') + SUM(renewal_total) FILTER(WHERE location_code LIKE 'wel%') as numeric (12,2)) / ((select cast(SUM(checkout_total) + SUM(renewal_total) as numeric (12,2)) from sierra_view.item_view WHERE location_code LIKE 'wel%')), 6) as relative_circ
 FROM
 sierra_view.item_record
 --WHERE item_status_code != 'o' AND item_status_code != 'p' AND item_status_code != 'e' AND item_status_code != 'r'
