@@ -1,15 +1,15 @@
 ﻿SELECT
 CASE
-WHEN v.field_content ~ '^0[0-9][0-9]' THEN '000'
-WHEN v.field_content ~ '^1[0-9][0-9]' THEN '100'
-WHEN v.field_content ~ '^2[0-9][0-9]' THEN '200'
-WHEN v.field_content ~ '^3[0-9][0-9]' THEN '300'
-WHEN v.field_content ~ '^4[0-9][0-9]' THEN '400'
-WHEN v.field_content ~ '^5[0-9][0-9]' THEN '500'
-WHEN v.field_content ~ '^6[0-9][0-9]' THEN '600'
-WHEN v.field_content ~ '^7[0-9][0-9]' THEN '700'
-WHEN v.field_content ~ '^8[0-9][0-9]' THEN '800'
-WHEN v.field_content ~ '^9[0-9][0-9]' THEN '900'
+WHEN v.field_content ~ '\|a0[0-9][0-9]' THEN '000'
+WHEN v.field_content ~ '\|a1[0-9][0-9]' THEN '100'
+WHEN v.field_content ~ '\|a2[0-9][0-9]' THEN '200'
+WHEN v.field_content ~ '\|a3[0-9][0-9]' THEN '300'
+WHEN v.field_content ~ '\|a4[0-9][0-9]' THEN '400'
+WHEN v.field_content ~ '\|a5[0-9][0-9]' THEN '500'
+WHEN v.field_content ~ '\|a6[0-9][0-9]' THEN '600'
+WHEN v.field_content ~ '\|a7[0-9][0-9]' THEN '700'
+WHEN v.field_content ~ '\|a8[0-9][0-9]' THEN '800'
+WHEN v.field_content ~ '\|a9[0-9][0-9]' THEN '900'
 ELSE 'unknown'
 END AS "Call#_Range",
 COUNT (i.id) AS "Item total",
@@ -37,9 +37,6 @@ JOIN
 sierra_view.varfield as v
 ON
 v.record_id = i.id AND v.varfield_type_code = 'c'
-JOIN sierra_view.subfield s
-ON
-v.id = subfield.varfield_id AND s.field_type_code = 's'
 WHERE i.location_code LIKE 'brk%'
 GROUP BY 1
 ORDER BY 1;
