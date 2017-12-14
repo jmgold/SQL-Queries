@@ -5,9 +5,10 @@ SELECT
     DISTINCT id2reckey(p.id)||'a' AS pnumber,
     n.first_name || ' ' || n.middle_name || ' ' || n.last_name AS Name,
     a.addr1 AS Address,
-    p.city as Town/City,
+    a.city as Town_City,
     p.ptype_code AS ptype,
-    p.barcode AS Barcode
+    p.barcode AS Barcode,
+    p.expiration_date_gmt AS Expiration
 FROM
     sierra_view.patron_record_fullname as n
 JOIN
