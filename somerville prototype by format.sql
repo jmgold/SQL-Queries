@@ -1,10 +1,12 @@
 ﻿SELECT
-(SELECT count(p1.id) FROM sierra_view.patron_view AS p1 JOIN sierra_view.record_metadata m ON p1.record_num = m.record_num and m.record_type_code = 'p' and p1.home_library_code = 'somz' WHERE m.creation_date_gmt > (current_date - 1)) AS "New_SOM_Patrons",
-(SELECT count(p1.id) FROM sierra_view.patron_view AS p1 JOIN sierra_view.record_metadata m ON p1.record_num = m.record_num and m.record_type_code = 'p' and p1.home_library_code = 'so2z' WHERE m.creation_date_gmt > (current_date - 1)) AS "New_SO2_Patrons",
-(SELECT count(p1.id) FROM sierra_view.patron_view AS p1 JOIN sierra_view.record_metadata m ON p1.record_num = m.record_num and m.record_type_code = 'p' and p1.home_library_code = 'so3z' WHERE m.creation_date_gmt > (current_date - 1)) AS "New_SO3_Patrons",
-COUNT(c.id) AS "total_checkout",
-COUNT(c.id) FILTER(WHERE i.location_code LIKE 'so%') AS "total_SOM_items",
-COUNT(c.id) FILTER(WHERE i.location_code NOT LIKE 'so%') AS "total_ILL_items",
+CASE
+WHEN b.material_code IN ('2', '9', 'a', 'c') THEN 'Books'
+WHEN b.material_code IN ('4', 'i', 'z') THEN 'Audiobooks'
+WHEN b.material_code IN ('5', 'g', 'u', 'x') THEN 'Video'
+WHEN b.material_code = 'j' THEN 'CD'
+ELSE 'Other'
+END AS "Format",
+COUNT (c.id) AS "Total_checkouts",
 COUNT(c.id) FILTER(WHERE c.stat_group_code_num BETWEEN '640' AND '648') AS "Checkout_count_main",
 COUNT(c.id) FILTER(WHERE c.stat_group_code_num BETWEEN '650' AND '658') AS "Checkout_count_east",
 COUNT(c.id) FILTER(WHERE c.stat_group_code_num BETWEEN '660' AND '668') AS "Checkout_count_west",
@@ -21,6 +23,10 @@ sierra_view.patron_record p
 ON
 c.patron_record_id=p.id
 JOIN
+sierra_view.bib_record_property b
+ON
+c.bib_record_id = b.bib_record_id
+JOIN
 sierra_view.item_record i
 ON
 c.item_record_id=i.id
@@ -30,5 +36,5 @@ AND
 c.op_code = 'o'
 AND
 c.transaction_gmt > (current_date - 1)
+Group by 1
 ;
-
