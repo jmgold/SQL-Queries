@@ -5,6 +5,7 @@ SELECT
     DISTINCT id2reckey(p.id)||'a' AS pnumber,
     n.first_name || ' ' || n.middle_name || ' ' || n.last_name AS Name,
     a.addr1 AS Address,
+    p.city as Town/City,
     p.ptype_code AS ptype,
     p.barcode AS Barcode
 FROM
@@ -12,7 +13,7 @@ FROM
 JOIN
     sierra_view.patron_view as p
 ON
-    n.patron_record_id=p.id
+    n.patron_record_id=p.id and p.ptype_code != '205'
 JOIN
     sierra_view.patron_record_address as a
 ON
@@ -27,7 +28,7 @@ WHERE
          JOIN
 	      sierra_view.patron_view as p
 	 ON
-              n.patron_record_id=p.id
+              n.patron_record_id=p.id and p.ptype_code != '205'
 	 JOIN
               sierra_view.patron_record_address as a
 	 ON
