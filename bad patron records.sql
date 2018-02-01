@@ -8,9 +8,14 @@ p.home_library_code,
 p.patron_agency_code_num,
 a.addr1,
 a.city,
-a.postal_code
+a.postal_code,
+v.field_content as email
 from
 sierra_view.patron_view as p
+join		
+sierra_view.varfield v		
+on		
+p.id = v.record_id and varfield_type_code = 'z'
 join
 sierra_view.patron_record_address as a
 on p.id = a.patron_record_id
@@ -26,6 +31,7 @@ or (a.postal_code !~ '^\d{5}' and a.postal_code !~'^\d{5}([\-]\d{4})') --zipcode
 or p.barcode is null
 or p.barcode !~ '^\d{14}' --barcode not 14 digits
 --or duplicate barcode
+or (v.field_content is not null and v.field_content !~ '(\@[a-zA-Z0-9\-]+\.[a-zA-Z0-9\-\.]+$)') --invalid e-mail format
 )
 order by
 2,1
