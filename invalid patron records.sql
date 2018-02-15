@@ -39,6 +39,7 @@ AND
 OR p.pcode3 != '27' --ma town does not match ptype
 OR p.patron_agency_code_num = '47' --improperly converted online registration
 OR a.addr1 IS NULL
+OR a.addr1 !~'^[\dPp]'--address doesn't start with a # or PO
 OR a.city IS NULL
 OR (a.postal_code !~ '^\d{5}' AND a.postal_code !~'^\d{5}([\-]\d{4})') --zipcode not ##### or #####-####
 OR p.barcode is null
