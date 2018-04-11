@@ -1,4 +1,7 @@
-﻿--Created for Millis to determine the average time between when a fine is assessed and when it is paid for their patrons
+﻿--Jeremy Goldstein
+--Minuteman Library Network
+
+--Created for Millis to determine the average time between when a fine is assessed and when it is paid for their patrons
 
 SELECT
 count (distinct f.id) AS "Count_Fines",
@@ -12,4 +15,5 @@ sierra_view.fine as f
 JOIN
 sierra_view.patron_record as p
 ON
+--Limit to a selected patron type
 p.id=f.patron_record_id and p.ptype_code='24'

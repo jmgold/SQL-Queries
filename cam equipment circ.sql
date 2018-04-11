@@ -1,4 +1,7 @@
-﻿--Cambridge circ_trans data stripped of patron info for project run by Reinhard Engels
+﻿--Jeremy Goldstein
+--Minuteman Library network
+
+--Cambridge circ_trans data stripped of patron info for project run by Reinhard Engels
 
 SELECT
 c.transaction_gmt,
@@ -23,6 +26,7 @@ sierra_view.circ_trans c
 JOIN
 sierra_view.bib_record_property b
 ON
+--Limited to equipment
 c.bib_record_id = b.bib_record_id and b.material_code IN ('q','r','v')
 JOIN
 sierra_view.item_record_property i

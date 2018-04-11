@@ -1,4 +1,7 @@
-﻿--Calculates the cost per circ by itype at the network level.
+﻿--Jeremy Goldstein
+--Minuteman Library network
+
+--Calculates the cost per circ by itype at the network level.
 --Provides this figure using both the avg. price and mode price for each itype, filtering out items with a price of $0 for these calculations
 --Excludes items that do not circulate
 

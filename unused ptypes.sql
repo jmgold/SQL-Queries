@@ -1,4 +1,13 @@
-﻿SELECT
+﻿-- ==================================================================
+
+-- SELECT Item Type Codes that are not being used for any items
+
+-- Brent Searle. Langara College. 2016-07-06
+
+-- ==================================================================
+
+
+SELECT
 
   ptprop.value                        AS "Ptype Code",
 

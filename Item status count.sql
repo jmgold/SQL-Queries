@@ -1,4 +1,7 @@
-﻿--Capture how many items are using each status code
+﻿--Jeremy Goldstein
+--Minuteman Library Network
+
+--Capture how many items are using each status code
 --Primary use: get number of withdrawn, billed, missing, etc... items included in annual holdings count
 
 SELECT

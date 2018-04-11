@@ -1,4 +1,9 @@
+--Jeremy Goldstein
+--Minuteman Library network
+
 --identifies patron records exhibiting various common data entry errors
+--Run monthly via python automation script
+
 SELECT
 id2reckey(p.id)||'a' AS record_num,
 p.barcode,
@@ -33,6 +38,7 @@ JOIN
 sierra_view.patron_record_address as a
 ON p.id = a.patron_record_id
 WHERE
+--limited by ptype
 p.ptype_code = '8'
 AND
 ((p.home_library_code NOT LIKE '%z' AND p.home_library_code IS NOT NULL) --failed to use pickup location code

@@ -1,4 +1,9 @@
-﻿SELECT
+﻿--Jeremy Goldstein
+--Minuteman Library Network
+
+--Pair with output of collection dev order report to see circ totals along side payment data
+
+SELECT
 b.bcode2 AS mat_type,
 COUNT(i.id),
 SUM(i.checkout_total) AS total_checkout,

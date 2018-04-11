@@ -1,4 +1,11 @@
-﻿SELECT
+﻿--Jeremy Goldstein
+--Minuteman Library network
+
+--Provides various performance metrics for all items at a library grouped by scat code
+--Used with python automation script
+
+
+SELECT
 icode1 AS "Scat",
 COUNT (id) AS "Item total",
 
@@ -25,6 +32,7 @@ round(cast(count(id) as numeric (12,2)) / (select cast(count (id) as numeric (12
 round(cast(SUM(checkout_total) + SUM(renewal_total) as numeric (12,2)) / (SELECT cast(SUM(checkout_total) + SUM(renewal_total) as numeric (12,2)) from sierra_view.item_record where location_code LIKE 'brk%'), 6) as relative_circ
 FROM
 sierra_view.item_record
+--limit to location
 WHERE location_code LIKE 'brk%'
 GROUP BY 1
 ORDER BY 1;

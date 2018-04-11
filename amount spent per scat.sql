@@ -1,4 +1,7 @@
-﻿--Used to gather the amount spent on items broken down by scat code.  Highly imperfect totals.
+﻿--Jeremy Goldstein
+--Minuteman Library Network
+
+--Used to gather the amount spent on items broken down by scat code.  Highly imperfect totals.
 select
 id2reckey(b.id)||'a',
 i.icode1,

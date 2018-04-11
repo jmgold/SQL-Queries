@@ -1,4 +1,7 @@
-﻿--Gathers current holdings by ARIS category for a specified library determined by Agency code
+﻿--Jeremy Goldstein
+--Minuteman Library Network
+
+--Gathers current holdings by ARIS category for a specified library determined by Agency code
 
 SELECT
 	CASE 
@@ -10,6 +13,7 @@ SELECT
 	WHEN (i.itype_code_num BETWEEN '19' AND '30') OR i.itype_code_num='52' OR (i.itype_code_num BETWEEN '112' AND '120') OR i.itype_code_num='132' 
 		OR i.itype_code_num='133' OR (i.itype_code_num BETWEEN '163' AND '168') OR i.itype_code_num='182' OR i.itype_code_num='183' THEN 'Video'
 	WHEN i.itype_code_num='248' OR i.itype_code_num='249' THEN 'E-book'
+	--We lack itypes to specify the following two categories
 	--WHEN  THEN 'Downloadable audio'
 	--WHEN  THEN 'Downloadable video'
 	WHEN  i.itype_code_num='31' OR i.itype_code_num='32' OR i.itype_code_num='42' OR i.itype_code_num='43' OR i.itype_code_num='121' OR i.itype_code_num='122'
@@ -30,6 +34,7 @@ SELECT
 FROM
 	sierra_view.item_record				AS i
 WHERE
+--Limit to a location
 	i.agency_code_num='1'
 	GROUP BY 1,2
 	ORDER BY 1

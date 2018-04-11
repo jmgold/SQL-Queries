@@ -1,4 +1,9 @@
-﻿select distinct(u.user_name)
+﻿--Jeremy Goldstein
+--Minuteman Library Network
+
+--Identifies user accounts with the permission to access Sierra Web
+
+select distinct(u.user_name)
 from
 sierra_view.iii_user_application_myuser u
 left join

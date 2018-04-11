@@ -1,4 +1,7 @@
-﻿--identifies items without parents in the system
+﻿--Jeremy Goldstein
+--Minuteman Library network
+
+--identifies items without parents in the system
 
 SELECT
   'i'||item_view.record_num||'a'
