@@ -1,4 +1,9 @@
-﻿SELECT
+﻿--Jeremy Goldstein
+--Minuteman Library Network
+
+--Pair with output of collection dev item report to see circ totals along side payment data
+
+SELECT
 b.bcode2 AS mat_type,
 SUM(p.copies) AS paid_copies,
 Round(SUM(p.paid_amount),2) AS total_payment 

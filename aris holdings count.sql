@@ -1,4 +1,7 @@
-﻿--Gathers current holdings by ARIS category for a specified library determined by Agency code
+﻿--Jeremy Goldstein
+--Minuteman Library Network
+
+--Gathers current holdings by ARIS category for a specified library determined by Agency code
 
 SELECT
 	CASE 
@@ -31,6 +34,7 @@ FROM
 	sierra_view.bib_record_property			AS b
 	ON
 	bi.bib_record_id=b.bib_record_id
+--Uncomment to limit to a location	
 --WHERE
 --	i.agency_code_num='1'
 	GROUP BY 1,2

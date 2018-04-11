@@ -1,6 +1,9 @@
-﻿--use to gather bibs where a library owns items in a specified itype and no other itypes.
+﻿--Jeremy Goldstein
+--Minuteman Library Network
 
---originally to find instances at Cambridge where there were speed views and not standard dvds.
+--use to gather bibs where a library owns items in a specified itype and no other itypes.
+
+--originally to find instances at Cambridge where there were speed views and not standard dvds, which violates local circ policy.
 
 SELECT
     b.record_type_code || b.record_num || 'a' AS "Bib Record",
@@ -12,6 +15,7 @@ WHERE NOT EXISTS (
    FROM  
       sierra_view.bib_record_item_record_link l
       JOIN   sierra_view.item_view i ON l.item_record_id = i.id
+   --limit to location   
    WHERE  b.id = l.bib_record_id AND i.itype_code_num != '23' AND location_code LIKE 'ntn%'
    )
    AND EXISTS (
@@ -19,6 +23,7 @@ WHERE NOT EXISTS (
    FROM  
       sierra_view.bib_record_item_record_link l
       JOIN   sierra_view.item_view i ON l.item_record_id = i.id
+   --limit to same location as above   
    WHERE  b.id = l.bib_record_id AND i.itype_code_num = '23' AND location_code LIKE 'ntn%'
    )
 ORDER BY "Bib Record";

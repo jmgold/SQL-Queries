@@ -1,4 +1,9 @@
-﻿select 
+﻿--Jeremy Goldstein
+--Minuteman Library Network
+
+--Finds bib records used for course reserves that are no longer in use
+
+select 
 distinct 'i'||i.record_num||'a',
 --'r'||r.record_num||'a',
 i.location_code

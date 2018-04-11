@@ -1,4 +1,8 @@
-﻿--use to gather bibs where a library owns multiple copies of a title.
+﻿--Jeremy Goldstein
+--Minuteman Library Network
+
+
+--use to gather bibs where a library owns multiple copies of a title.
 
 select 'b'||bib.record_num||'a' as "record_num",
 bib.title,
@@ -15,6 +19,7 @@ sierra_view.item_view as item
 on
 item.id = link.item_record_id
 where
+--Limit to a location
 item.agency_code_num = '38'
 group by 1, 2
 having count(case when item.agency_code_num = '38' then 1 else null end) > 1

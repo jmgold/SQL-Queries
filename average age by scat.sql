@@ -1,4 +1,7 @@
-﻿----average age of all items by scat
+﻿--Jeremy Goldstein
+--Minuteman Library Network
+
+----average age of all items by scat
 Select
 i.icode1 as SCAT,
 round(AVG(bp.publish_year), 0) as avg_age
@@ -14,6 +17,7 @@ JOIN sierra_view.bib_record_property as bp
 ON
 b.id=bp.bib_record_id
 Where
+--Limit to library
 i.agency_code_num = '11'
 group by 1
 order by 1;

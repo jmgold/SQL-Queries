@@ -1,4 +1,7 @@
-﻿--Gathers payments on standing order records made within a specified time period
+﻿--Jeremy Goldstein
+--Minuteman Library Network
+
+--Gathers payments on standing order records made within a specified time period
 --Special request from ARL
 
 select *

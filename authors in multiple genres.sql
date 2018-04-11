@@ -1,5 +1,9 @@
-﻿--Finds authors for who a library has classified their works in multiple genres (based on Scat code)
+﻿--Jeremy Goldstein
+--Minuteman Library Network
+
+--Finds authors for who a library has classified their works in multiple genres (based on Scat code)
 --Currently broken but can use the logic to get two lists that can be duplicate checked in excel.
+
 select bp.best_author_norm
 from
 sierra_view.bib_record_property bp
@@ -8,6 +12,7 @@ WHERE EXISTS (
    FROM  
       sierra_view.bib_record_item_record_link l
       JOIN   sierra_view.item_view i ON l.item_record_id = i.id
+   --Limit to location
    WHERE  bp.bib_record_id = l.bib_record_id AND i.icode1 = '1' AND location_code LIKE 'lin%'
    )
    and EXISTS (
@@ -15,8 +20,10 @@ WHERE EXISTS (
    FROM  
       sierra_view.bib_record_item_record_link l
       JOIN   sierra_view.item_view i ON l.item_record_id = i.id
+   --Limit to same location as above
    WHERE  bp.bib_record_id = l.bib_record_id AND i.icode1 = '2' AND location_code LIKE 'lin%'
    )
+   
 /*join
 sierra_view.bib_record_item_record_link bi
 on

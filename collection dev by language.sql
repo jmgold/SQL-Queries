@@ -1,4 +1,9 @@
-﻿SELECT
+﻿--Jeremy Goldstein
+--Minuteman Library Network
+
+--Provides various performance metrics for each language collection
+
+SELECT
 language_property_myuser.name AS "language",
 COUNT (i.id) AS "Item total",
 SUM(i.checkout_total) AS "Total_Checkouts",

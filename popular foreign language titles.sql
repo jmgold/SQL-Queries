@@ -1,4 +1,7 @@
-﻿--limited to one language at a time
+﻿--Jeremy Goldstein
+--Minuteman Library Network
+
+--Lists all items in a language collection sorted by YTD checkout total, limited to one language at a time
 
 SELECT
 CASE
@@ -41,7 +44,9 @@ END     AS "MatType",
   SUM(iv.last_year_to_date_checkout_total)           	    AS "Last YTD Checkouts",
   count(bilink.id) 			        	    AS "item count",
   round(cast(SUM(iv.last_year_to_date_checkout_total) as numeric (12,2))/cast(count (bilink.id) as numeric (12,2)), 2) as "turnover",
+  --List all libraries who own this title
   string_agg(distinct(loc.location_code), ',')                           AS "location code",
+  --link to record in Encore
   'http://find.minlib.net/iii/encore/record/C__Rb'||bv.record_num   AS "URL"
 FROM
   sierra_view.bib_view                              AS bv
@@ -58,6 +63,7 @@ JOIN
   ON
   bilink.item_record_id = iv.id  
 WHERE 
+--enter desired language code
   bv.language_code = 'chi'
   AND 
   iv.last_year_to_date_checkout_total > 0

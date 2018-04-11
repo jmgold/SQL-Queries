@@ -1,4 +1,7 @@
-﻿
+﻿--Jeremy Goldstein
+--Minuteman Library Network
+
+
 --Reproduces fund view from the fund function in acquisitions for a specified accounting unit 
 
 SELECT

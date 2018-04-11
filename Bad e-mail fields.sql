@@ -1,4 +1,10 @@
+--Jeremy Goldstein
+--Minuteman Library Network
+
 --Identifies patron records with invalid e-mail records, includes fields with excessive spaces.
+
+--Automated with the python script template (https://github.com/jmgold/SQL-Queries/blob/master/python_script_template.py)
+
 SELECT
 id2reckey(p.id)||'a' AS record_num,
 p.barcode,

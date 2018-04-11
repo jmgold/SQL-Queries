@@ -1,4 +1,9 @@
-﻿SELECT 
+﻿--Jeremy Goldstein
+--Minuteman Library Network
+
+--Retrieves deleted records
+
+SELECT 
   record_metadata.record_num, 
   record_metadata.deletion_date_gmt, 
   record_metadata.record_type_code 

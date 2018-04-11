@@ -1,4 +1,7 @@
-﻿--Returns on the fly records more than 2 months old and not on an on the fly or ILL bib record
+﻿--Jeremy Goldstein
+--Minuteman Library network
+
+--Returns on the fly records more than 2 months old and not on an on the fly or ILL bib record
 
 select 
 id2reckey(i.id)||'a' as "item_number",
