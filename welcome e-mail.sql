@@ -1,70 +1,134 @@
---query used to populate a welcome e-mail to new patrons (generated via python query)
-
 SELECT
-n.first_name,
-n.last_name,
+min(n.first_name),
+min(n.last_name),
 min(v.field_content) as email,
 p.barcode,
 CASE
-WHEN u.field_content IS NOT NULL THEN u.field_content
-ELSE 'You have not set a username <a href="https://library.minlib.net/screens/username.html"> click here for more information</a>'
-END as user_name,
+WHEN p.ptype_code = 5 THEN 'the Belmont Public Library'
+WHEN p.ptype_code = 6 THEN 'the Public Library of Brookline'
+WHEN p.ptype_code = 7 THEN 'the Cambridge Public Library'
+WHEN p.ptype_code = 8 THEN 'the Concord Free Public Library'
+WHEN p.ptype_code IN ('10','110') THEN 'the Dedham Public Library'
+WHEN p.ptype_code IN ('17', '117') THEN 'the Cary Memorial Library'
+WHEN p.ptype_code IN ('29', '129') THEN 'the Newton Free Library'
+WHEN p.ptype_code = 31 THEN 'the Somerville Public Library'
+WHEN p.ptype_code = 35 THEN 'the Watertown Free Public Library'
+WHEN p.ptype_code IN ('37', '137') THEN 'the Wellesley Free Library'
+WHEN p.ptype_code = 1 THEN 'the Acton Public Library'
+WHEN p.ptype_code = 2 THEN 'the Robbins Library'
+WHEN p.ptype_code = 3 THEN 'the Ashland Public Library'
+WHEN p.ptype_code = 4 THEN 'the Bedford Free Public Library'
+WHEN p.ptype_code = 11 THEN 'the Dover Town Library'
+WHEN p.ptype_code = 12 THEN 'the Framingham Public Library'
+WHEN p.ptype_code = 14 THEN 'the Franklin Public Library'
+WHEN p.ptype_code IN ('15', '115') THEN 'the Holliston Public Library'
+WHEN p.ptype_code = 18 THEN 'the Lincoln Public Library'
+WHEN p.ptype_code IN ('20', '120') THEN 'the Maynard Public Library'
+WHEN p.ptype_code IN ('21', '121') THEN 'the Medfield Public Library'
+WHEN p.ptype_code IN ('22', '122') THEN 'the Medford Public Library'
+WHEN p.ptype_code = 23 THEN 'the Medway Public Library'
+WHEN p.ptype_code = 24 THEN 'the Millis Public Library'
+WHEN (p.ptype_code = 26 AND p.home_library_code != 'na2z') THEN 'the Morse Institute Library'
+WHEN (p.ptype_code = 26 AND p.home_library_code = 'na2z') THEN 'the Bacon Free Library'
+WHEN p.ptype_code = 27 THEN 'the Needham Free Public Library'
+WHEN p.ptype_code IN ('30', '130') THEN 'the Morrill Memorial Library'
+WHEN p.ptype_code = 32 THEN 'the Randall Library'
+WHEN p.ptype_code IN ('33', '133') THEN 'the Goodnow Library'
+WHEN p.ptype_code = 34 THEN 'the Waltham Public Library'
+WHEN p.ptype_code = 36 THEN 'the Wayland Free Library'
+WHEN p.ptype_code = 38 THEN 'the Weston Public Library'
+WHEN p.ptype_code = 39 THEN 'the Westwood Public Library'
+WHEN p.ptype_code = 40 THEN 'the Winchester Public Library'
+WHEN p.ptype_code = 41 THEN 'the Woburn Public Library'
+WHEN p.ptype_code = 46 THEN 'the Sherborn Public Library'
+Else 'the Minuteman Library Network'
+END AS library,
 CASE
-WHEN p.patron_agency_code_num = 1 THEN 'Belmont Public Library'
-WHEN p.patron_agency_code_num = 2 THEN 'Public Library of Brookline'
-WHEN p.patron_agency_code_num = 3 THEN 'Cambridge Public Library'
-WHEN p.patron_agency_code_num = 4 THEN 'Concord Public Library'
-WHEN p.patron_agency_code_num = 5 THEN 'Dedham Public Library'
-WHEN p.patron_agency_code_num = 6 THEN 'Lexington Public Library'
-WHEN p.patron_agency_code_num = 7 THEN 'MassBay Community College'
-WHEN p.patron_agency_code_num = 8 THEN 'Newton Public Library'
-WHEN p.patron_agency_code_num = 9 THEN 'Somerville Public Library'
-WHEN p.patron_agency_code_num = 10 THEN 'Watertown Public Library'
-WHEN p.patron_agency_code_num = 11 THEN 'Wellesley Public Library'
-WHEN p.patron_agency_code_num = 12 THEN 'Acton Public Library'
-WHEN p.patron_agency_code_num = 13 THEN 'Arlington Public Library'
-WHEN p.patron_agency_code_num = 14 THEN 'Ashland Public Library'
-WHEN p.patron_agency_code_num = 15 THEN 'Bedford Public Library'
-WHEN p.patron_agency_code_num = 16 THEN 'Dean College'
-WHEN p.patron_agency_code_num = 17 THEN 'Dover Public Library'
-WHEN p.patron_agency_code_num = 18 THEN 'Framingham Public Library'
-WHEN p.patron_agency_code_num = 19 THEN 'Framingham State University'
-WHEN p.patron_agency_code_num = 20 THEN 'Franklin Public Library'
-WHEN p.patron_agency_code_num = 21 THEN 'Holliston Public Library'
-WHEN p.patron_agency_code_num = 22 THEN 'Lasell Public Library'
-WHEN p.patron_agency_code_num = 23 THEN 'Lincoln Public Library'
-WHEN p.patron_agency_code_num = 24 THEN 'Maynard Public Library'
-WHEN p.patron_agency_code_num = 25 THEN 'Medfield Public Library'
-WHEN p.patron_agency_code_num = 26 THEN 'Medford Public Library'
-WHEN p.patron_agency_code_num = 27 THEN 'Medway Public Library'
-WHEN p.patron_agency_code_num = 28 THEN 'Millis Public Library'
-WHEN p.patron_agency_code_num = 29 THEN 'Mount Ida College'
-WHEN p.patron_agency_code_num = 30 THEN 'Natick Public Library'
-WHEN p.patron_agency_code_num = 31 THEN 'Needham Public Library'
-WHEN p.patron_agency_code_num = 33 THEN 'Norwood Public Library'
-WHEN p.patron_agency_code_num = 34 THEN 'Stow Public Library'
-WHEN p.patron_agency_code_num = 35 THEN 'Sudbury Public Library'
-WHEN p.patron_agency_code_num = 36 THEN 'Waltham Public Library'
-WHEN p.patron_agency_code_num = 37 THEN 'Wayland Public Library'
-WHEN p.patron_agency_code_num = 38 THEN 'Weston Public Library'
-WHEN p.patron_agency_code_num = 39 THEN 'Westwood Public Library'
-WHEN p.patron_agency_code_num = 40 THEN 'Winchester Public Library'
-WHEN p.patron_agency_code_num = 41 THEN 'Woburn Public Library'
-WHEN p.patron_agency_code_num = 43 THEN 'Pine Manor College'
-WHEN p.patron_agency_code_num = 44 THEN 'Regis College'
-WHEN p.patron_agency_code_num = 45 THEN 'Sherborn Public Library'
-Else 'Unknown'
-END AS library
+WHEN p.ptype_code = 5 THEN 'the Belmont Public Library</a>, a member of the Minuteman Library Network'
+WHEN p.ptype_code = 6 THEN 'the Public Library of Brookline</a>, a member of the Minuteman Library Network'
+WHEN p.ptype_code = 7 THEN 'the Cambridge Public Library</a>, a member of the Minuteman Library Network'
+WHEN p.ptype_code = 8 THEN 'the Concord Free Public Library</a>, a member of the Minuteman Library Network'
+WHEN p.ptype_code IN ('10','110') THEN 'the Dedham Public Library</a>, a member of the Minuteman Library Network'
+WHEN p.ptype_code IN ('17', '117') THEN 'the Cary Memorial Library</a>, a member of the Minuteman Library Network'
+WHEN p.ptype_code IN ('29', '129') THEN 'the Newton Free Library</a>, a member of the Minuteman Library Network'
+WHEN p.ptype_code = 31 THEN 'the Somerville Public Library</a>, a member of the Minuteman Library Network'
+WHEN p.ptype_code = 35 THEN 'the Watertown Free Public Library</a>, a member of the Minuteman Library Network'
+WHEN p.ptype_code IN ('37', '137') THEN 'the Wellesley Free Library</a>, a member of the Minuteman Library Network'
+WHEN p.ptype_code = 1 THEN 'the Acton Public Library</a>, a member of the Minuteman Library Network'
+WHEN p.ptype_code = 2 THEN 'the Robbins Library</a>, a member of the Minuteman Library Network'
+WHEN p.ptype_code = 3 THEN 'the Ashland Public Library</a>, a member of the Minuteman Library Network'
+WHEN p.ptype_code = 4 THEN 'the Bedford Free Public Library</a>, a member of the Minuteman Library Network'
+WHEN p.ptype_code = 11 THEN 'the Dover Town Library</a>, a member of the Minuteman Library Network'
+WHEN p.ptype_code = 12 THEN 'the Framingham Public Library</a>, a member of the Minuteman Library Network'
+WHEN p.ptype_code = 14 THEN 'the Franklin Public Library</a>, a member of the Minuteman Library Network'
+WHEN p.ptype_code IN ('15', '115') THEN 'the Holliston Public Library</a>, a member of the Minuteman Library Network'
+WHEN p.ptype_code = 18 THEN 'the Lincoln Public Library</a>, a member of the Minuteman Library Network'
+WHEN p.ptype_code IN ('20', '120') THEN 'the Maynard Public Library</a>, a member of the Minuteman Library Network'
+WHEN p.ptype_code IN ('21', '121') THEN 'the Medfield Public Library</a>, a member of the Minuteman Library Network'
+WHEN p.ptype_code IN ('22', '122') THEN 'the Medford Public Library</a>, a member of the Minuteman Library Network'
+WHEN p.ptype_code = 23 THEN 'the Medway Public Library</a>, a member of the Minuteman Library Network'
+WHEN p.ptype_code = 24 THEN 'the Millis Public Library</a>, a member of the Minuteman Library Network'
+WHEN (p.ptype_code = 26 AND p.home_library_code != 'na2z') THEN 'the Morse Institute Library</a>, a member of the Minuteman Library Network'
+WHEN (p.ptype_code = 26 AND p.home_library_code = 'na2z') THEN 'the Bacon Free Library</a>, a member of the Minuteman Library Network'
+WHEN p.ptype_code = 27 THEN 'the Needham Free Public Library</a>, a member of the Minuteman Library Network'
+WHEN p.ptype_code IN ('30', '130') THEN 'the Morrill Memorial Library</a>, a member of the Minuteman Library Network'
+WHEN p.ptype_code = 32 THEN 'the Randall Library</a>, a member of the Minuteman Library Network'
+WHEN p.ptype_code IN ('33', '133') THEN 'the Goodnow Library</a>, a member of the Minuteman Library Network'
+WHEN p.ptype_code = 34 THEN 'the Waltham Public Library</a>, a member of the Minuteman Library Network'
+WHEN p.ptype_code = 36 THEN 'the Wayland Free Library</a>, a member of the Minuteman Library Network'
+WHEN p.ptype_code = 38 THEN 'the Weston Public Library</a>, a member of the Minuteman Library Network'
+WHEN p.ptype_code = 39 THEN 'the Westwood Public Library</a>, a member of the Minuteman Library Network'
+WHEN p.ptype_code = 40 THEN 'the Winchester Public Library</a>, a member of the Minuteman Library Network'
+WHEN p.ptype_code = 41 THEN 'the Woburn Public Library</a>, a member of the Minuteman Library Network'
+WHEN p.ptype_code = 46 THEN 'the Sherborn Public Library</a>, a member of the Minuteman Library Network'
+Else 'the Minuteman Library Network</a>'
+END AS library_2,
+CASE
+WHEN p.ptype_code = 5 THEN 'https://belmontpubliclibrary.net/'
+WHEN p.ptype_code = 6 THEN 'https://www.brooklinelibrary.org/'
+WHEN p.ptype_code = 7 THEN 'https://www.cambridgema.gov/cpl'
+WHEN p.ptype_code = 8 THEN 'https://concordlibrary.org/'
+WHEN p.ptype_code IN ('10','110') THEN 'http://library.dedham-ma.gov/'
+WHEN p.ptype_code IN ('17', '117') THEN 'https://www.carylibrary.org/'
+WHEN p.ptype_code IN ('29', '129') THEN 'http://newtonfreelibrary.net/'
+WHEN p.ptype_code = 31 THEN 'http://www.somervillepubliclibrary.org/'
+WHEN p.ptype_code = 35 THEN 'http://www.watertownlib.org/'
+WHEN p.ptype_code IN ('37', '137') THEN 'https://www.wellesleyfreelibrary.org/'
+WHEN p.ptype_code = 1 THEN 'http://www.actonmemoriallibrary.org/'
+WHEN p.ptype_code = 2 THEN 'https://www.robbinslibrary.org/'
+WHEN p.ptype_code = 3 THEN 'http://www.ashlandmass.com/184/Ashland-Public-Library'
+WHEN p.ptype_code = 4 THEN 'http://www.bedfordlibrary.net/'
+WHEN p.ptype_code = 11 THEN 'http://dovertownlibrary.org/'
+WHEN p.ptype_code = 12 THEN 'https://framinghamlibrary.org/'
+WHEN p.ptype_code = 14 THEN 'http://www.franklinma.gov/franklin-public-library'
+WHEN p.ptype_code IN ('15', '115') THEN 'http://www.hollistonlibrary.org/'
+WHEN p.ptype_code = 18 THEN 'http://www.lincolnpl.org/'
+WHEN p.ptype_code IN ('20', '120') THEN 'http://www.maynardpubliclibrary.org/'
+WHEN p.ptype_code IN ('21', '121') THEN 'http://www.medfieldpubliclibrary.org/'
+WHEN p.ptype_code IN ('22', '122') THEN 'http://www.medfordlibrary.org/'
+WHEN p.ptype_code = 23 THEN 'http://medwaylib.org/'
+WHEN p.ptype_code = 24 THEN 'http://www.millislibrary.org/'
+WHEN (p.ptype_code = 26 AND p.home_library_code != 'na2z') THEN 'https://morseinstitute.org/'
+WHEN (p.ptype_code = 26 AND p.home_library_code = 'na2z') THEN 'http://baconfreelibrary.org/'
+WHEN p.ptype_code = 27 THEN 'http://www.needhamma.gov/index.aspx?nid=3031'
+WHEN p.ptype_code IN ('30', '130') THEN 'http://www.norwoodlibrary.org/'
+WHEN p.ptype_code = 32 THEN 'http://www.randalllibrarystow.org/'
+WHEN p.ptype_code IN ('33', '133') THEN 'https://goodnowlibrary.org/'
+WHEN p.ptype_code = 34 THEN 'http://waltham.lib.ma.us/'
+WHEN p.ptype_code = 36 THEN 'https://waylandlibrary.org/'
+WHEN p.ptype_code = 38 THEN 'http://www.westonlibrary.org/'
+WHEN p.ptype_code = 39 THEN 'http://www.westwoodlibrary.org/'
+WHEN p.ptype_code = 40 THEN 'http://www.winpublib.org/'
+WHEN p.ptype_code = 41 THEN 'https://woburnpubliclibrary.org/'
+WHEN p.ptype_code = 46 THEN 'https://sherbornlibrary.org/'
+ELSE 'http://www.mln.lib.ma.us/info/index.htm/'
+END AS url
 FROM
 sierra_view.patron_view as p
 JOIN		
 sierra_view.varfield v		
 ON		
 p.id = v.record_id and v.varfield_type_code = 'z'
-LEFT OUTER JOIN		
-sierra_view.varfield u		
-ON		
-p.id = u.record_id and u.varfield_type_code = 'w'
 JOIN
 sierra_view.patron_record_fullname n
 ON
@@ -72,8 +136,10 @@ p.id = n.patron_record_id
 JOIN
 sierra_view.record_metadata m
 ON
-p.record_num = m.record_num
+p.record_num = m.record_num AND m.record_type_code = 'p'
 WHERE
-m.creation_date_gmt  > (localtimestamp - interval '1 day')
-AND p.patron_agency_code_num NOT IN ('32','42','46','47')
-group by 5, 2, 1, 4, 6
+m.creation_date_gmt > (localtimestamp - interval '1 day')
+
+--Opt out list, libraries and ptypes
+AND p.ptype_code NOT IN('7', '29', '129', '9', '159', '13', '163', '204', '200', '16', '116', '166', '19', '169', '25', '175', '201', '206', '199', '207', '44', '194', '45', '195', '202', '203', '255', '254', '205', '28', '178')
+group by 4, 5, 6, 7
