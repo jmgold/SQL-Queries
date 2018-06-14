@@ -138,7 +138,7 @@ sierra_view.record_metadata m
 ON
 p.record_num = m.record_num AND m.record_type_code = 'p'
 WHERE
-m.creation_date_gmt > (localtimestamp - interval '1 day')
+m.creation_date_gmt::date > (localtimestamp::date - interval '1 day')
 
 --Opt out list, libraries and ptypes
 AND p.ptype_code NOT IN('7', '29', '129', '9', '159', '13', '163', '204', '200', '16', '116', '166', '19', '169', '25', '175', '201', '206', '199', '207', '44', '194', '45', '195', '202', '203', '255', '254', '205', '28', '178')
