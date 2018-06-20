@@ -21,7 +21,7 @@ SELECT
 	WHEN i.itype_code_num='46' THEN 'Microforms'
 	WHEN  i.itype_code_num='11' OR i.itype_code_num='13' OR i.itype_code_num='44' OR i.itype_code_num='45' OR i.itype_code_num='47' OR i.itype_code_num='51' 
 		OR i.itype_code_num='108' OR i.itype_code_num='127' OR i.itype_code_num='128' OR i.itype_code_num='131' OR i.itype_code_num='159' OR i.itype_code_num='176'
-		OR i.itype_code_num='177' OR i.itype_code_num='179' OR i.itype_code_num='181' OR i.itype_code_num='243' OR (i.itype_code_num BETWEEN '245' AND '247') THEN 'Miscellaneous'
+		OR i.itype_code_num='177' OR i.itype_code_num='179' OR i.itype_code_num='181' OR i.itype_code_num='243' OR (i.itype_code_num BETWEEN '245' AND '247') OR (i.itype_code_num BETWEEN '250' AND '253')THEN 'Miscellaneous'
 	WHEN i.itype_code_num='244' THEN 'Electronic collections' 
 	ELSE 'Unknown'
 	END AS "ARIS CATEGORY",
