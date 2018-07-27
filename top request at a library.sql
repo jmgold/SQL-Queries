@@ -41,7 +41,7 @@ sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
 WHERE
-h.pickup_location_code LIKE 'ar%'
+h.pickup_location_code LIKE 'arl%'
 GROUP BY 1,2,3
 HAVING COUNT(h.id) = (SELECT MAX(C) FROM (SELECT h.pickup_location_code,b.best_title,COUNT(h.id) AS C FROM sierra_view.hold h
 JOIN
@@ -49,7 +49,31 @@ sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
 WHERE
-h.pickup_location_code LIKE 'ar%'
+h.pickup_location_code LIKE 'arl%'
+GROUP BY 1,2)AS Q)
+UNION
+SELECT
+DISTINCT ON (h.pickup_location_code)
+h.pickup_location_code,
+b.best_title,
+b.best_author,
+COUNT(h.id)
+FROM 
+sierra_view.hold h
+JOIN
+sierra_view.bib_record_property b
+ON
+h.record_id = b.bib_record_id
+WHERE
+h.pickup_location_code LIKE 'ar2%'
+GROUP BY 1,2,3
+HAVING COUNT(h.id) = (SELECT MAX(C) FROM (SELECT h.pickup_location_code,b.best_title,COUNT(h.id) AS C FROM sierra_view.hold h
+JOIN
+sierra_view.bib_record_property b
+ON
+h.record_id = b.bib_record_id
+WHERE
+h.pickup_location_code LIKE 'ar2%'
 GROUP BY 1,2)AS Q)
 UNION
 SELECT
@@ -137,7 +161,7 @@ sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
 WHERE
-h.pickup_location_code LIKE 'br%'
+h.pickup_location_code LIKE 'brk'
 GROUP BY 1,2,3
 HAVING COUNT(h.id) = (SELECT MAX(C) FROM (SELECT h.pickup_location_code,b.best_title,COUNT(h.id) AS C FROM sierra_view.hold h
 JOIN
@@ -145,7 +169,7 @@ sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
 WHERE
-h.pickup_location_code LIKE 'br%'
+h.pickup_location_code LIKE 'brk'
 GROUP BY 1,2)AS Q)
 UNION
 SELECT
@@ -161,7 +185,7 @@ sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
 WHERE
-h.pickup_location_code LIKE 'ca%'
+h.pickup_location_code LIKE 'br2%'
 GROUP BY 1,2,3
 HAVING COUNT(h.id) = (SELECT MAX(C) FROM (SELECT h.pickup_location_code,b.best_title,COUNT(h.id) AS C FROM sierra_view.hold h
 JOIN
@@ -169,7 +193,7 @@ sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
 WHERE
-h.pickup_location_code LIKE 'ca%'
+h.pickup_location_code LIKE 'br2%'
 GROUP BY 1,2)AS Q)
 UNION
 SELECT
@@ -185,7 +209,7 @@ sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
 WHERE
-h.pickup_location_code LIKE 'co%'
+h.pickup_location_code LIKE 'br3%'
 GROUP BY 1,2,3
 HAVING COUNT(h.id) = (SELECT MAX(C) FROM (SELECT h.pickup_location_code,b.best_title,COUNT(h.id) AS C FROM sierra_view.hold h
 JOIN
@@ -193,7 +217,223 @@ sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
 WHERE
-h.pickup_location_code LIKE 'co%'
+h.pickup_location_code LIKE 'br3%'
+GROUP BY 1,2)AS Q)
+UNION
+SELECT
+DISTINCT ON (h.pickup_location_code)
+h.pickup_location_code,
+b.best_title,
+b.best_author,
+COUNT(h.id)
+FROM 
+sierra_view.hold h
+JOIN
+sierra_view.bib_record_property b
+ON
+h.record_id = b.bib_record_id
+WHERE
+h.pickup_location_code LIKE 'cam'
+GROUP BY 1,2,3
+HAVING COUNT(h.id) = (SELECT MAX(C) FROM (SELECT h.pickup_location_code,b.best_title,COUNT(h.id) AS C FROM sierra_view.hold h
+JOIN
+sierra_view.bib_record_property b
+ON
+h.record_id = b.bib_record_id
+WHERE
+h.pickup_location_code LIKE 'cam'
+GROUP BY 1,2)AS Q)
+UNION
+SELECT
+DISTINCT ON (h.pickup_location_code)
+h.pickup_location_code,
+b.best_title,
+b.best_author,
+COUNT(h.id)
+FROM 
+sierra_view.hold h
+JOIN
+sierra_view.bib_record_property b
+ON
+h.record_id = b.bib_record_id
+WHERE
+h.pickup_location_code LIKE 'ca4%'
+GROUP BY 1,2,3
+HAVING COUNT(h.id) = (SELECT MAX(C) FROM (SELECT h.pickup_location_code,b.best_title,COUNT(h.id) AS C FROM sierra_view.hold h
+JOIN
+sierra_view.bib_record_property b
+ON
+h.record_id = b.bib_record_id
+WHERE
+h.pickup_location_code LIKE 'ca4%'
+GROUP BY 1,2)AS Q)
+UNION
+SELECT
+DISTINCT ON (h.pickup_location_code)
+h.pickup_location_code,
+b.best_title,
+b.best_author,
+COUNT(h.id)
+FROM 
+sierra_view.hold h
+JOIN
+sierra_view.bib_record_property b
+ON
+h.record_id = b.bib_record_id
+WHERE
+h.pickup_location_code LIKE 'ca5%'
+GROUP BY 1,2,3
+HAVING COUNT(h.id) = (SELECT MAX(C) FROM (SELECT h.pickup_location_code,b.best_title,COUNT(h.id) AS C FROM sierra_view.hold h
+JOIN
+sierra_view.bib_record_property b
+ON
+h.record_id = b.bib_record_id
+WHERE
+h.pickup_location_code LIKE 'ca5%'
+GROUP BY 1,2)AS Q)
+UNION
+SELECT
+DISTINCT ON (h.pickup_location_code)
+h.pickup_location_code,
+b.best_title,
+b.best_author,
+COUNT(h.id)
+FROM 
+sierra_view.hold h
+JOIN
+sierra_view.bib_record_property b
+ON
+h.record_id = b.bib_record_id
+WHERE
+h.pickup_location_code LIKE 'ca6%'
+GROUP BY 1,2,3
+HAVING COUNT(h.id) = (SELECT MAX(C) FROM (SELECT h.pickup_location_code,b.best_title,COUNT(h.id) AS C FROM sierra_view.hold h
+JOIN
+sierra_view.bib_record_property b
+ON
+h.record_id = b.bib_record_id
+WHERE
+h.pickup_location_code LIKE 'ca6%'
+GROUP BY 1,2)AS Q)
+UNION
+SELECT
+DISTINCT ON (h.pickup_location_code)
+h.pickup_location_code,
+b.best_title,
+b.best_author,
+COUNT(h.id)
+FROM 
+sierra_view.hold h
+JOIN
+sierra_view.bib_record_property b
+ON
+h.record_id = b.bib_record_id
+WHERE
+h.pickup_location_code LIKE 'ca7%'
+GROUP BY 1,2,3
+HAVING COUNT(h.id) = (SELECT MAX(C) FROM (SELECT h.pickup_location_code,b.best_title,COUNT(h.id) AS C FROM sierra_view.hold h
+JOIN
+sierra_view.bib_record_property b
+ON
+h.record_id = b.bib_record_id
+WHERE
+h.pickup_location_code LIKE 'ca7%'
+GROUP BY 1,2)AS Q)
+UNION
+SELECT
+DISTINCT ON (h.pickup_location_code)
+h.pickup_location_code,
+b.best_title,
+b.best_author,
+COUNT(h.id)
+FROM 
+sierra_view.hold h
+JOIN
+sierra_view.bib_record_property b
+ON
+h.record_id = b.bib_record_id
+WHERE
+h.pickup_location_code LIKE 'ca8%'
+GROUP BY 1,2,3
+HAVING COUNT(h.id) = (SELECT MAX(C) FROM (SELECT h.pickup_location_code,b.best_title,COUNT(h.id) AS C FROM sierra_view.hold h
+JOIN
+sierra_view.bib_record_property b
+ON
+h.record_id = b.bib_record_id
+WHERE
+h.pickup_location_code LIKE 'ca8%'
+GROUP BY 1,2)AS Q)
+UNION
+SELECT
+DISTINCT ON (h.pickup_location_code)
+h.pickup_location_code,
+b.best_title,
+b.best_author,
+COUNT(h.id)
+FROM 
+sierra_view.hold h
+JOIN
+sierra_view.bib_record_property b
+ON
+h.record_id = b.bib_record_id
+WHERE
+h.pickup_location_code LIKE 'ca9%'
+GROUP BY 1,2,3
+HAVING COUNT(h.id) = (SELECT MAX(C) FROM (SELECT h.pickup_location_code,b.best_title,COUNT(h.id) AS C FROM sierra_view.hold h
+JOIN
+sierra_view.bib_record_property b
+ON
+h.record_id = b.bib_record_id
+WHERE
+h.pickup_location_code LIKE 'ca9%'
+GROUP BY 1,2)AS Q)
+UNION
+SELECT
+DISTINCT ON (h.pickup_location_code)
+h.pickup_location_code,
+b.best_title,
+b.best_author,
+COUNT(h.id)
+FROM 
+sierra_view.hold h
+JOIN
+sierra_view.bib_record_property b
+ON
+h.record_id = b.bib_record_id
+WHERE
+h.pickup_location_code LIKE 'con%'
+GROUP BY 1,2,3
+HAVING COUNT(h.id) = (SELECT MAX(C) FROM (SELECT h.pickup_location_code,b.best_title,COUNT(h.id) AS C FROM sierra_view.hold h
+JOIN
+sierra_view.bib_record_property b
+ON
+h.record_id = b.bib_record_id
+WHERE
+h.pickup_location_code LIKE 'con%'
+GROUP BY 1,2)AS Q)
+UNION
+SELECT
+DISTINCT ON (h.pickup_location_code)
+h.pickup_location_code,
+b.best_title,
+b.best_author,
+COUNT(h.id)
+FROM 
+sierra_view.hold h
+JOIN
+sierra_view.bib_record_property b
+ON
+h.record_id = b.bib_record_id
+WHERE
+h.pickup_location_code LIKE 'co2%'
+GROUP BY 1,2,3
+HAVING COUNT(h.id) = (SELECT MAX(C) FROM (SELECT h.pickup_location_code,b.best_title,COUNT(h.id) AS C FROM sierra_view.hold h
+JOIN
+sierra_view.bib_record_property b
+ON
+h.record_id = b.bib_record_id
+WHERE
+h.pickup_location_code LIKE 'co2%'
 GROUP BY 1,2)AS Q)
 UNION
 SELECT
@@ -233,7 +473,7 @@ sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
 WHERE
-h.pickup_location_code LIKE 'dd%'
+h.pickup_location_code LIKE 'ddm%'
 GROUP BY 1,2,3
 HAVING COUNT(h.id) = (SELECT MAX(C) FROM (SELECT h.pickup_location_code,b.best_title,COUNT(h.id) AS C FROM sierra_view.hold h
 JOIN
@@ -241,7 +481,31 @@ sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
 WHERE
-h.pickup_location_code LIKE 'dd%'
+h.pickup_location_code LIKE 'ddm%'
+GROUP BY 1,2)AS Q)
+UNION
+SELECT
+DISTINCT ON (h.pickup_location_code)
+h.pickup_location_code,
+b.best_title,
+b.best_author,
+COUNT(h.id)
+FROM 
+sierra_view.hold h
+JOIN
+sierra_view.bib_record_property b
+ON
+h.record_id = b.bib_record_id
+WHERE
+h.pickup_location_code LIKE 'dd2%'
+GROUP BY 1,2,3
+HAVING COUNT(h.id) = (SELECT MAX(C) FROM (SELECT h.pickup_location_code,b.best_title,COUNT(h.id) AS C FROM sierra_view.hold h
+JOIN
+sierra_view.bib_record_property b
+ON
+h.record_id = b.bib_record_id
+WHERE
+h.pickup_location_code LIKE 'dd2%'
 GROUP BY 1,2)AS Q)
 UNION
 SELECT
@@ -281,7 +545,7 @@ sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
 WHERE
-h.pickup_location_code LIKE 'fp%'
+h.pickup_location_code LIKE 'fpl%'
 GROUP BY 1,2,3
 HAVING COUNT(h.id) = (SELECT MAX(C) FROM (SELECT h.pickup_location_code,b.best_title,COUNT(h.id) AS C FROM sierra_view.hold h
 JOIN
@@ -289,7 +553,31 @@ sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
 WHERE
-h.pickup_location_code LIKE 'fp%'
+h.pickup_location_code LIKE 'fpl%'
+GROUP BY 1,2)AS Q)
+UNION
+SELECT
+DISTINCT ON (h.pickup_location_code)
+h.pickup_location_code,
+b.best_title,
+b.best_author,
+COUNT(h.id)
+FROM 
+sierra_view.hold h
+JOIN
+sierra_view.bib_record_property b
+ON
+h.record_id = b.bib_record_id
+WHERE
+h.pickup_location_code LIKE 'fp2%'
+GROUP BY 1,2,3
+HAVING COUNT(h.id) = (SELECT MAX(C) FROM (SELECT h.pickup_location_code,b.best_title,COUNT(h.id) AS C FROM sierra_view.hold h
+JOIN
+sierra_view.bib_record_property b
+ON
+h.record_id = b.bib_record_id
+WHERE
+h.pickup_location_code LIKE 'fp2%'
 GROUP BY 1,2)AS Q)
 UNION
 SELECT
@@ -569,7 +857,7 @@ sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
 WHERE
-h.pickup_location_code LIKE 'na%'
+h.pickup_location_code LIKE 'nat%'
 GROUP BY 1,2,3
 HAVING COUNT(h.id) = (SELECT MAX(C) FROM (SELECT h.pickup_location_code,b.best_title,COUNT(h.id) AS C FROM sierra_view.hold h
 JOIN
@@ -577,7 +865,55 @@ sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
 WHERE
-h.pickup_location_code LIKE 'na%'
+h.pickup_location_code LIKE 'nat%'
+GROUP BY 1,2)AS Q)
+UNION
+SELECT
+DISTINCT ON (h.pickup_location_code)
+h.pickup_location_code,
+b.best_title,
+b.best_author,
+COUNT(h.id)
+FROM 
+sierra_view.hold h
+JOIN
+sierra_view.bib_record_property b
+ON
+h.record_id = b.bib_record_id
+WHERE
+h.pickup_location_code LIKE 'na2%'
+GROUP BY 1,2,3
+HAVING COUNT(h.id) = (SELECT MAX(C) FROM (SELECT h.pickup_location_code,b.best_title,COUNT(h.id) AS C FROM sierra_view.hold h
+JOIN
+sierra_view.bib_record_property b
+ON
+h.record_id = b.bib_record_id
+WHERE
+h.pickup_location_code LIKE 'na2%'
+GROUP BY 1,2)AS Q)
+UNION
+SELECT
+DISTINCT ON (h.pickup_location_code)
+h.pickup_location_code,
+b.best_title,
+b.best_author,
+COUNT(h.id)
+FROM 
+sierra_view.hold h
+JOIN
+sierra_view.bib_record_property b
+ON
+h.record_id = b.bib_record_id
+WHERE
+h.pickup_location_code LIKE 'na3%'
+GROUP BY 1,2,3
+HAVING COUNT(h.id) = (SELECT MAX(C) FROM (SELECT h.pickup_location_code,b.best_title,COUNT(h.id) AS C FROM sierra_view.hold h
+JOIN
+sierra_view.bib_record_property b
+ON
+h.record_id = b.bib_record_id
+WHERE
+h.pickup_location_code LIKE 'na3%'
 GROUP BY 1,2)AS Q)
 UNION
 SELECT
@@ -739,7 +1075,7 @@ sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
 WHERE
-h.pickup_location_code LIKE 'so%'
+h.pickup_location_code LIKE 'som%'
 GROUP BY 1,2,3
 HAVING COUNT(h.id) = (SELECT MAX(C) FROM (SELECT h.pickup_location_code,b.best_title,COUNT(h.id) AS C FROM sierra_view.hold h
 JOIN
@@ -747,7 +1083,55 @@ sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
 WHERE
-h.pickup_location_code LIKE 'so%'
+h.pickup_location_code LIKE 'som%'
+GROUP BY 1,2)AS Q)
+UNION
+SELECT
+DISTINCT ON (h.pickup_location_code)
+h.pickup_location_code,
+b.best_title,
+b.best_author,
+COUNT(h.id)
+FROM 
+sierra_view.hold h
+JOIN
+sierra_view.bib_record_property b
+ON
+h.record_id = b.bib_record_id
+WHERE
+h.pickup_location_code LIKE 'so2%'
+GROUP BY 1,2,3
+HAVING COUNT(h.id) = (SELECT MAX(C) FROM (SELECT h.pickup_location_code,b.best_title,COUNT(h.id) AS C FROM sierra_view.hold h
+JOIN
+sierra_view.bib_record_property b
+ON
+h.record_id = b.bib_record_id
+WHERE
+h.pickup_location_code LIKE 'so2%'
+GROUP BY 1,2)AS Q)
+UNION
+SELECT
+DISTINCT ON (h.pickup_location_code)
+h.pickup_location_code,
+b.best_title,
+b.best_author,
+COUNT(h.id)
+FROM 
+sierra_view.hold h
+JOIN
+sierra_view.bib_record_property b
+ON
+h.record_id = b.bib_record_id
+WHERE
+h.pickup_location_code LIKE 'so3%'
+GROUP BY 1,2,3
+HAVING COUNT(h.id) = (SELECT MAX(C) FROM (SELECT h.pickup_location_code,b.best_title,COUNT(h.id) AS C FROM sierra_view.hold h
+JOIN
+sierra_view.bib_record_property b
+ON
+h.record_id = b.bib_record_id
+WHERE
+h.pickup_location_code LIKE 'so3%'
 GROUP BY 1,2)AS Q)
 UNION
 SELECT
@@ -883,7 +1267,7 @@ sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
 WHERE
-h.pickup_location_code LIKE 'we%'
+h.pickup_location_code LIKE 'wel%'
 GROUP BY 1,2,3
 HAVING COUNT(h.id) = (SELECT MAX(C) FROM (SELECT h.pickup_location_code,b.best_title,COUNT(h.id) AS C FROM sierra_view.hold h
 JOIN
@@ -891,7 +1275,55 @@ sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
 WHERE
-h.pickup_location_code LIKE 'we%'
+h.pickup_location_code LIKE 'wel%'
+GROUP BY 1,2)AS Q)
+UNION
+SELECT
+DISTINCT ON (h.pickup_location_code)
+h.pickup_location_code,
+b.best_title,
+b.best_author,
+COUNT(h.id)
+FROM 
+sierra_view.hold h
+JOIN
+sierra_view.bib_record_property b
+ON
+h.record_id = b.bib_record_id
+WHERE
+h.pickup_location_code LIKE 'we2%'
+GROUP BY 1,2,3
+HAVING COUNT(h.id) = (SELECT MAX(C) FROM (SELECT h.pickup_location_code,b.best_title,COUNT(h.id) AS C FROM sierra_view.hold h
+JOIN
+sierra_view.bib_record_property b
+ON
+h.record_id = b.bib_record_id
+WHERE
+h.pickup_location_code LIKE 'we2%'
+GROUP BY 1,2)AS Q)
+UNION
+SELECT
+DISTINCT ON (h.pickup_location_code)
+h.pickup_location_code,
+b.best_title,
+b.best_author,
+COUNT(h.id)
+FROM 
+sierra_view.hold h
+JOIN
+sierra_view.bib_record_property b
+ON
+h.record_id = b.bib_record_id
+WHERE
+h.pickup_location_code LIKE 'we3%'
+GROUP BY 1,2,3
+HAVING COUNT(h.id) = (SELECT MAX(C) FROM (SELECT h.pickup_location_code,b.best_title,COUNT(h.id) AS C FROM sierra_view.hold h
+JOIN
+sierra_view.bib_record_property b
+ON
+h.record_id = b.bib_record_id
+WHERE
+h.pickup_location_code LIKE 'we3%'
 GROUP BY 1,2)AS Q)
 UNION
 SELECT
@@ -931,7 +1363,7 @@ sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
 WHERE
-h.pickup_location_code LIKE 'ww%'
+h.pickup_location_code LIKE 'wwd%'
 GROUP BY 1,2,3
 HAVING COUNT(h.id) = (SELECT MAX(C) FROM (SELECT h.pickup_location_code,b.best_title,COUNT(h.id) AS C FROM sierra_view.hold h
 JOIN
@@ -939,7 +1371,31 @@ sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
 WHERE
-h.pickup_location_code LIKE 'ww%'
+h.pickup_location_code LIKE 'wwd%'
+GROUP BY 1,2)AS Q)
+UNION
+SELECT
+DISTINCT ON (h.pickup_location_code)
+h.pickup_location_code,
+b.best_title,
+b.best_author,
+COUNT(h.id)
+FROM 
+sierra_view.hold h
+JOIN
+sierra_view.bib_record_property b
+ON
+h.record_id = b.bib_record_id
+WHERE
+h.pickup_location_code LIKE 'ww2%'
+GROUP BY 1,2,3
+HAVING COUNT(h.id) = (SELECT MAX(C) FROM (SELECT h.pickup_location_code,b.best_title,COUNT(h.id) AS C FROM sierra_view.hold h
+JOIN
+sierra_view.bib_record_property b
+ON
+h.record_id = b.bib_record_id
+WHERE
+h.pickup_location_code LIKE 'ww2%'
 GROUP BY 1,2)AS Q)
 UNION
 SELECT
