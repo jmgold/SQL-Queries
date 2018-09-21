@@ -1,6 +1,7 @@
 ﻿SELECT
 b.best_title,
-b.best_author
+b.best_author,
+--URL (best method TBD)
 --COUNT(m.id)
 FROM
 sierra_view.fine f
