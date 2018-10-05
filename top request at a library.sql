@@ -10,13 +10,17 @@ l.name AS field_booklist_entry_location,
 'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id) AS field_booklist_entry_encore_url,
 b.best_title as title,
 b.best_author AS field_booklist_entry_author, 
-COUNT(h.id)
+COUNT(h.id),
+'https://syndetics.com/index.aspx?isbn='||SUBSTRING(MAX(s.content) FROM '[0-9]+')||'/SC.gif&client=minuteman' AS field_booklist_entry_cover
 FROM 
 sierra_view.hold h
 JOIN
 sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
+JOIN sierra_view.subfield s
+ON
+b.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
 JOIN
 sierra_view.location_myuser l
 ON
@@ -39,13 +43,17 @@ l.name AS field_booklist_entry_location,
 'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id) AS field_booklist_entry_encore_url,
 b.best_title as title,
 b.best_author AS field_booklist_entry_author, 
-COUNT(h.id)
+COUNT(h.id),
+'https://syndetics.com/index.aspx?isbn='||SUBSTRING(MAX(s.content) FROM '[0-9]+')||'/SC.gif&client=minuteman' AS field_booklist_entry_cover
 FROM 
 sierra_view.hold h
 JOIN
 sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
+JOIN sierra_view.subfield s
+ON
+b.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
 JOIN
 sierra_view.location_myuser l
 ON
@@ -68,13 +76,17 @@ l.name AS field_booklist_entry_location,
 'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id) AS field_booklist_entry_encore_url,
 b.best_title as title,
 b.best_author AS field_booklist_entry_author, 
-COUNT(h.id)
+COUNT(h.id),
+'https://syndetics.com/index.aspx?isbn='||SUBSTRING(MAX(s.content) FROM '[0-9]+')||'/SC.gif&client=minuteman' AS field_booklist_entry_cover
 FROM 
 sierra_view.hold h
 JOIN
 sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
+JOIN sierra_view.subfield s
+ON
+b.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
 JOIN
 sierra_view.location_myuser l
 ON
@@ -97,13 +109,17 @@ l.name AS field_booklist_entry_location,
 'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id) AS field_booklist_entry_encore_url,
 b.best_title as title,
 b.best_author AS field_booklist_entry_author, 
-COUNT(h.id)
+COUNT(h.id),
+'https://syndetics.com/index.aspx?isbn='||SUBSTRING(MAX(s.content) FROM '[0-9]+')||'/SC.gif&client=minuteman' AS field_booklist_entry_cover
 FROM 
 sierra_view.hold h
 JOIN
 sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
+JOIN sierra_view.subfield s
+ON
+b.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
 JOIN
 sierra_view.location_myuser l
 ON
@@ -126,13 +142,17 @@ l.name AS field_booklist_entry_location,
 'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id) AS field_booklist_entry_encore_url,
 b.best_title as title,
 b.best_author AS field_booklist_entry_author, 
-COUNT(h.id)
+COUNT(h.id),
+'https://syndetics.com/index.aspx?isbn='||SUBSTRING(MAX(s.content) FROM '[0-9]+')||'/SC.gif&client=minuteman' AS field_booklist_entry_cover
 FROM 
 sierra_view.hold h
 JOIN
 sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
+JOIN sierra_view.subfield s
+ON
+b.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
 JOIN
 sierra_view.location_myuser l
 ON
@@ -155,13 +175,17 @@ l.name AS field_booklist_entry_location,
 'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id) AS field_booklist_entry_encore_url,
 b.best_title as title,
 b.best_author AS field_booklist_entry_author, 
-COUNT(h.id)
+COUNT(h.id),
+'https://syndetics.com/index.aspx?isbn='||SUBSTRING(MAX(s.content) FROM '[0-9]+')||'/SC.gif&client=minuteman' AS field_booklist_entry_cover
 FROM 
 sierra_view.hold h
 JOIN
 sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
+JOIN sierra_view.subfield s
+ON
+b.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
 JOIN
 sierra_view.location_myuser l
 ON
@@ -184,13 +208,17 @@ l.name AS field_booklist_entry_location,
 'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id) AS field_booklist_entry_encore_url,
 b.best_title as title,
 b.best_author AS field_booklist_entry_author, 
-COUNT(h.id)
+COUNT(h.id),
+'https://syndetics.com/index.aspx?isbn='||SUBSTRING(MAX(s.content) FROM '[0-9]+')||'/SC.gif&client=minuteman' AS field_booklist_entry_cover
 FROM 
 sierra_view.hold h
 JOIN
 sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
+JOIN sierra_view.subfield s
+ON
+b.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
 JOIN
 sierra_view.location_myuser l
 ON
@@ -212,13 +240,17 @@ l.name AS field_booklist_entry_location,
 'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id) AS field_booklist_entry_encore_url,
 b.best_title as title,
 b.best_author AS field_booklist_entry_author, 
-COUNT(h.id)
+COUNT(h.id),
+'https://syndetics.com/index.aspx?isbn='||SUBSTRING(MAX(s.content) FROM '[0-9]+')||'/SC.gif&client=minuteman' AS field_booklist_entry_cover
 FROM 
 sierra_view.hold h
 JOIN
 sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
+JOIN sierra_view.subfield s
+ON
+b.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
 JOIN
 sierra_view.location_myuser l
 ON
@@ -241,13 +273,17 @@ l.name AS field_booklist_entry_location,
 'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id) AS field_booklist_entry_encore_url,
 b.best_title as title,
 b.best_author AS field_booklist_entry_author, 
-COUNT(h.id)
+COUNT(h.id),
+'https://syndetics.com/index.aspx?isbn='||SUBSTRING(MAX(s.content) FROM '[0-9]+')||'/SC.gif&client=minuteman' AS field_booklist_entry_cover
 FROM 
 sierra_view.hold h
 JOIN
 sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
+JOIN sierra_view.subfield s
+ON
+b.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
 JOIN
 sierra_view.location_myuser l
 ON
@@ -270,13 +306,17 @@ l.name AS field_booklist_entry_location,
 'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id) AS field_booklist_entry_encore_url,
 b.best_title as title,
 b.best_author AS field_booklist_entry_author, 
-COUNT(h.id)
+COUNT(h.id),
+'https://syndetics.com/index.aspx?isbn='||SUBSTRING(MAX(s.content) FROM '[0-9]+')||'/SC.gif&client=minuteman' AS field_booklist_entry_cover
 FROM 
 sierra_view.hold h
 JOIN
 sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
+JOIN sierra_view.subfield s
+ON
+b.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
 JOIN
 sierra_view.location_myuser l
 ON
@@ -299,13 +339,17 @@ l.name AS field_booklist_entry_location,
 'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id) AS field_booklist_entry_encore_url,
 b.best_title as title,
 b.best_author AS field_booklist_entry_author, 
-COUNT(h.id)
+COUNT(h.id),
+'https://syndetics.com/index.aspx?isbn='||SUBSTRING(MAX(s.content) FROM '[0-9]+')||'/SC.gif&client=minuteman' AS field_booklist_entry_cover
 FROM 
 sierra_view.hold h
 JOIN
 sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
+JOIN sierra_view.subfield s
+ON
+b.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
 JOIN
 sierra_view.location_myuser l
 ON
@@ -328,13 +372,17 @@ l.name AS field_booklist_entry_location,
 'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id) AS field_booklist_entry_encore_url,
 b.best_title as title,
 b.best_author AS field_booklist_entry_author, 
-COUNT(h.id)
+COUNT(h.id),
+'https://syndetics.com/index.aspx?isbn='||SUBSTRING(MAX(s.content) FROM '[0-9]+')||'/SC.gif&client=minuteman' AS field_booklist_entry_cover
 FROM 
 sierra_view.hold h
 JOIN
 sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
+JOIN sierra_view.subfield s
+ON
+b.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
 JOIN
 sierra_view.location_myuser l
 ON
@@ -357,13 +405,17 @@ l.name AS field_booklist_entry_location,
 'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id) AS field_booklist_entry_encore_url,
 b.best_title as title,
 b.best_author AS field_booklist_entry_author, 
-COUNT(h.id)
+COUNT(h.id),
+'https://syndetics.com/index.aspx?isbn='||SUBSTRING(MAX(s.content) FROM '[0-9]+')||'/SC.gif&client=minuteman' AS field_booklist_entry_cover
 FROM 
 sierra_view.hold h
 JOIN
 sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
+JOIN sierra_view.subfield s
+ON
+b.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
 JOIN
 sierra_view.location_myuser l
 ON
@@ -386,13 +438,17 @@ l.name AS field_booklist_entry_location,
 'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id) AS field_booklist_entry_encore_url,
 b.best_title as title,
 b.best_author AS field_booklist_entry_author, 
-COUNT(h.id)
+COUNT(h.id),
+'https://syndetics.com/index.aspx?isbn='||SUBSTRING(MAX(s.content) FROM '[0-9]+')||'/SC.gif&client=minuteman' AS field_booklist_entry_cover
 FROM 
 sierra_view.hold h
 JOIN
 sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
+JOIN sierra_view.subfield s
+ON
+b.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
 JOIN
 sierra_view.location_myuser l
 ON
@@ -415,13 +471,17 @@ l.name AS field_booklist_entry_location,
 'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id) AS field_booklist_entry_encore_url,
 b.best_title as title,
 b.best_author AS field_booklist_entry_author, 
-COUNT(h.id)
+COUNT(h.id),
+'https://syndetics.com/index.aspx?isbn='||SUBSTRING(MAX(s.content) FROM '[0-9]+')||'/SC.gif&client=minuteman' AS field_booklist_entry_cover
 FROM 
 sierra_view.hold h
 JOIN
 sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
+JOIN sierra_view.subfield s
+ON
+b.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
 JOIN
 sierra_view.location_myuser l
 ON
@@ -444,13 +504,17 @@ l.name AS field_booklist_entry_location,
 'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id) AS field_booklist_entry_encore_url,
 b.best_title as title,
 b.best_author AS field_booklist_entry_author, 
-COUNT(h.id)
+COUNT(h.id),
+'https://syndetics.com/index.aspx?isbn='||SUBSTRING(MAX(s.content) FROM '[0-9]+')||'/SC.gif&client=minuteman' AS field_booklist_entry_cover
 FROM 
 sierra_view.hold h
 JOIN
 sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
+JOIN sierra_view.subfield s
+ON
+b.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
 JOIN
 sierra_view.location_myuser l
 ON
@@ -473,13 +537,17 @@ l.name AS field_booklist_entry_location,
 'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id) AS field_booklist_entry_encore_url,
 b.best_title as title,
 b.best_author AS field_booklist_entry_author, 
-COUNT(h.id)
+COUNT(h.id),
+'https://syndetics.com/index.aspx?isbn='||SUBSTRING(MAX(s.content) FROM '[0-9]+')||'/SC.gif&client=minuteman' AS field_booklist_entry_cover
 FROM 
 sierra_view.hold h
 JOIN
 sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
+JOIN sierra_view.subfield s
+ON
+b.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
 JOIN
 sierra_view.location_myuser l
 ON
@@ -502,13 +570,17 @@ l.name AS field_booklist_entry_location,
 'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id) AS field_booklist_entry_encore_url,
 b.best_title as title,
 b.best_author AS field_booklist_entry_author, 
-COUNT(h.id)
+COUNT(h.id),
+'https://syndetics.com/index.aspx?isbn='||SUBSTRING(MAX(s.content) FROM '[0-9]+')||'/SC.gif&client=minuteman' AS field_booklist_entry_cover
 FROM 
 sierra_view.hold h
 JOIN
 sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
+JOIN sierra_view.subfield s
+ON
+b.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
 JOIN
 sierra_view.location_myuser l
 ON
@@ -531,13 +603,17 @@ l.name AS field_booklist_entry_location,
 'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id) AS field_booklist_entry_encore_url,
 b.best_title as title,
 b.best_author AS field_booklist_entry_author, 
-COUNT(h.id)
+COUNT(h.id),
+'https://syndetics.com/index.aspx?isbn='||SUBSTRING(MAX(s.content) FROM '[0-9]+')||'/SC.gif&client=minuteman' AS field_booklist_entry_cover
 FROM 
 sierra_view.hold h
 JOIN
 sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
+JOIN sierra_view.subfield s
+ON
+b.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
 JOIN
 sierra_view.location_myuser l
 ON
@@ -560,13 +636,17 @@ l.name AS field_booklist_entry_location,
 'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id) AS field_booklist_entry_encore_url,
 b.best_title as title,
 b.best_author AS field_booklist_entry_author, 
-COUNT(h.id)
+COUNT(h.id),
+'https://syndetics.com/index.aspx?isbn='||SUBSTRING(MAX(s.content) FROM '[0-9]+')||'/SC.gif&client=minuteman' AS field_booklist_entry_cover
 FROM 
 sierra_view.hold h
 JOIN
 sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
+JOIN sierra_view.subfield s
+ON
+b.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
 JOIN
 sierra_view.location_myuser l
 ON
@@ -589,13 +669,17 @@ l.name AS field_booklist_entry_location,
 'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id) AS field_booklist_entry_encore_url,
 b.best_title as title,
 b.best_author AS field_booklist_entry_author, 
-COUNT(h.id)
+COUNT(h.id),
+'https://syndetics.com/index.aspx?isbn='||SUBSTRING(MAX(s.content) FROM '[0-9]+')||'/SC.gif&client=minuteman' AS field_booklist_entry_cover
 FROM 
 sierra_view.hold h
 JOIN
 sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
+JOIN sierra_view.subfield s
+ON
+b.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
 JOIN
 sierra_view.location_myuser l
 ON
@@ -618,13 +702,17 @@ l.name AS field_booklist_entry_location,
 'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id) AS field_booklist_entry_encore_url,
 b.best_title as title,
 b.best_author AS field_booklist_entry_author, 
-COUNT(h.id)
+COUNT(h.id),
+'https://syndetics.com/index.aspx?isbn='||SUBSTRING(MAX(s.content) FROM '[0-9]+')||'/SC.gif&client=minuteman' AS field_booklist_entry_cover
 FROM 
 sierra_view.hold h
 JOIN
 sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
+JOIN sierra_view.subfield s
+ON
+b.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
 JOIN
 sierra_view.location_myuser l
 ON
@@ -647,13 +735,17 @@ l.name AS field_booklist_entry_location,
 'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id) AS field_booklist_entry_encore_url,
 b.best_title as title,
 b.best_author AS field_booklist_entry_author, 
-COUNT(h.id)
+COUNT(h.id),
+'https://syndetics.com/index.aspx?isbn='||SUBSTRING(MAX(s.content) FROM '[0-9]+')||'/SC.gif&client=minuteman' AS field_booklist_entry_cover
 FROM 
 sierra_view.hold h
 JOIN
 sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
+JOIN sierra_view.subfield s
+ON
+b.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
 JOIN
 sierra_view.location_myuser l
 ON
@@ -676,13 +768,17 @@ l.name AS field_booklist_entry_location,
 'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id) AS field_booklist_entry_encore_url,
 b.best_title as title,
 b.best_author AS field_booklist_entry_author, 
-COUNT(h.id)
+COUNT(h.id),
+'https://syndetics.com/index.aspx?isbn='||SUBSTRING(MAX(s.content) FROM '[0-9]+')||'/SC.gif&client=minuteman' AS field_booklist_entry_cover
 FROM 
 sierra_view.hold h
 JOIN
 sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
+JOIN sierra_view.subfield s
+ON
+b.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
 JOIN
 sierra_view.location_myuser l
 ON
@@ -705,13 +801,17 @@ l.name AS field_booklist_entry_location,
 'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id) AS field_booklist_entry_encore_url,
 b.best_title as title,
 b.best_author AS field_booklist_entry_author, 
-COUNT(h.id)
+COUNT(h.id),
+'https://syndetics.com/index.aspx?isbn='||SUBSTRING(MAX(s.content) FROM '[0-9]+')||'/SC.gif&client=minuteman' AS field_booklist_entry_cover
 FROM 
 sierra_view.hold h
 JOIN
 sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
+JOIN sierra_view.subfield s
+ON
+b.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
 JOIN
 sierra_view.location_myuser l
 ON
@@ -734,13 +834,17 @@ l.name AS field_booklist_entry_location,
 'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id) AS field_booklist_entry_encore_url,
 b.best_title as title,
 b.best_author AS field_booklist_entry_author, 
-COUNT(h.id)
+COUNT(h.id),
+'https://syndetics.com/index.aspx?isbn='||SUBSTRING(MAX(s.content) FROM '[0-9]+')||'/SC.gif&client=minuteman' AS field_booklist_entry_cover
 FROM 
 sierra_view.hold h
 JOIN
 sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
+JOIN sierra_view.subfield s
+ON
+b.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
 JOIN
 sierra_view.location_myuser l
 ON
@@ -763,13 +867,17 @@ l.name AS field_booklist_entry_location,
 'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id) AS field_booklist_entry_encore_url,
 b.best_title as title,
 b.best_author AS field_booklist_entry_author, 
-COUNT(h.id)
+COUNT(h.id),
+'https://syndetics.com/index.aspx?isbn='||SUBSTRING(MAX(s.content) FROM '[0-9]+')||'/SC.gif&client=minuteman' AS field_booklist_entry_cover
 FROM 
 sierra_view.hold h
 JOIN
 sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
+JOIN sierra_view.subfield s
+ON
+b.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
 JOIN
 sierra_view.location_myuser l
 ON
@@ -792,13 +900,17 @@ l.name AS field_booklist_entry_location,
 'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id) AS field_booklist_entry_encore_url,
 b.best_title as title,
 b.best_author AS field_booklist_entry_author, 
-COUNT(h.id)
+COUNT(h.id),
+'https://syndetics.com/index.aspx?isbn='||SUBSTRING(MAX(s.content) FROM '[0-9]+')||'/SC.gif&client=minuteman' AS field_booklist_entry_cover
 FROM 
 sierra_view.hold h
 JOIN
 sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
+JOIN sierra_view.subfield s
+ON
+b.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
 JOIN
 sierra_view.location_myuser l
 ON
@@ -821,13 +933,17 @@ l.name AS field_booklist_entry_location,
 'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id) AS field_booklist_entry_encore_url,
 b.best_title as title,
 b.best_author AS field_booklist_entry_author, 
-COUNT(h.id)
+COUNT(h.id),
+'https://syndetics.com/index.aspx?isbn='||SUBSTRING(MAX(s.content) FROM '[0-9]+')||'/SC.gif&client=minuteman' AS field_booklist_entry_cover
 FROM 
 sierra_view.hold h
 JOIN
 sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
+JOIN sierra_view.subfield s
+ON
+b.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
 JOIN
 sierra_view.location_myuser l
 ON
@@ -850,13 +966,17 @@ l.name AS field_booklist_entry_location,
 'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id) AS field_booklist_entry_encore_url,
 b.best_title as title,
 b.best_author AS field_booklist_entry_author, 
-COUNT(h.id)
+COUNT(h.id),
+'https://syndetics.com/index.aspx?isbn='||SUBSTRING(MAX(s.content) FROM '[0-9]+')||'/SC.gif&client=minuteman' AS field_booklist_entry_cover
 FROM 
 sierra_view.hold h
 JOIN
 sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
+JOIN sierra_view.subfield s
+ON
+b.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
 JOIN
 sierra_view.location_myuser l
 ON
@@ -879,13 +999,17 @@ l.name AS field_booklist_entry_location,
 'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id) AS field_booklist_entry_encore_url,
 b.best_title as title,
 b.best_author AS field_booklist_entry_author, 
-COUNT(h.id)
+COUNT(h.id),
+'https://syndetics.com/index.aspx?isbn='||SUBSTRING(MAX(s.content) FROM '[0-9]+')||'/SC.gif&client=minuteman' AS field_booklist_entry_cover
 FROM 
 sierra_view.hold h
 JOIN
 sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
+JOIN sierra_view.subfield s
+ON
+b.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
 JOIN
 sierra_view.location_myuser l
 ON
@@ -908,13 +1032,17 @@ l.name AS field_booklist_entry_location,
 'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id) AS field_booklist_entry_encore_url,
 b.best_title as title,
 b.best_author AS field_booklist_entry_author, 
-COUNT(h.id)
+COUNT(h.id),
+'https://syndetics.com/index.aspx?isbn='||SUBSTRING(MAX(s.content) FROM '[0-9]+')||'/SC.gif&client=minuteman' AS field_booklist_entry_cover
 FROM 
 sierra_view.hold h
 JOIN
 sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
+JOIN sierra_view.subfield s
+ON
+b.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
 JOIN
 sierra_view.location_myuser l
 ON
@@ -937,13 +1065,17 @@ l.name AS field_booklist_entry_location,
 'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id) AS field_booklist_entry_encore_url,
 b.best_title as title,
 b.best_author AS field_booklist_entry_author, 
-COUNT(h.id)
+COUNT(h.id),
+'https://syndetics.com/index.aspx?isbn='||SUBSTRING(MAX(s.content) FROM '[0-9]+')||'/SC.gif&client=minuteman' AS field_booklist_entry_cover
 FROM 
 sierra_view.hold h
 JOIN
 sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
+JOIN sierra_view.subfield s
+ON
+b.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
 JOIN
 sierra_view.location_myuser l
 ON
@@ -966,13 +1098,17 @@ l.name AS field_booklist_entry_location,
 'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id) AS field_booklist_entry_encore_url,
 b.best_title as title,
 b.best_author AS field_booklist_entry_author, 
-COUNT(h.id)
+COUNT(h.id),
+'https://syndetics.com/index.aspx?isbn='||SUBSTRING(MAX(s.content) FROM '[0-9]+')||'/SC.gif&client=minuteman' AS field_booklist_entry_cover
 FROM 
 sierra_view.hold h
 JOIN
 sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
+JOIN sierra_view.subfield s
+ON
+b.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
 JOIN
 sierra_view.location_myuser l
 ON
@@ -995,13 +1131,17 @@ l.name AS field_booklist_entry_location,
 'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id) AS field_booklist_entry_encore_url,
 b.best_title as title,
 b.best_author AS field_booklist_entry_author, 
-COUNT(h.id)
+COUNT(h.id),
+'https://syndetics.com/index.aspx?isbn='||SUBSTRING(MAX(s.content) FROM '[0-9]+')||'/SC.gif&client=minuteman' AS field_booklist_entry_cover
 FROM 
 sierra_view.hold h
 JOIN
 sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
+JOIN sierra_view.subfield s
+ON
+b.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
 JOIN
 sierra_view.location_myuser l
 ON
@@ -1024,13 +1164,17 @@ l.name AS field_booklist_entry_location,
 'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id) AS field_booklist_entry_encore_url,
 b.best_title as title,
 b.best_author AS field_booklist_entry_author, 
-COUNT(h.id)
+COUNT(h.id),
+'https://syndetics.com/index.aspx?isbn='||SUBSTRING(MAX(s.content) FROM '[0-9]+')||'/SC.gif&client=minuteman' AS field_booklist_entry_cover
 FROM 
 sierra_view.hold h
 JOIN
 sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
+JOIN sierra_view.subfield s
+ON
+b.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
 JOIN
 sierra_view.location_myuser l
 ON
@@ -1053,13 +1197,17 @@ l.name AS field_booklist_entry_location,
 'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id) AS field_booklist_entry_encore_url,
 b.best_title as title,
 b.best_author AS field_booklist_entry_author, 
-COUNT(h.id)
+COUNT(h.id),
+'https://syndetics.com/index.aspx?isbn='||SUBSTRING(MAX(s.content) FROM '[0-9]+')||'/SC.gif&client=minuteman' AS field_booklist_entry_cover
 FROM 
 sierra_view.hold h
 JOIN
 sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
+JOIN sierra_view.subfield s
+ON
+b.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
 JOIN
 sierra_view.location_myuser l
 ON
@@ -1082,13 +1230,17 @@ l.name AS field_booklist_entry_location,
 'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id) AS field_booklist_entry_encore_url,
 b.best_title as title,
 b.best_author AS field_booklist_entry_author, 
-COUNT(h.id)
+COUNT(h.id),
+'https://syndetics.com/index.aspx?isbn='||SUBSTRING(MAX(s.content) FROM '[0-9]+')||'/SC.gif&client=minuteman' AS field_booklist_entry_cover
 FROM 
 sierra_view.hold h
 JOIN
 sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
+JOIN sierra_view.subfield s
+ON
+b.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
 JOIN
 sierra_view.location_myuser l
 ON
@@ -1111,13 +1263,17 @@ l.name AS field_booklist_entry_location,
 'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id) AS field_booklist_entry_encore_url,
 b.best_title as title,
 b.best_author AS field_booklist_entry_author, 
-COUNT(h.id)
+COUNT(h.id),
+'https://syndetics.com/index.aspx?isbn='||SUBSTRING(MAX(s.content) FROM '[0-9]+')||'/SC.gif&client=minuteman' AS field_booklist_entry_cover
 FROM 
 sierra_view.hold h
 JOIN
 sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
+JOIN sierra_view.subfield s
+ON
+b.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
 JOIN
 sierra_view.location_myuser l
 ON
@@ -1140,13 +1296,17 @@ l.name AS field_booklist_entry_location,
 'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id) AS field_booklist_entry_encore_url,
 b.best_title as title,
 b.best_author AS field_booklist_entry_author, 
-COUNT(h.id)
+COUNT(h.id),
+'https://syndetics.com/index.aspx?isbn='||SUBSTRING(MAX(s.content) FROM '[0-9]+')||'/SC.gif&client=minuteman' AS field_booklist_entry_cover
 FROM 
 sierra_view.hold h
 JOIN
 sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
+JOIN sierra_view.subfield s
+ON
+b.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
 JOIN
 sierra_view.location_myuser l
 ON
@@ -1169,13 +1329,17 @@ l.name AS field_booklist_entry_location,
 'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id) AS field_booklist_entry_encore_url,
 b.best_title as title,
 b.best_author AS field_booklist_entry_author, 
-COUNT(h.id)
+COUNT(h.id),
+'https://syndetics.com/index.aspx?isbn='||SUBSTRING(MAX(s.content) FROM '[0-9]+')||'/SC.gif&client=minuteman' AS field_booklist_entry_cover
 FROM 
 sierra_view.hold h
 JOIN
 sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
+JOIN sierra_view.subfield s
+ON
+b.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
 JOIN
 sierra_view.location_myuser l
 ON
@@ -1198,13 +1362,17 @@ l.name AS field_booklist_entry_location,
 'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id) AS field_booklist_entry_encore_url,
 b.best_title as title,
 b.best_author AS field_booklist_entry_author, 
-COUNT(h.id)
+COUNT(h.id),
+'https://syndetics.com/index.aspx?isbn='||SUBSTRING(MAX(s.content) FROM '[0-9]+')||'/SC.gif&client=minuteman' AS field_booklist_entry_cover
 FROM 
 sierra_view.hold h
 JOIN
 sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
+JOIN sierra_view.subfield s
+ON
+b.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
 JOIN
 sierra_view.location_myuser l
 ON
@@ -1229,13 +1397,17 @@ l.name AS field_booklist_entry_location,
 'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id) AS field_booklist_entry_encore_url,
 b.best_title as title,
 b.best_author AS field_booklist_entry_author, 
-COUNT(h.id)
+COUNT(h.id),
+'https://syndetics.com/index.aspx?isbn='||SUBSTRING(MAX(s.content) FROM '[0-9]+')||'/SC.gif&client=minuteman' AS field_booklist_entry_cover
 FROM 
 sierra_view.hold h
 JOIN
 sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
+JOIN sierra_view.subfield s
+ON
+b.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
 JOIN
 sierra_view.location_myuser l
 ON
@@ -1258,13 +1430,17 @@ l.name AS field_booklist_entry_location,
 'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id) AS field_booklist_entry_encore_url,
 b.best_title as title,
 b.best_author AS field_booklist_entry_author, 
-COUNT(h.id)
+COUNT(h.id),
+'https://syndetics.com/index.aspx?isbn='||SUBSTRING(MAX(s.content) FROM '[0-9]+')||'/SC.gif&client=minuteman' AS field_booklist_entry_cover
 FROM 
 sierra_view.hold h
 JOIN
 sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
+JOIN sierra_view.subfield s
+ON
+b.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
 JOIN
 sierra_view.location_myuser l
 ON
@@ -1287,13 +1463,17 @@ l.name AS field_booklist_entry_location,
 'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id) AS field_booklist_entry_encore_url,
 b.best_title as title,
 b.best_author AS field_booklist_entry_author, 
-COUNT(h.id)
+COUNT(h.id),
+'https://syndetics.com/index.aspx?isbn='||SUBSTRING(MAX(s.content) FROM '[0-9]+')||'/SC.gif&client=minuteman' AS field_booklist_entry_cover
 FROM 
 sierra_view.hold h
 JOIN
 sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
+JOIN sierra_view.subfield s
+ON
+b.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
 JOIN
 sierra_view.location_myuser l
 ON
@@ -1316,13 +1496,17 @@ l.name AS field_booklist_entry_location,
 'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id) AS field_booklist_entry_encore_url,
 b.best_title as title,
 b.best_author AS field_booklist_entry_author, 
-COUNT(h.id)
+COUNT(h.id),
+'https://syndetics.com/index.aspx?isbn='||SUBSTRING(MAX(s.content) FROM '[0-9]+')||'/SC.gif&client=minuteman' AS field_booklist_entry_cover
 FROM 
 sierra_view.hold h
 JOIN
 sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
+JOIN sierra_view.subfield s
+ON
+b.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
 JOIN
 sierra_view.location_myuser l
 ON
@@ -1345,13 +1529,17 @@ l.name AS field_booklist_entry_location,
 'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id) AS field_booklist_entry_encore_url,
 b.best_title as title,
 b.best_author AS field_booklist_entry_author, 
-COUNT(h.id)
+COUNT(h.id),
+'https://syndetics.com/index.aspx?isbn='||SUBSTRING(MAX(s.content) FROM '[0-9]+')||'/SC.gif&client=minuteman' AS field_booklist_entry_cover
 FROM 
 sierra_view.hold h
 JOIN
 sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
+JOIN sierra_view.subfield s
+ON
+b.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
 JOIN
 sierra_view.location_myuser l
 ON
@@ -1374,13 +1562,17 @@ l.name AS field_booklist_entry_location,
 'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id) AS field_booklist_entry_encore_url,
 b.best_title as title,
 b.best_author AS field_booklist_entry_author, 
-COUNT(h.id)
+COUNT(h.id),
+'https://syndetics.com/index.aspx?isbn='||SUBSTRING(MAX(s.content) FROM '[0-9]+')||'/SC.gif&client=minuteman' AS field_booklist_entry_cover
 FROM 
 sierra_view.hold h
 JOIN
 sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
+JOIN sierra_view.subfield s
+ON
+b.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
 JOIN
 sierra_view.location_myuser l
 ON
@@ -1403,13 +1595,17 @@ l.name AS field_booklist_entry_location,
 'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id) AS field_booklist_entry_encore_url,
 b.best_title as title,
 b.best_author AS field_booklist_entry_author, 
-COUNT(h.id)
+COUNT(h.id),
+'https://syndetics.com/index.aspx?isbn='||SUBSTRING(MAX(s.content) FROM '[0-9]+')||'/SC.gif&client=minuteman' AS field_booklist_entry_cover
 FROM 
 sierra_view.hold h
 JOIN
 sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
+JOIN sierra_view.subfield s
+ON
+b.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
 JOIN
 sierra_view.location_myuser l
 ON
@@ -1432,13 +1628,17 @@ l.name AS field_booklist_entry_location,
 'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id) AS field_booklist_entry_encore_url,
 b.best_title as title,
 b.best_author AS field_booklist_entry_author, 
-COUNT(h.id)
+COUNT(h.id),
+'https://syndetics.com/index.aspx?isbn='||SUBSTRING(MAX(s.content) FROM '[0-9]+')||'/SC.gif&client=minuteman' AS field_booklist_entry_cover
 FROM 
 sierra_view.hold h
 JOIN
 sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
+JOIN sierra_view.subfield s
+ON
+b.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
 JOIN
 sierra_view.location_myuser l
 ON
@@ -1461,13 +1661,17 @@ l.name AS field_booklist_entry_location,
 'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id) AS field_booklist_entry_encore_url,
 b.best_title as title,
 b.best_author AS field_booklist_entry_author, 
-COUNT(h.id)
+COUNT(h.id),
+'https://syndetics.com/index.aspx?isbn='||SUBSTRING(MAX(s.content) FROM '[0-9]+')||'/SC.gif&client=minuteman' AS field_booklist_entry_cover
 FROM 
 sierra_view.hold h
 JOIN
 sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
+JOIN sierra_view.subfield s
+ON
+b.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
 JOIN
 sierra_view.location_myuser l
 ON
@@ -1490,13 +1694,17 @@ l.name AS field_booklist_entry_location,
 'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id) AS field_booklist_entry_encore_url,
 b.best_title as title,
 b.best_author AS field_booklist_entry_author, 
-COUNT(h.id)
+COUNT(h.id),
+'https://syndetics.com/index.aspx?isbn='||SUBSTRING(MAX(s.content) FROM '[0-9]+')||'/SC.gif&client=minuteman' AS field_booklist_entry_cover
 FROM 
 sierra_view.hold h
 JOIN
 sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
+JOIN sierra_view.subfield s
+ON
+b.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
 JOIN
 sierra_view.location_myuser l
 ON
@@ -1519,13 +1727,17 @@ l.name AS field_booklist_entry_location,
 'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id) AS field_booklist_entry_encore_url,
 b.best_title as title,
 b.best_author AS field_booklist_entry_author, 
-COUNT(h.id)
+COUNT(h.id),
+'https://syndetics.com/index.aspx?isbn='||SUBSTRING(MAX(s.content) FROM '[0-9]+')||'/SC.gif&client=minuteman' AS field_booklist_entry_cover
 FROM 
 sierra_view.hold h
 JOIN
 sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
+JOIN sierra_view.subfield s
+ON
+b.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
 JOIN
 sierra_view.location_myuser l
 ON
@@ -1548,13 +1760,17 @@ l.name AS field_booklist_entry_location,
 'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id) AS field_booklist_entry_encore_url,
 b.best_title as title,
 b.best_author AS field_booklist_entry_author, 
-COUNT(h.id)
+COUNT(h.id),
+'https://syndetics.com/index.aspx?isbn='||SUBSTRING(MAX(s.content) FROM '[0-9]+')||'/SC.gif&client=minuteman' AS field_booklist_entry_cover
 FROM 
 sierra_view.hold h
 JOIN
 sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
+JOIN sierra_view.subfield s
+ON
+b.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
 JOIN
 sierra_view.location_myuser l
 ON
@@ -1577,13 +1793,17 @@ l.name AS field_booklist_entry_location,
 'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id) AS field_booklist_entry_encore_url,
 b.best_title as title,
 b.best_author AS field_booklist_entry_author, 
-COUNT(h.id)
+COUNT(h.id),
+'https://syndetics.com/index.aspx?isbn='||SUBSTRING(MAX(s.content) FROM '[0-9]+')||'/SC.gif&client=minuteman' AS field_booklist_entry_cover
 FROM 
 sierra_view.hold h
 JOIN
 sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
+JOIN sierra_view.subfield s
+ON
+b.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
 JOIN
 sierra_view.location_myuser l
 ON
@@ -1606,13 +1826,17 @@ l.name AS field_booklist_entry_location,
 'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id) AS field_booklist_entry_encore_url,
 b.best_title as title,
 b.best_author AS field_booklist_entry_author, 
-COUNT(h.id)
+COUNT(h.id),
+'https://syndetics.com/index.aspx?isbn='||SUBSTRING(MAX(s.content) FROM '[0-9]+')||'/SC.gif&client=minuteman' AS field_booklist_entry_cover
 FROM 
 sierra_view.hold h
 JOIN
 sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
+JOIN sierra_view.subfield s
+ON
+b.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
 JOIN
 sierra_view.location_myuser l
 ON
@@ -1635,13 +1859,17 @@ l.name AS field_booklist_entry_location,
 'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id) AS field_booklist_entry_encore_url,
 b.best_title as title,
 b.best_author AS field_booklist_entry_author, 
-COUNT(h.id)
+COUNT(h.id),
+'https://syndetics.com/index.aspx?isbn='||SUBSTRING(MAX(s.content) FROM '[0-9]+')||'/SC.gif&client=minuteman' AS field_booklist_entry_cover
 FROM 
 sierra_view.hold h
 JOIN
 sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
+JOIN sierra_view.subfield s
+ON
+b.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
 JOIN
 sierra_view.location_myuser l
 ON
@@ -1664,13 +1892,17 @@ l.name AS field_booklist_entry_location,
 'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id) AS field_booklist_entry_encore_url,
 b.best_title as title,
 b.best_author AS field_booklist_entry_author, 
-COUNT(h.id)
+COUNT(h.id),
+'https://syndetics.com/index.aspx?isbn='||SUBSTRING(MAX(s.content) FROM '[0-9]+')||'/SC.gif&client=minuteman' AS field_booklist_entry_cover
 FROM 
 sierra_view.hold h
 JOIN
 sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
+JOIN sierra_view.subfield s
+ON
+b.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
 JOIN
 sierra_view.location_myuser l
 ON
@@ -1693,13 +1925,17 @@ l.name AS field_booklist_entry_location,
 'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id) AS field_booklist_entry_encore_url,
 b.best_title as title,
 b.best_author AS field_booklist_entry_author, 
-COUNT(h.id)
+COUNT(h.id),
+'https://syndetics.com/index.aspx?isbn='||SUBSTRING(MAX(s.content) FROM '[0-9]+')||'/SC.gif&client=minuteman' AS field_booklist_entry_cover
 FROM 
 sierra_view.hold h
 JOIN
 sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
+JOIN sierra_view.subfield s
+ON
+b.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
 JOIN
 sierra_view.location_myuser l
 ON
@@ -1722,13 +1958,17 @@ l.name AS field_booklist_entry_location,
 'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id) AS field_booklist_entry_encore_url,
 b.best_title as title,
 b.best_author AS field_booklist_entry_author, 
-COUNT(h.id)
+COUNT(h.id),
+'https://syndetics.com/index.aspx?isbn='||SUBSTRING(MAX(s.content) FROM '[0-9]+')||'/SC.gif&client=minuteman' AS field_booklist_entry_cover
 FROM 
 sierra_view.hold h
 JOIN
 sierra_view.bib_record_property b
 ON
 h.record_id = b.bib_record_id
+JOIN sierra_view.subfield s
+ON
+b.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
 JOIN
 sierra_view.location_myuser l
 ON
