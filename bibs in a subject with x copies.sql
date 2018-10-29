@@ -20,7 +20,7 @@ bi.item_record_id = m.id AND m.deletion_date_gmt IS NULL
 JOIN
 sierra_view.varfield_view v
 ON
-b.bib_record_id = v.record_id AND v.varfield_type_code = 'd' AND (v.field_content LIKE '%cooking%' OR v.field_content LIKE '%cookbooks%')
+b.bib_record_id = v.record_id AND v.varfield_type_code = 'd' AND (v.field_content LIKE '%cooking%' OR v.field_content LIKE '%Cooking%' OR v.field_content LIKE '%cookbooks%')
 GROUP BY
 1,2,3,4
 HAVING
