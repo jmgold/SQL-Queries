@@ -62,7 +62,7 @@ sierra_view.varfield_view v
 ON
 b.bib_record_id = v.record_id AND v.varfield_type_code = 'd' 
 --Limit to a subject
-AND v.field_content LIKE '%Hanukkah%' AND (v.field_content LIKE '%decorations%' OR v.field_content LIKE '%history%' OR v.field_content LIKE '%cooking%' OR v.field_content LIKE '%Cook%')
+AND v.field_content LIKE '%Hanukkah%' AND v.field_content LIKE '%Juvenile literature%'
 JOIN sierra_view.subfield s
 ON
 b.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
@@ -99,7 +99,7 @@ sierra_view.varfield_view v
 ON
 b.bib_record_id = v.record_id AND v.varfield_type_code = 'd' 
 --Limit to a subject
-AND v.field_content LIKE '%Kwanza%' AND (v.field_content LIKE '%decorations%' OR v.field_content LIKE '%history%' OR v.field_content LIKE '%cooking%' OR v.field_content LIKE '%Cook%')
+AND v.field_content LIKE '%Kwanza%' --AND (v.field_content LIKE '%decorations%' OR v.field_content LIKE '%history%' OR v.field_content LIKE '%cooking%' OR v.field_content LIKE '%Cook%')
 JOIN sierra_view.subfield s
 ON
 b.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
