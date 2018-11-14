@@ -1,4 +1,9 @@
-﻿SELECT *
+﻿--Jeremy Goldstein
+--Minuteman Library Network
+--
+--Produces list of Thanksgiving titles in adult collections for posting at https://www.minlib.net/booklists/recommended-reads/thanksgiving
+
+SELECT *
 FROM(
 SELECT
 --link to Encore
@@ -16,21 +21,26 @@ JOIN
 sierra_view.item_record i
 ON
 l.item_record_id = i.id
+--Optional Availability Limit
 --AND
 --i.is_available_at_library = 'TRUE'
 AND i.item_status_code NOT IN ('m', 'n', 'z', 't', 'o', '$', '!', 'w', 'd', 'p', 'r', 'e', 'j', 'u', 'q', 'x', 'y', 'v')
-AND SUBSTRING(i.location_code,4,1) NOT IN ('j')
+--Exclude items in childrens and YA locations
+AND SUBSTRING(i.location_code,4,1) NOT IN ('j','y')
 JOIN
 sierra_view.varfield_view v
 ON
 b.bib_record_id = v.record_id AND v.varfield_type_code = 'd' 
---Limit to a subject
-AND v.field_content LIKE '%Thanksgiving%' AND (v.field_content LIKE '%decorations%' OR v.field_content LIKE '%history%' OR v.field_content LIKE '%cooking%' OR v.field_content LIKE '%Cook%')
+--Limit to subject(s)
+AND LOWER(v.field_content) LIKE '%thanksgiving%' AND (LOWER(v.field_content) LIKE '%decorations%' OR LOWER(v.field_content) LIKE '%history%' OR LOWER(v.field_content) LIKE '%cook%')
+--Grab ISBN for cover image
 JOIN sierra_view.subfield s
 ON
 b.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
+--Limit to books and a date range
 WHERE
 b.material_code = 'a' AND b.publish_year >= '1990'
 GROUP BY 1,2,3) a
+--Return random results each time query is run
 ORDER BY RANDOM()
-LIMIT 40;
+LIMIT 50;
