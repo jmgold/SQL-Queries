@@ -26,6 +26,7 @@ on substring(i.location_code from 1 for 3) = l.code
 --filter to items created in the past year
 WHERE
 i.record_creation_date_gmt > (localtimestamp - interval '1 year')
+AND substring(i.location_code from 1 for 3) NOT IN ('mls', 'int', 'cmc')
 
 ;
 
@@ -62,8 +63,8 @@ circ_total
 ;
 
 SELECT
---DISTINCT ON (library_name)
-t.library AS library_name,
+--DISTINCT ON (field_booklist_entry_location)
+t.library AS field_booklist_entry_location,
 --Encore Link
 'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(t.bib_record_id) AS field_booklist_entry_encore_url,
 b.best_title as title,
@@ -77,7 +78,7 @@ SELECT
 t2.library,
 MAX(t2.circ_total) as max_circ
 FROM
-temp_agency_circ_counts as t2
+temp_loc_circ_counts as t2
 GROUP BY 1
 ) AS C
 
