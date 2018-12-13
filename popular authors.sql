@@ -44,9 +44,7 @@ r.id = h.record_id
 ;
 
 SELECT
---still needs clean up
-array_to_string(regexp_matches(b.best_author, E'^(\\w+, \\w+).*$')) AS title,--AS field_booklist_entry_author,
---MAX(b.best_title) AS title,
+TRIM(trailing ',' from a.content) AS title,
 'https://syndetics.com/index.aspx?isbn='||SUBSTRING((MAX(s.content) FILTER(WHERE b.material_code = 'a')) FROM '[0-9]+')||'/SC.gif&client=minuteman' AS field_booklist_entry_cover
 FROM
 sierra_view.bib_record_property b
@@ -57,9 +55,12 @@ b.bib_record_id = t.bib_record_id
 --Pull ISBN for cover image
 JOIN sierra_view.subfield s
 ON
-b.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
+t.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
+JOIN sierra_view.subfield a
+ON
+t.bib_record_id = a.record_id AND a.field_type_code = 'a' AND a.tag = 'a'
 WHERE
-b.best_author !=''
+b.best_author !='' AND b.material_code IN ('a', '2')
 GROUP BY 1
-ORDER BY COUNT(b.best_author) DESC
+ORDER BY COUNT(substring(b.best_author from '\w+, \w+')) DESC
 LIMIT 100;
