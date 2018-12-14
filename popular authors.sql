@@ -45,22 +45,26 @@ r.id = h.record_id
 
 SELECT
 TRIM(trailing ',' from a.content) AS title,
-'https://syndetics.com/index.aspx?isbn='||SUBSTRING((MAX(s.content) FILTER(WHERE b.material_code = 'a')) FROM '[0-9]+')||'/SC.gif&client=minuteman' AS field_booklist_entry_cover
+(SELECT
+'https://syndetics.com/index.aspx?isbn='||SUBSTRING(s.content FROM '[0-9]+')||'/SC.gif&client=minuteman'
+FROM
+sierra_view.subfield s
+WHERE
+b.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
+ORDER BY s.occ_num
+LIMIT 1) AS field_booklist_entry_cover
 FROM
 sierra_view.bib_record_property b
 JOIN
 temp_holds_data t
 ON
 b.bib_record_id = t.bib_record_id
---Pull ISBN for cover image
-JOIN sierra_view.subfield s
-ON
-t.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
+
 JOIN sierra_view.subfield a
 ON
 t.bib_record_id = a.record_id AND a.field_type_code = 'a' AND a.tag = 'a'
 WHERE
 b.best_author !='' AND b.material_code IN ('a', '2')
-GROUP BY 1
-ORDER BY COUNT(substring(b.best_author from '\w+, \w+')) DESC
+GROUP BY 1,2
+ORDER BY COUNT(TRIM(trailing ',' from a.content)) DESC
 LIMIT 100;

@@ -26,7 +26,7 @@ on substring(i.location_code from 1 for 3) = l.code
 --filter to items created in the past year
 WHERE
 i.record_creation_date_gmt > (localtimestamp - interval '1 year')
-AND substring(i.location_code from 1 for 3) NOT IN ('mls', 'int', 'cmc')
+AND substring(i.location_code from 1 for 3) NOT IN ('mls', 'int', 'cmc', 'mti')
 
 ;
 
@@ -47,7 +47,7 @@ t.item_id = l.item_record_id
 JOIN sierra_view.bib_record_property b
 ON
 --limit to books
-l.bib_record_id = b.bib_record_id AND b.material_code = 'a'
+l.bib_record_id = b.bib_record_id AND b.material_code = 'a' AND LOWER(b.best_title) NOT LIKE 'non-mln ill%'
 
 GROUP BY
 t.library,
@@ -66,11 +66,18 @@ SELECT
 --DISTINCT ON (field_booklist_entry_location)
 t.library AS field_booklist_entry_location,
 --Encore Link
-'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(t.bib_record_id) AS field_booklist_entry_encore_url,
+--'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(t.bib_record_id) AS field_booklist_entry_encore_url,
 b.best_title as title,
 b.best_author AS field_booklist_entry_author,
 --Cover image from Syndetics
-'https://syndetics.com/index.aspx?isbn='||SUBSTRING(MAX(s.content) FROM '[0-9]+')||'/SC.gif&client=minuteman' AS field_booklist_entry_cover,
+(SELECT
+'https://syndetics.com/index.aspx?isbn='||SUBSTRING(s.content FROM '[0-9]+')||'/SC.gif&client=minuteman'
+FROM
+sierra_view.subfield s
+WHERE
+b.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
+ORDER BY s.occ_num
+LIMIT 1) AS field_booklist_entry_cover,
 t.circ_total
 FROM
 (
@@ -90,11 +97,6 @@ JOIN
 sierra_view.bib_record_property b
 ON
 t.bib_record_id = b.bib_record_id
---Grab ISBN for cover image
-JOIN sierra_view.subfield s
-ON
-b.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
 
-GROUP BY 1,2,3,4,6
+GROUP BY 1,2,3,4,5
 ORDER BY 1;
-
