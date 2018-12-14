@@ -6,19 +6,27 @@ b.best_title as title,
 b.best_author as field_booklist_entry_author,
 CASE
 WHEN b.material_code = 'a'
-THEN 'https://syndetics.com/index.aspx?isbn='||SUBSTRING(MAX(isbn.content) FROM '[0-9]+')||'/SC.gif&client=minuteman'
+THEN (SELECT
+'https://syndetics.com/index.aspx?isbn='||SUBSTRING(s.content FROM '[0-9]+')||'/SC.gif&client=minuteman'
+FROM
+sierra_view.subfield s
+WHERE
+b.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
+ORDER BY s.occ_num
+LIMIT 1)
 WHEN b.material_code != 'a'
-THEN 'https://syndetics.com/index.aspx?upc='||SUBSTRING(MAX(upc.content) FROM '[0-9]+')||'/SC.gif&client=minuteman'
+THEN (SELECT
+'https://syndetics.com/index.aspx?upc='||SUBSTRING(s.content FROM '[0-9]+')||'/SC.gif&client=minuteman'
+FROM
+sierra_view.subfield s
+WHERE
+b.bib_record_id = s.record_id AND s.marc_tag = '024' AND s.tag = 'a'
+ORDER BY s.occ_num
+LIMIT 1)
 END AS field_booklist_entry_cover
 
 FROM
 sierra_view.bib_record_property b
-LEFT JOIN sierra_view.subfield isbn
-ON
-b.bib_record_id = isbn.record_id AND isbn.marc_tag = '020' AND isbn.tag = 'a'
-LEFT JOIN sierra_view.subfield upc
-ON
-b.bib_record_id = upc.record_id AND upc.marc_tag = '024' AND upc.tag = 'a'
 JOIN sierra_view.bib_record_item_record_link bi
 ON
 b.bib_record_id = bi.bib_record_id
