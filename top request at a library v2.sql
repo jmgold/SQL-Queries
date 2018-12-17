@@ -84,8 +84,14 @@ l.name AS field_booklist_entry_location,
 b.best_title as title,
 b.best_author AS field_booklist_entry_author,
 --Cover image from Syndetics
-'https://syndetics.com/index.aspx?isbn='||SUBSTRING(MAX(s.content) FROM '[0-9]+')||'/SC.gif&client=minuteman' AS field_booklist_entry_cover,
-t.count_holds_on_title
+(SELECT
+'https://syndetics.com/index.aspx?isbn='||SUBSTRING(s.content FROM '[0-9]+')||'/SC.gif&client=minuteman'
+FROM
+sierra_view.subfield s
+WHERE
+b.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
+ORDER BY s.occ_num
+LIMIT 1) AS field_booklist_entry_cover
 
 FROM (
     SELECT
@@ -115,13 +121,10 @@ JOIN
 sierra_view.bib_record_property b
 ON
 t.bib_record_id = b.bib_record_id
---Grab ISBN for cover image
-JOIN sierra_view.subfield s
-ON
-b.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
+
 
 GROUP BY
-1,2,3,4,6
+1,2,3,4,5
 ORDER BY
 1
 ;
