@@ -6,7 +6,23 @@
 SELECT
 c.transaction_gmt,
 c.application_name,
-c.op_code,
+CASE
+WHEN c.op_code = 'o' THEN 'checkout'
+WHEN c.op_code = 'i' THEN 'checkin'
+WHEN c.op_code = 'n' THEN 'hold'
+WHEN c.op_code = 'h' THEN 'hold with recall'
+WHEN c.op_code = 'nb' THEN 'bib hold'
+WHEN c.op_code = 'hb' THEN 'hold recall bib'
+WHEN c.op_code = 'ni' THEN 'item hold'
+WHEN c.op_code = 'hi' THEN 'hold recall item'
+WHEN c.op_code = 'nv' THEN 'volume hold'
+WHEN c.op_code = 'hv' THEN 'hold recall volume'
+WHEN c.op_code = 'f' THEN 'filled hold'
+WHEN c.op_code = 'r' THEN 'renewal'
+WHEN c.op_code = 'b' THEN 'booking'
+WHEN c.op_code = 'u' THEN 'use count'
+ELSE 'unknown'
+END AS transaction_type,
 b.best_title,
 b.material_code,
 id2reckey(c.bib_record_id)||'a' as bib_num,
@@ -39,3 +55,5 @@ AND
 c.icode1 = '138'
 AND
 c.item_agency_code_num = '18'
+
+ORDER BY i.barcode, c.transaction_gmt
