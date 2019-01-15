@@ -19,6 +19,8 @@ ORDER BY s.occ_num
 LIMIT 1) AS field_booklist_entry_cover
 FROM
 sierra_view.bib_record_property b
+JOIN sierra_view.bib_record br
+ON b.bib_record_id = br.id AND br.bcode3 != 'g'
 JOIN sierra_view.bib_record_item_record_link bi
 ON
 b.bib_record_id = bi.bib_record_id
@@ -27,5 +29,5 @@ ON
 bi.item_record_id = m.id AND m.creation_date_gmt > (localtimestamp - interval '4 days')
 WHERE b.material_code ='a'
 GROUP BY 1,2,3,4 
-ORDER BY 1 Desc
+ORDER BY COUNT(bi.bib_record_id) desc
 LIMIT 100;
