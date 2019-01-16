@@ -20,5 +20,5 @@ ON
 b.bib_record_id = br.id AND (br.cataloging_date_gmt > (localtimestamp - interval '7 days') OR br.cataloging_date_gmt IS NULL)
 WHERE b.material_code IN ('5','u')
 GROUP BY 1,2,3 
-ORDER BY 1 Desc
+ORDER BY COUNT(bi.bib_record_id) desc
 LIMIT 100;

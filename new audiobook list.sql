@@ -21,5 +21,5 @@ ON
 bi.item_record_id = m.id AND m.creation_date_gmt > (localtimestamp - interval '7 days')
 WHERE b.material_code ='4'
 GROUP BY 1,2,3,4 
-ORDER BY 1 Desc
+ORDER BY COUNT(bi.bib_record_id) desc
 LIMIT 100;

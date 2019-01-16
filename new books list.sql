@@ -6,7 +6,7 @@ New Book list for www.minlib.net
 */
 SELECT
 --link to Encore
-'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id)   AS field_booklist_entry_encore_url,
+'https://find.minlib.net/iii/encore/record/C__Rb'||br.record_num   AS field_booklist_entry_encore_url,
 b.best_title as title,
 b.best_author as field_booklist_entry_author,
 (SELECT
@@ -19,7 +19,7 @@ ORDER BY s.occ_num
 LIMIT 1) AS field_booklist_entry_cover
 FROM
 sierra_view.bib_record_property b
-JOIN sierra_view.bib_record br
+JOIN sierra_view.bib_view br
 ON b.bib_record_id = br.id AND br.bcode3 != 'g'
 JOIN sierra_view.bib_record_item_record_link bi
 ON
