@@ -4,7 +4,7 @@
 */
 
 SELECT
-l.name as home_library,
+DATE_TRUNC('year', AGE(now()::date,p.birth_date_gmt)) AS age,
 COUNT(p.id) as total_patrons,
 COUNT(p.id) FILTER(WHERE ((p.mblock_code != '-') OR (p.owed_amt >= 10))) as total_block,
 cast(COUNT(p.id) FILTER(WHERE ((p.mblock_code != '-') OR (p.owed_amt >= 10))) as numeric (12,2)) / cast(COUNT(p.id) as numeric (12,2)) AS pct_blocked,
