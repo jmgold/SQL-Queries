@@ -1,16 +1,22 @@
-﻿SELECT
-    SUBSTRING(f.charge_location_code for 3) as loc,
+﻿/* Jeremy Goldstein
+   Minuteman Library Network
+
+   Gathers stats around fines owed, broken into ranges of total owed
+   Based upon query from Jason Boland
+*/
+SELECT
+  l.name as loc,
   CAST((amt.start_charge) as money) AS "Start Charge",
   CAST((amt.end_charge) as money) AS "End Charge",
   SUM( CAST((f.item_charge_amt+f.processing_fee_amt+f.billing_fee_amt) AS money)) AS "Total Due",
   COUNT(f.patron_record_id) as total_patrons,
   (SUM( CAST((f.item_charge_amt+f.processing_fee_amt+f.billing_fee_amt) AS money)))/COUNT(f.patron_record_id) avg_fine_per_patron,
-  AVG(AGE(now(),activity_gmt::date)) AS avg_last_active
+  DATE_TRUNC('day', AVG(AGE(now(),activity_gmt::date))) AS avg_last_active
   
 FROM 
   sierra_view.fine f
-  JOIN ( SELECT 0.00 as start_charge, 10.00 as end_charge UNION 
-    SELECT 10.01 as start_charge, 50.00 as end_charge UNION 
+  JOIN ( SELECT 0.00 as start_charge, 9.99 as end_charge UNION 
+    SELECT 10.00 as start_charge, 50.00 as end_charge UNION 
     SELECT 50.01 as start_charge, 100.00 as end_charge UNION 
     SELECT 100.01 as start_charge, 200.00 as end_charge UNION 
     SELECT 200.01 as start_charge, 300.00 as end_charge UNION 
@@ -26,5 +32,9 @@ FROM
     SELECT 1200.01 as start_charge, 9999.99 as end_charge) as amt
   ON (f.item_charge_amt+f.processing_fee_amt+f.billing_fee_amt) BETWEEN amt.start_charge AND amt.end_charge
 JOIN sierra_view.patron_record p ON f.patron_record_id = p.id
+JOIN
+sierra_view.location_myuser l
+ON
+SUBSTRING(f.charge_location_code for 3) = SUBSTRING(l.code FOR 3) AND l.code ~ '^[a-z1-9]{3}$'
 GROUP BY loc, amt.start_charge, amt.end_charge
 ORDER BY 1,amt.start_charge;
