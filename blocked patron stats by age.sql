@@ -4,7 +4,7 @@
 */
 
 SELECT
-l.name as home_library,
+DATE_TRUNC('year', AGE(now()::date,p.birth_date_gmt)) AS age,
 COUNT(p.id) as total_patrons,
 COUNT(p.id) FILTER(WHERE ((p.mblock_code != '-') OR (p.owed_amt >= 10))) as total_block,
 COUNT (p.id) FILTER(WHERE ((p.mblock_code != '-') OR (p.owed_amt >= 10)) AND f.charge_code IN ('3','5')) AS total_block_lost_item,
@@ -18,10 +18,7 @@ COUNT(p.id) FILTER(WHERE (((p.mblock_code != '-') OR (p.owed_amt >= 10)) AND f.c
 
 FROM
 sierra_view.patron_record p
-JOIN
-sierra_view.location_myuser l
-ON
-SUBSTRING(p.home_library_code FOR 3) = SUBSTRING(l.code FOR 3) AND l.code ~ '^[a-z1-9]{3}$'
+
 LEFT JOIN
 sierra_view.fine f
 ON
