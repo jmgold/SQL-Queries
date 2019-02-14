@@ -75,34 +75,31 @@ ORDER BY 1,2
 SELECT
 ip.name AS itype,
 l.checkout_location,
-f.loanrule_code_num,
+c.loanrule_code_num,
 l.est_fine_per_day,
-est_loan_period,
-COUNT(DISTINCT p.id) AS total_patrons,
-COUNT(distinct p.id) FILTER(WHERE ((p.mblock_code != '-') OR (p.owed_amt >= 10))) as total_block,
-COUNT (p.id) FILTER(WHERE ((p.mblock_code != '-') OR (p.owed_amt >= 10)) AND f.charge_code IN ('3','5')) AS total_block_lost_item,
-CAST(COUNT(distinct p.id) FILTER(WHERE ((p.mblock_code != '-') OR (p.owed_amt >= 10))) as numeric (12,2)) / cast(COUNT(distinct p.id) as numeric (12,2)) AS pct_block,
-CAST(COUNT(p.id) FILTER(WHERE ((p.mblock_code != '-') OR (p.owed_amt >= 10))AND f.charge_code IN ('3','5')) as numeric (12,2)) / cast(COUNT(p.id) as numeric (12,2)) AS pct_block_lost_item,
-DATE_TRUNC('day', AVG(AGE(now()::date,p.activity_gmt::date)) FILTER(WHERE ((p.mblock_code = '-') OR (p.owed_amt < 10)))) AS avg_last_active_not_blocked,
-DATE_TRUNC('day', AVG(AGE(now()::date,p.activity_gmt::date)) FILTER(WHERE ((p.mblock_code != '-') OR (p.owed_amt >= 10)))) AS avg_last_active_blocked,
-COUNT(distinct p.id) FILTER(WHERE ((p.mblock_code = '-') OR (p.owed_amt < 10)) AND p.expiration_date_gmt < (now() + interval '1 year')) AS total_not_blocked_exp_this_year,
-COUNT(distinct p.id) FILTER(WHERE ((p.mblock_code != '-') OR (p.owed_amt >= 10)) AND p.expiration_date_gmt < (now() + interval '1 year')) AS total_blocked_exp_this_year,
-COUNT(p.id) FILTER(WHERE (((p.mblock_code != '-') OR (p.owed_amt >= 10)) AND f.charge_code IN ('3','5')) AND p.expiration_date_gmt < (now() + interval '1 year')) AS total_blocked_lost_item_exp_this_year
+l.est_loan_period,
+COUNT(DISTINCT p.id) AS unique_patron_count,
+--ROUND(COUNT(DISTINCT p.id) / (SELECT CAST(COUNT(DISTINCT c2.patron_record_id) AS NUMERIC (12,2)) FROM sierra_view.checkout c2),6) AS relative_patron_count,
+COUNT(c.id) AS total_checkouts,
+--ROUND(COUNT(c.id) / (SELECT CAST(COUNT(*) AS NUMERIC (12,2)) FROM sierra_view.checkout),6) AS relative_checkout_count,
+SUM(c.overdue_count) AS total_overdue_count
+--ROUND(SUM(c.overdue_count) / (SELECT CAST(SUM(overdue_count) AS NUMERIC (12,2)) FROM sierra_view.checkout),6) AS relative_total_overdue_count
 FROM
-sierra_view.fine f
+sierra_view.checkout c
 JOIN
 sierra_view.patron_record p
 ON
-f.patron_record_id = p.id
+c.patron_record_id = p.id
 JOIN temp_loan_rules l
 ON
-f.loanrule_code_num = l.loanrule_num
+c.loanrule_code_num = l.loanrule_num
 JOIN
 sierra_view.item_record i
 ON
-f.item_record_metadata_id = i.id
+c.item_record_id = i.id
 JOIN
 sierra_view.itype_property_myuser ip
 ON
 i.itype_code_num = ip.code
+
 GROUP BY 1,2,3,4,5
