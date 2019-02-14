@@ -77,17 +77,10 @@ ip.name AS itype,
 l.checkout_location,
 f.loanrule_code_num,
 l.est_fine_per_day,
-est_loan_period,
-COUNT(DISTINCT p.id) AS total_patrons,
-COUNT(distinct p.id) FILTER(WHERE ((p.mblock_code != '-') OR (p.owed_amt >= 10))) as total_block,
-COUNT (p.id) FILTER(WHERE ((p.mblock_code != '-') OR (p.owed_amt >= 10)) AND f.charge_code IN ('3','5')) AS total_block_lost_item,
-CAST(COUNT(distinct p.id) FILTER(WHERE ((p.mblock_code != '-') OR (p.owed_amt >= 10))) as numeric (12,2)) / cast(COUNT(distinct p.id) as numeric (12,2)) AS pct_block,
-CAST(COUNT(p.id) FILTER(WHERE ((p.mblock_code != '-') OR (p.owed_amt >= 10))AND f.charge_code IN ('3','5')) as numeric (12,2)) / cast(COUNT(p.id) as numeric (12,2)) AS pct_block_lost_item,
-DATE_TRUNC('day', AVG(AGE(now()::date,p.activity_gmt::date)) FILTER(WHERE ((p.mblock_code = '-') OR (p.owed_amt < 10)))) AS avg_last_active_not_blocked,
-DATE_TRUNC('day', AVG(AGE(now()::date,p.activity_gmt::date)) FILTER(WHERE ((p.mblock_code != '-') OR (p.owed_amt >= 10)))) AS avg_last_active_blocked,
-COUNT(distinct p.id) FILTER(WHERE ((p.mblock_code = '-') OR (p.owed_amt < 10)) AND p.expiration_date_gmt < (now() + interval '1 year')) AS total_not_blocked_exp_this_year,
-COUNT(distinct p.id) FILTER(WHERE ((p.mblock_code != '-') OR (p.owed_amt >= 10)) AND p.expiration_date_gmt < (now() + interval '1 year')) AS total_blocked_exp_this_year,
-COUNT(p.id) FILTER(WHERE (((p.mblock_code != '-') OR (p.owed_amt >= 10)) AND f.charge_code IN ('3','5')) AND p.expiration_date_gmt < (now() + interval '1 year')) AS total_blocked_lost_item_exp_this_year
+EXTRACT(EPOCH FROM est_loan_period)/86400 as est_loan_period,
+EXTRACT(EPOCH FROM DATE_TRUNC('day', AGE(f.returned_gmt::date,f.due_gmt::date)))/86400 as days_late,
+f.billing_fee_amt,
+f.charge_code
 FROM
 sierra_view.fine f
 JOIN
@@ -105,4 +98,4 @@ JOIN
 sierra_view.itype_property_myuser ip
 ON
 i.itype_code_num = ip.code
-GROUP BY 1,2,3,4,5
+
