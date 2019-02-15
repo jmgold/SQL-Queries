@@ -3,11 +3,13 @@ Jeremy Goldstein
 Minuteman Library Newtork
 
 Used to generate booklist at www.minlib.net
-Originally run in 2018 for 50th anniversary of Apollo missions
 */
+SELECT *
+FROM(
 SELECT
-'http://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id)   AS "field_booklist_entry_encore_url",
-b.best_title AS title,
+--link to Encore
+DISTINCT 'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id)   AS field_booklist_entry_encore_url,
+B.best_title as title,
 SPLIT_PART(b.best_author,' ',1)||' '||REPLACE(TRANSLATE(SPLIT_PART(b.best_author,' ',2),'.',','),',','') AS field_booklist_entry_author,
 --Generate cover image from Syndetics
 (SELECT
@@ -21,21 +23,25 @@ LIMIT 1) AS field_booklist_entry_cover
 FROM
 sierra_view.bib_record_property b
 JOIN
-sierra_view.bib_record_item_record_link bi
+sierra_view.bib_record_item_record_link l
 ON
-b.bib_record_id = bi.bib_record_id
+b.bib_record_id = l.bib_record_id
 JOIN
 sierra_view.item_record i
 ON
-bi.item_record_id = i.id AND SUBSTRING(i.location_code,4,1) NOT IN ('j','y')
+l.item_record_id = i.id
+AND
+i.is_available_at_library = 'TRUE'
 AND i.item_status_code NOT IN ('m', 'n', 'z', 't', 'o', '$', '!', 'w', 'd', 'p', 'r', 'e', 'j', 'u', 'q', 'x', 'y', 'v')
+--Limit to juv or YA collections
+AND SUBSTRING(i.location_code,4,1) NOT IN ('j','y')
 JOIN
 sierra_view.phrase_entry d
 ON
-b.bib_record_id = d.record_id AND d.varfield_type_code = 'd'
-AND REPLACE(d.index_entry, ' ', '') LIKE '%romancefiction%'
+b.bib_record_id = d.record_id AND varfield_type_code = 'd'
+AND (REPLACE(d.index_entry, ' ', '') = 'pi' OR REPLACE(d.index_entry, ' ', '') LIKE 'pies%')
 WHERE
-b.publish_year = '2018' AND b.material_code = 'a'
-GROUP BY 1,2,3,4
-ORDER BY SUM(i.checkout_total) desc
-LIMIT 100
+b.material_code = 'a' AND b.publish_year >= '2008'
+GROUP BY 1,2,3,4) a
+ORDER BY RANDOM()
+LIMIT 50;
