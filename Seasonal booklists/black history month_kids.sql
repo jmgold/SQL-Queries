@@ -9,8 +9,8 @@ FROM(
 SELECT
 --link to Encore
 DISTINCT 'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id)   AS field_booklist_entry_encore_url,
-B.best_title as title,
-B.best_author as field_booklist_entry_author,
+b.best_title AS title,
+SPLIT_PART(b.best_author,' ',1)||' '||REPLACE(TRANSLATE(SPLIT_PART(b.best_author,' ',2),'.',','),',','') AS field_booklist_entry_author,
 --Generate cover image from Syndetics
 (SELECT
 'https://syndetics.com/index.aspx?isbn='||SUBSTRING(s.content FROM '[0-9]+')||'/SC.gif&client=minuteman'
@@ -36,11 +36,10 @@ AND i.item_status_code NOT IN ('m', 'n', 'z', 't', 'o', '$', '!', 'w', 'd', 'p',
 --Limit to juv or YA collections
 AND SUBSTRING(i.location_code,4,1) IN ('j','y')
 JOIN
-sierra_view.varfield_view v
+sierra_view.phrase_entry d
 ON
-b.bib_record_id = v.record_id AND v.varfield_type_code = 'd' 
---Limit to a subject
-AND (v.field_content LIKE '|aAfrican Americans|vBiography|vJuvenile literature%' OR v.field_content LIKE '|aAfrican American women|vBiography|vJuvenile literature%' OR v.field_content LIKE '|aAfrican Americans|xHistory|vJuvenile literature%')
+b.bib_record_id = d.record_id AND d.varfield_type_code = 'd'
+AND (REPLACE(d.index_entry, ' ', '') LIKE 'africanamericansbiographyjuvenileliterature%' OR REPLACE(d.index_entry, ' ', '') LIKE 'africanamericanwomenbiographyjuvenileliterature%' OR REPLACE(d.index_entry, ' ', '') LIKE 'africanamericanshistoryjuvenileliterature%')
 WHERE
 b.material_code = 'a' AND b.publish_year >= '2008'
 --Filter out inappropriate title for this list

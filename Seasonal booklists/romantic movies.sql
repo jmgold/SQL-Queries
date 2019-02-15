@@ -8,7 +8,6 @@ SELECT
 --Encore link
 'http://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id)   AS "field_booklist_entry_encore_url",
 best_title as title,
-best_author as field_booklist_entry_author,
 --Generate cover image via Syndetics
 'https://syndetics.com/index.aspx?upc='||SUBSTRING(MAX(s.content) FROM '[0-9]+')||'/SC.gif&client=minuteman' AS field_booklist_entry_cover
 FROM
@@ -30,14 +29,13 @@ JOIN
 sierra_view.bib_record r
 ON b.bib_record_id = r.id AND r.language_code = 'eng'
 JOIN
-sierra_view.varfield_view v
+sierra_view.phrase_entry d
 ON
-b.bib_record_id = v.record_id AND v.varfield_type_code = 'd' 
---Limit to a subject
-AND (v.field_content LIKE '%Romance films%' OR v.field_content LIKE '%Romantic comedy%')
+b.bib_record_id = d.record_id AND d.varfield_type_code = 'd'
+AND (REPLACE(d.index_entry, ' ', '') LIKE '%romancefilms%' OR REPLACE(d.index_entry, ' ', '') LIKE '%romanticcomedy%')
 WHERE
 --limit to dvd or blu-ray
 b.material_code IN ('5', 'u')
-GROUP BY 1,2,3
+GROUP BY 1,2
 ORDER BY RANDOM()
 LIMIT 100
