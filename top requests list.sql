@@ -49,7 +49,7 @@ SELECT
 ROW_NUMBER() OVER (ORDER BY t.count_holds_on_title DESC) AS field_booklist_entry_rank,
 'http://find.minlib.net/iii/encore/record/C__R'||id2reckey(t.bib_record_id) AS "field_booklist_entry_encore_url",
 best_title AS title,
-SPLIT_PART(b.best_author,' ',1)||' '||REPLACE(TRANSLATE(SPLIT_PART(b.best_author,' ',2),'.',','),',','') AS field_booklist_entry_author,
+SPLIT_PART(b.best_author,', ',1)||', '||REPLACE(TRANSLATE(SPLIT_PART(b.best_author,', ',2),'.',','),',','') AS field_booklist_entry_author,
 (SELECT
 'https://syndetics.com/index.aspx?isbn='||SUBSTRING(s.content FROM '[0-9]+')||'/SC.gif&client=minuteman'
 FROM

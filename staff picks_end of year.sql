@@ -3,7 +3,7 @@ SELECT
 --link to Encore, removed in favor of default keyword search on title
 --'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id)   AS field_booklist_entry_encore_url,
 b.best_title as title,
-b.best_author as field_booklist_entry_author,
+SPLIT_PART(b.best_author,', ',1)||', '||REPLACE(TRANSLATE(SPLIT_PART(b.best_author,', ',2),'.',','),',','') as field_booklist_entry_author,
 CASE
 WHEN b.material_code = 'a'
 THEN (SELECT

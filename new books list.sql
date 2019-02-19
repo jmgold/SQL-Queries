@@ -7,8 +7,8 @@ New Book list for www.minlib.net
 SELECT
 --link to Encore
 'https://find.minlib.net/iii/encore/record/C__Rb'||br.record_num   AS field_booklist_entry_encore_url,
-b.best_title as title,
-b.best_author as field_booklist_entry_author,
+b.best_title AS title,
+SSPLIT_PART(b.best_author,', ',1)||', '||REPLACE(TRANSLATE(SPLIT_PART(b.best_author,', ',2),'.',','),',','') AS field_booklist_entry_author,
 (SELECT
 'https://syndetics.com/index.aspx?isbn='||SUBSTRING(s.content FROM '[0-9]+')||'/SC.gif&client=minuteman'
 FROM

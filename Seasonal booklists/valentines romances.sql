@@ -8,7 +8,7 @@ Originally run in 2018 for 50th anniversary of Apollo missions
 SELECT
 'http://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id)   AS "field_booklist_entry_encore_url",
 b.best_title AS title,
-SPLIT_PART(b.best_author,' ',1)||' '||REPLACE(TRANSLATE(SPLIT_PART(b.best_author,' ',2),'.',','),',','') AS field_booklist_entry_author,
+SPLIT_PART(b.best_author,', ',1)||', '||REPLACE(TRANSLATE(SPLIT_PART(b.best_author,', ',2),'.',','),',','') AS field_booklist_entry_author,
 --Generate cover image from Syndetics
 (SELECT
 'https://syndetics.com/index.aspx?isbn='||SUBSTRING(s.content FROM '[0-9]+')||'/SC.gif&client=minuteman'
