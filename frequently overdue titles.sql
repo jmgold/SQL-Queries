@@ -7,7 +7,7 @@ SELECT
 --Link to Encore
 'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id) AS field_booklist_entry_encore_url,
 b.best_title as title,
-SPLIT_PART(b.best_author,' ',1)||' '||REPLACE(TRANSLATE(SPLIT_PART(b.best_author,' ',2),'.',','),',','') AS field_booklist_entry_author,
+SPLIT_PART(b.best_author,', ',1)||', '||REPLACE(TRANSLATE(SPLIT_PART(b.best_author,', ',2),'.',','),',','') AS field_booklist_entry_author,
 --Link to cover from Syndetics
 'https://syndetics.com/index.aspx?isbn='||SUBSTRING(MAX(s.content) FROM '[0-9]+')||'/SC.gif&client=minuteman' AS field_booklist_entry_cover
 FROM

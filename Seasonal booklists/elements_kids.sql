@@ -9,17 +9,10 @@ FROM(
 SELECT
 --link to Encore
 DISTINCT 'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id)   AS field_booklist_entry_encore_url,
-b.best_title as title,
-SPLIT_PART(b.best_author,', ',1)||', '||REPLACE(TRANSLATE(SPLIT_PART(b.best_author,', ',2),'.',','),',','') as field_booklist_entry_author,
+b.best_title AS title,
+SPLIT_PART(b.best_author,', ',1)||', '||REPLACE(TRANSLATE(SPLIT_PART(b.best_author,', ',2),'.',','),',','') AS field_booklist_entry_author,
 --Generate cover image from Syndetics
-(SELECT
-'https://syndetics.com/index.aspx?isbn='||SUBSTRING(s.content FROM '[0-9]+')||'/SC.gif&client=minuteman'
-FROM
-sierra_view.subfield s
-WHERE
-b.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
-ORDER BY s.occ_num
-LIMIT 1) AS field_booklist_entry_cover
+'https://syndetics.com/index.aspx?isbn='||SUBSTRING(MAX(s.content) FROM '[0-9]+')||'/SC.gif&client=minuteman' AS field_booklist_entry_cover
 FROM
 sierra_view.bib_record_property b
 JOIN
@@ -42,10 +35,14 @@ ON b.bib_record_id = r.id AND r.language_code = 'eng'
 JOIN
 sierra_view.phrase_entry d
 ON
-b.bib_record_id = d.record_id AND varfield_type_code = 'd'
-AND REPLACE(d.index_entry, ' ', '') LIKE 'chinesenewyearjuvenileliterature%'
+b.bib_record_id = d.record_id AND d.varfield_type_code = 'd'
+AND ((REPLACE(d.index_entry, ' ', '') LIKE '%periodiclaw%' OR REPLACE(d.index_entry, ' ', '') LIKE '%chemicalelements%') AND REPLACE(d.index_entry, ' ', '') NOT LIKE '%fiction%')
+--Grab ISBN for cover image
+JOIN sierra_view.subfield s
+ON
+b.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
 WHERE
 b.material_code = 'a' AND b.publish_year >= '2000'
-GROUP BY 1,2,3,4) a
+GROUP BY 1,2,3) a
 ORDER BY RANDOM()
 LIMIT 50;
