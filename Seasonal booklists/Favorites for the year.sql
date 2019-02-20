@@ -1,12 +1,12 @@
 ﻿--Jeremy Goldstein
 --Minuteman Library Network
 
---top 50 most requested titles in the network
+--top 100 most checked out titles in the network for the year
 
 SELECT
 'http://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id)   AS "field_booklist_entry_encore_url",
-best_title as title,
-best_author as field_booklist_entry_author,
+b.best_title as title,
+SPLIT_PART(b.best_author,', ',1)||', '||REPLACE(TRANSLATE(SPLIT_PART(b.best_author,', ',2),'.',','),',','') AS field_booklist_entry_author,
 (SELECT
 'https://syndetics.com/index.aspx?isbn='||SUBSTRING(s.content FROM '[0-9]+')||'/SC.gif&client=minuteman'
 FROM
@@ -26,7 +26,7 @@ sierra_view.item_record i
 ON
 bi.item_record_id = i.id AND SUBSTRING(i.location_code,4,1) NOT IN ('j')
 WHERE
-b.publish_year = '2018' AND b.material_code = 'a'
+b.publish_year = '2019' AND b.material_code = 'a'
 GROUP BY 1,2,3,4
 ORDER BY SUM(i.checkout_total) desc
 LIMIT 100

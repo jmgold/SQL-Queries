@@ -1,18 +1,16 @@
 ﻿/*
 Jeremy Goldstein
-Minuteman Library Newtork
+Minuteman Library Network
 
-Used to generate booklist at www.minlib.net
+Generates booklist at www.minlib.net
 */
-
 SELECT *
 FROM(
 SELECT
 --link to Encore
 DISTINCT 'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id)   AS field_booklist_entry_encore_url,
-b.best_title AS title,
+b.best_title as title,
 SPLIT_PART(b.best_author,', ',1)||', '||REPLACE(TRANSLATE(SPLIT_PART(b.best_author,', ',2),'.',','),',','') AS field_booklist_entry_author,
---generate cover image from syndetics
 (SELECT
 'https://syndetics.com/index.aspx?isbn='||SUBSTRING(s.content FROM '[0-9]+')||'/SC.gif&client=minuteman'
 FROM
@@ -31,22 +29,18 @@ JOIN
 sierra_view.item_record i
 ON
 l.item_record_id = i.id
-AND
-i.is_available_at_library = 'TRUE'
---All copies are not billed, missing, etc...
+--AND
+--i.is_available_at_library = 'TRUE'
 AND i.item_status_code NOT IN ('m', 'n', 'z', 't', 'o', '$', '!', 'w', 'd', 'p', 'r', 'e', 'j', 'u', 'q', 'x', 'y', 'v')
---Library has added to a juv or YA collection
-AND SUBSTRING(i.location_code,4,1) IN ('j','y')
+AND SUBSTRING(i.location_code,4,1) IN ('j')
 JOIN
 sierra_view.phrase_entry d
 ON
 b.bib_record_id = d.record_id AND d.varfield_type_code = 'd'
 --Limit to a subject
-AND REPLACE(d.index_entry, ' ', '') LIKE '%juvenilefiction%'
-AND (REPLACE(d.index_entry, ' ', '') LIKE '%leaves%'  OR REPLACE(d.index_entry, ' ', '') LIKE '%autumn%')
+AND REPLACE(d.index_entry, ' ', '') LIKE '%halloween%' AND (REPLACE(d.index_entry, ' ', '') LIKE '%decorations%' OR REPLACE(d.index_entry, ' ', '') LIKE '%history%' OR REPLACE(d.index_entry, ' ', '') LIKE '%cooking%' OR REPLACE(d.index_entry, ' ', '') LIKE '%costumes%')
 WHERE
---limite to books published after a given date
-b.material_code = 'a' AND b.publish_year >= '2000'
+b.material_code = 'a' AND b.publish_year >= '2008'
 GROUP BY 1,2,3,4) a
 ORDER BY RANDOM()
-LIMIT 50;
+LIMIT 40;

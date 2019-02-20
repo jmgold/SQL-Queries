@@ -9,8 +9,8 @@ FROM(
 SELECT
 --link to Encore
 DISTINCT 'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id)   AS field_booklist_entry_encore_url,
-B.best_title as title,
-B.best_author as field_booklist_entry_author,
+b.best_title as title,
+SPLIT_PART(b.best_author,', ',1)||', '||REPLACE(TRANSLATE(SPLIT_PART(b.best_author,', ',2),'.',','),',','') AS field_booklist_entry_author,
 (SELECT
 'https://syndetics.com/index.aspx?isbn='||SUBSTRING(s.content FROM '[0-9]+')||'/SC.gif&client=minuteman'
 FROM
@@ -34,11 +34,11 @@ l.item_record_id = i.id
 AND i.item_status_code NOT IN ('m', 'n', 'z', 't', 'o', '$', '!', 'w', 'd', 'p', 'r', 'e', 'j', 'u', 'q', 'x', 'y', 'v')
 AND SUBSTRING(i.location_code,4,1) NOT IN ('j')
 JOIN
-sierra_view.varfield_view v
+sierra_view.phrase_entry d
 ON
-b.bib_record_id = v.record_id AND v.varfield_type_code = 'd' 
+b.bib_record_id = d.record_id AND d.varfield_type_code = 'd'
 --Limit to a subject
-AND v.field_content LIKE '%Halloween%' AND (v.field_content LIKE '%decorations%' OR v.field_content LIKE '%history%' OR v.field_content LIKE '%cooking%' OR v.field_content LIKE '%costumes%')
+AND REPLACE(d.index_entry, ' ', '') LIKE '%halloween%' AND (REPLACE(d.index_entry, ' ', '') LIKE '%decorations%' OR REPLACE(d.index_entry, ' ', '') LIKE '%history%' OR REPLACE(d.index_entry, ' ', '') LIKE '%cooking%' OR REPLACE(d.index_entry, ' ', '') LIKE '%costumes%')
 WHERE
 b.material_code = 'a' AND b.publish_year >= '2008'
 GROUP BY 1,2,3,4) a
