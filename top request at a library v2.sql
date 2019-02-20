@@ -82,7 +82,7 @@ l.name AS field_booklist_entry_location,
 --Encore Link
 'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(t.bib_record_id) AS field_booklist_entry_encore_url,
 b.best_title as title,
-b.best_author AS field_booklist_entry_author,
+SPLIT_PART(b.best_author,', ',1)||', '||REPLACE(TRANSLATE(SPLIT_PART(b.best_author,', ',2),'.',','),',','') AS field_booklist_entry_author,
 --Cover image from Syndetics
 (SELECT
 'https://syndetics.com/index.aspx?isbn='||SUBSTRING(s.content FROM '[0-9]+')||'/SC.gif&client=minuteman'

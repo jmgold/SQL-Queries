@@ -3,8 +3,8 @@ FROM(
 SELECT
 --link to Encore
 DISTINCT 'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id)   AS field_booklist_entry_encore_url,
-B.best_title as title,
-B.best_author as field_booklist_entry_author,
+b.best_title AS title,
+SPLIT_PART(b.best_author,', ',1)||', '||REPLACE(TRANSLATE(SPLIT_PART(b.best_author,', ',2),'.',','),',','') AS field_booklist_entry_author,
 (SELECT
 'https://syndetics.com/index.aspx?isbn='||SUBSTRING(s.content FROM '[0-9]+')||'/SC.gif&client=minuteman'
 FROM
@@ -28,11 +28,11 @@ AND i.item_status_code NOT IN ('m', 'n', 'z', 't', 'o', '$', '!', 'w', 'd', 'p',
 AND i.itype_code_num NOT IN ('100', '101', '104', '105', '108', '150', '151', '152', '155', '156', '159', '160')
 AND SUBSTRING(i.location_code,4,1) NOT IN ('j','y')
 JOIN
-sierra_view.varfield_view v
+sierra_view.phrase_entry d
 ON
-b.bib_record_id = v.record_id AND v.varfield_type_code = 'd' 
+b.bib_record_id = d.record_id AND d.varfield_type_code = 'd'
 --Limit to a subject
-AND v.field_content LIKE '%Christmas%' AND (v.field_content LIKE '%decorations%' OR v.field_content LIKE '%history%' OR v.field_content LIKE '%cooking%' OR v.field_content LIKE '%Cook%')
+AND REPLACE(d.index_entry, ' ', '') LIKE '%christmas%' AND (REPLACE(d.index_entry, ' ', '') LIKE '%decorations%' OR REPLACE(d.index_entry, ' ', '') LIKE '%history%' OR REPLACE(d.index_entry, ' ', '') LIKE '%cook%')
 WHERE
 b.material_code = 'a' AND b.publish_year >= '2000'
 GROUP BY 1,2,3,4) a
@@ -70,11 +70,11 @@ AND i.item_status_code NOT IN ('m', 'n', 'z', 't', 'o', '$', '!', 'w', 'd', 'p',
 AND i.itype_code_num NOT IN ('100', '101', '104', '105', '108', '150', '151', '152', '155', '156', '159', '160')
 AND SUBSTRING(i.location_code,4,1) NOT IN ('j','y')
 JOIN
-sierra_view.varfield_view v
+sierra_view.phrase_entry d
 ON
-b.bib_record_id = v.record_id AND v.varfield_type_code = 'd' 
+b.bib_record_id = d.record_id AND d.varfield_type_code = 'd'
 --Limit to a subject
-AND v.field_content LIKE '%Hanukkah%'
+AND REPLACE(d.index_entry, ' ', '') LIKE '%hanukkah%'
 WHERE
 b.material_code = 'a' AND b.publish_year >= '1980'
 GROUP BY 1,2,3,4) a
@@ -111,11 +111,11 @@ AND i.item_status_code NOT IN ('m', 'n', 'z', 't', 'o', '$', '!', 'w', 'd', 'p',
 AND i.itype_code_num NOT IN ('100', '101', '104', '105', '108', '150', '151', '152', '155', '156', '159', '160')
 AND SUBSTRING(i.location_code,4,1) NOT IN ('j','y')
 JOIN
-sierra_view.varfield_view v
+sierra_view.phrase_entry d
 ON
-b.bib_record_id = v.record_id AND v.varfield_type_code = 'd' 
+b.bib_record_id = d.record_id AND d.varfield_type_code = 'd'
 --Limit to a subject
-AND v.field_content LIKE '%Kwanza%' --AND (v.field_content LIKE '%decorations%' OR v.field_content LIKE '%history%' OR v.field_content LIKE '%cooking%' OR v.field_content LIKE '%Cook%')
+AND REPLACE(d.index_entry, ' ', '') LIKE '%kwanza%' --AND (v.field_content LIKE '%decorations%' OR v.field_content LIKE '%history%' OR v.field_content LIKE '%cooking%' OR v.field_content LIKE '%Cook%')
 WHERE
 b.material_code = 'a' AND b.publish_year >= '1980'
 GROUP BY 1,2,3,4) a
