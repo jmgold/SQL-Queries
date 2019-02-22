@@ -1,7 +1,7 @@
 ﻿SELECT
 'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id)   AS "url",
-B.best_title as title,
-SPLIT_PART(b.best_author,', ',1)||', '||REPLACE(TRANSLATE(SPLIT_PART(b.best_author,', ',2),'.',','),',','') as author,
+b.best_title AS title,
+REPLACE(SPLIT_PART(SPLIT_PART(b.best_author,' (',1),', ',2),'.','')||' '||SPLIT_PART(b.best_author,', ',1) AS author,
 CASE
 WHEN b.material_code IN ('a','2','4','9','c','i','o')
 THEN (SELECT
