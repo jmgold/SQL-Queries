@@ -38,6 +38,7 @@ l.item_record_id = i.id
 AND
 i.is_available_at_library = 'TRUE'
 AND i.item_status_code NOT IN ('m', 'n', 'z', 't', 'o', '$', '!', 'w', 'd', 'p', 'r', 'e', 'j', 'u', 'q', 'x', 'y', 'v')
-GROUP BY 1,2,3,4
+GROUP BY 1,2,3,4,c.transaction_gmt
+ORDER BY c.transaction_gmt DESC
 LIMIT 50
 
