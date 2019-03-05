@@ -19,7 +19,9 @@ ON
 b.bib_record_id = v.id AND
 v.record_num IN (
 --Films
---SPiderverse
+--Black Klansman
+'3776398',
+--Spiderverse
 '3479082',
 --The Wife
 '3776548',
