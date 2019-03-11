@@ -40,7 +40,7 @@ sierra_view.phrase_entry d
 ON
 b.bib_record_id = d.record_id AND varfield_type_code = 'd'
 AND REPLACE(d.index_entry, ' ', '') LIKE  '%juvenilefiction%'
-AND REPLACE(d.index_entry, ' ', '') LIKE  '%spring%'
+AND REPLACE(d.index_entry, ' ', '') LIKE  'spring%'
 WHERE
 b.material_code = 'a' AND b.publish_year >= '2000'
 GROUP BY 1,2,3,4) a
