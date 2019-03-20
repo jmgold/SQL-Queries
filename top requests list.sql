@@ -45,6 +45,9 @@ ORDER BY
 count_holds_on_title
 ;
 
+CREATE INDEX temp_hold_data_bib_record_id ON temp_location_holds_counts(bib_record_id);
+ANALYZE temp_location_holds_counts;
+
 SELECT
 ROW_NUMBER() OVER (ORDER BY t.count_holds_on_title DESC) AS field_booklist_entry_rank,
 'http://find.minlib.net/iii/encore/record/C__R'||id2reckey(t.bib_record_id) AS "field_booklist_entry_encore_url",
