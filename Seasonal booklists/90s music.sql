@@ -183,5 +183,5 @@ v.record_num IN ('1842257',
 )
 WHERE b.material_code IN ('8','j','w')
 GROUP BY 1,2,3 
-ORDER BY 2 Desc
+ORDER BY RANDOM()
 LIMIT 75;
