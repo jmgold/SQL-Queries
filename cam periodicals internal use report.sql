@@ -5,14 +5,15 @@
 --Requested by Diana Fendler at CAM
 
 SELECT
+CASE
+WHEN i.itype_code_num = '10' THEN 'Adult'
+WHEN i.itype_code_num = '107' THEN 'YA'
+WHEN i.itype_code_num = '158' THEN 'Juvenile'
+END AS age_level,
 b.best_title,
---REPLACE(ip.call_number,'|a',''),
 v.field_content AS volume,
 ip.barcode,
---use count field being used tbd
-i.internal_use_count,
-copy_use_count,
-use3_count
+SUM(i.internal_use_count) AS total_use
 
 FROM
 sierra_view.circ_trans c
@@ -25,15 +26,15 @@ ON
 c.item_record_id = ip.item_record_id
 JOIN
 sierra_view.item_record i
-ON c.item_record_id = i.id
+ON c.item_record_id = i.id AND i.itype_code_num IN ('10','107','158')
 LEFT JOIN
 sierra_view.varfield v
-ON c.item_record_id = v.record_id AND varfield_type_code = 'u'
+ON c.item_record_id = v.record_id AND varfield_type_code = 'v'
 
 WHERE
-c.op_code = 'o' 
+c.op_code = 'u' 
 AND SUBSTRING(c.item_location_code FROM 1 FOR 3) = 'cam'
-AND c.transaction_gmt BETWEEN '2019-04-10' AND '2019-04-12'
-
+AND c.transaction_gmt BETWEEN '2019-05-13' AND '2019-05-18'
+GROUP BY 1,2,3,4
 ORDER BY 1,2,3,4
 ;
