@@ -73,6 +73,24 @@ v.record_num IN (
 '1216711',
 --Art of racing in the rain
 '2555380',
+--I Heard you Paint Houses
+'3803047',
+--the last thing he wanted
+'1578547',
+--Secrecy World
+'3680745',
+--the art of racing in the rain
+'2585366',
+--the woman in the window
+'3650356',
+--The Kitchen
+'3484012',
+--The Goldfinch
+'3083504',
+--The Good Liar
+'3454594',
+--Motherless Brooklyn
+'1882244',
 --TV
 --The Passage
 '2761859',
@@ -89,7 +107,15 @@ v.record_num IN (
 --Good Omens
 '2459591',
 --Game of thrones
-'1581217'
+'1581217',
+--Chilling Adventures of Sabrina
+'3524746',
+--Catch 22
+'2905888',
+--NOS4A2
+'3042545',
+--Lovecraft Country
+'3451427'
 )
 WHERE b.material_code ='a'
 GROUP BY 1,2,3 
