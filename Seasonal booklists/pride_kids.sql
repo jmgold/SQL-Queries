@@ -1,0 +1,127 @@
+--Pride month booklist
+SELECT
+--link to Encore
+'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id)   AS field_booklist_entry_encore_url,
+b.best_title as title,
+REPLACE(SPLIT_PART(SPLIT_PART(b.best_author,' (',1),', ',2),'.','')||' '||SPLIT_PART(b.best_author,', ',1) as field_booklist_entry_author,
+'https://syndetics.com/index.aspx?isbn='||SUBSTRING(MAX(s.content) FROM '[0-9]+')||'/SC.gif&client=minuteman' AS field_booklist_entry_cover
+FROM
+sierra_view.bib_record_property b
+JOIN sierra_view.subfield s
+ON
+b.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
+JOIN sierra_view.bib_record_item_record_link bi
+ON
+b.bib_record_id = bi.bib_record_id
+JOIN
+sierra_view.bib_view v
+ON
+b.bib_record_id = v.id AND
+v.record_num IN (
+'3493651',
+'3466166',
+'3216403',
+'3603176',
+'2982457',
+'3224827',
+'3594397',
+'2874010',
+'3483890',
+'2881628',
+'3750607',
+'3805377',
+'3171343',
+'3648016',
+'2987304',
+'3432885',
+'3064279',
+'2662749',
+'3626827',
+'3014328',
+'3599398',
+'3195963',
+'2889640',
+'3781543',
+'3209636',
+'3215303',
+'3732614',
+'3640585',
+'3279386',
+'3271155',
+'3461655',
+'3522270',
+'3636552',
+'3033504',
+'3528187',
+'3145503',
+'3160897',
+'3725067',
+'2645010',
+'3652614',
+'3480116',
+'3659211',
+'3168465',
+'2946524',
+'3207178',
+'3769077',
+'3636405',
+'2896830',
+'3772237',
+'3818710',
+'3743128',
+'3274263',
+'3197078',
+'3582367',
+'3631085',
+'3742520',
+'2904772',
+'3829456',
+'3051281',
+'3147474',
+'2909358',
+'2880467',
+'3274028',
+'3648013',
+'3640611',
+'3714034',
+'3776561',
+'3185824',
+'3181481',
+'2881632',
+'3629883',
+'3189963',
+'2881626',
+'3828102',
+'3492933',
+'3595279',
+'3502547',
+'3829722',
+'3639439',
+'3811675',
+'3750078',
+'3659700',
+'3659701',
+'3241509',
+'3825830',
+'3776115',
+'3621789',
+'2877599',
+'3448311',
+'3648020',
+'3132230',
+'3829459',
+'3716252',
+'3428872',
+'3473841',
+'3681532',
+'3616952',
+'3644703',
+'3212878',
+'3633797',
+'3789469'
+)
+WHERE b.material_code ='a'
+GROUP BY 1,2,3 
+ORDER BY RANDOM()
+LIMIT 25
+;
