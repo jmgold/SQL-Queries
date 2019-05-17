@@ -1,4 +1,4 @@
-/*Jeremy Goldstein
+﻿/*Jeremy Goldstein
 Minuteman Library Newtork
 
 Used to generate booklist at www.minlib.net
@@ -42,9 +42,9 @@ JOIN
 sierra_view.phrase_entry d
 ON
 b.bib_record_id = d.record_id AND varfield_type_code = 'd'
-AND REPLACE(d.index_entry, ' ', '') LIKE 'mothers%' AND REPLACE(d.index_entry, ' ', '') LIKE '%juvenile%'
+AND REPLACE(d.index_entry, ' ', '') LIKE 'fathers%' AND REPLACE(d.index_entry, ' ', '') LIKE '%juvenile%'
 WHERE
-b.material_code = 'a' AND b.publish_year >= '2000'
+b.material_code = 'a' AND b.publish_year >= '1990'
 GROUP BY 1,2,3,4) a
 ORDER BY RANDOM()
 LIMIT 50;
