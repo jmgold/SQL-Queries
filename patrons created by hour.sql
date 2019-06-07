@@ -2,7 +2,7 @@
 Jeremy Goldstein
 Minuteman Library Network
 Patrons created by hour 
-limited by agency code and date range
+limited by (agency code or barcode prefix) and date range
 */
 
 SELECT
@@ -30,7 +30,7 @@ sierra_view.patron_view p
 JOIN
 sierra_view.record_metadata m
 ON
-p.record_num = m.record_num AND m.record_type_code = 'p' AND p.patron_agency_code_num = '41'
+p.record_num = m.record_num AND m.record_type_code = 'p' AND (p.patron_agency_code_num = '41' OR SUBSTRING(p.barcode FROM 1 FOR 5) = '31906')
 WHERE
 m.creation_date_gmt::DATE >= '2019-05-01' 
 GROUP BY 1
