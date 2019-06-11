@@ -1,4 +1,4 @@
-﻿SELECT
+SELECT
 id2reckey(bp.bib_record_id)||'a' AS bib_num,
 bp.best_title AS title,
 string_agg(distinct(hl.location_code), ',') AS checkin_rec_location,

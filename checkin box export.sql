@@ -1,4 +1,4 @@
-﻿/*
+/*
 Jeremy Goldstein
 Minuteman Library Network
 
