@@ -1,6 +1,8 @@
 --Modified version of code shared by Gem Stone Logan over Sierra mailing list on 4/13/17
 --Individual library coding needs to be updated on lines 12, 19, 35, 43, 45
 
+--Purchase alert for instances where there are 0 local holds
+
 /* Drop the temp table if it already exists */
 DROP TABLE IF EXISTS mvhdholds;
 
