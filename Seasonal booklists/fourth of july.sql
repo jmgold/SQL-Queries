@@ -34,7 +34,7 @@ AND
 i.is_available_at_library = 'TRUE'
 AND i.item_status_code NOT IN ('m', 'n', 'z', 't', 'o', '$', '!', 'w', 'd', 'p', 'r', 'e', 'j', 'u', 'q', 'x', 'y', 'v')
 --Limit to Jub collections
-AND SUBSTRING(i.location_code,4,1) IN ('j','y')
+AND SUBSTRING(i.location_code,4,1) NOT IN ('j','y')
 --Limit to English
 JOIN
 sierra_view.bib_record r
