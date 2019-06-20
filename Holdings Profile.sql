@@ -1,15 +1,20 @@
+/*
+Jeremy Goldstein
+Minuteman Library Network
+
+Holdings Profile gathered for annual reports
+*/
+
 SELECT
 i.location_code,
 i.itype_code_num,
-count(i.itype_code_num)
+count(i.id)
 
 FROM
-sierra_view.item_view as i
+sierra_view.item_record as i
 
 GROUP BY
-i.itype_code_num,
-i.location_code
+1,2
 
 ORDER BY
-i.location_code,
-i.itype_code_num
+1,2
