@@ -4,7 +4,7 @@
 --Finds bib records used for course reserves that are no longer in use
 
 select 
-distinct id2reckey(i.id)||'a' AS record_num,
+distinct id2reckey(bp.bib_record_id)||'a' AS record_num,
 --'r'||r.record_num||'a',
 i.location_code,
 bp.best_title
