@@ -29,11 +29,11 @@ JOIN
 sierra_view.item_record i
 ON
 l.item_record_id = i.id
---AND
---i.is_available_at_library = 'TRUE'
+AND
+i.is_available_at_library = 'TRUE'
 AND i.item_status_code NOT IN ('m', 'n', 'z', 't', 'o', '$', '!', 'w', 'd', 'p', 'r', 'e', 'j', 'u', 'q', 'x', 'y', 'v')
 --Limit to adult collections
-AND SUBSTRING(i.location_code,4,1) NOT IN ('j','y')
+AND SUBSTRING(i.location_code,4,1) IN ('j','y')
 --Limit to English
 JOIN
 sierra_view.bib_record r
@@ -42,13 +42,13 @@ JOIN
 sierra_view.phrase_entry d
 ON
 b.bib_record_id = d.record_id AND d.varfield_type_code = 'd'
-AND ((REPLACE(d.index_entry, ' ', '') LIKE '%carnegieandrew1835%' OR REPLACE(d.index_entry, ' ', '') LIKE '%carnegielibraries%') AND REPLACE(d.index_entry, ' ', '') NOT LIKE '%fiction%')
+AND REPLACE(d.index_entry, ' ', '') LIKE '%firstdayofschool%'
 --Grab ISBN for cover image
 JOIN sierra_view.subfield s
 ON
 b.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
 WHERE
-b.material_code = 'a' --AND b.publish_year >= '1980'
+b.material_code = 'a' AND b.publish_year >= '2009'
 GROUP BY b.bib_record_id,1,2,3) a
 ORDER BY RANDOM()
 LIMIT 50;
