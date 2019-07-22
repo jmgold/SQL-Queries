@@ -4,6 +4,7 @@ Minuteman Library Network
 Based on code shared by Ray Voelker
 
 Identifies potentially duplicated patron records based on matching birth_date and near matching name
+Is passed variable for ptype(s)
 */
 
 DROP TABLE IF EXISTS dupes;
@@ -12,7 +13,6 @@ CREATE TEMP TABLE dupes AS
 SELECT
 r.creation_date_gmt as created,
 e.index_entry as barcode,
---'p' || r.record_num || 'a' as patron_record_num,
 r.record_num AS patron_record_num,
 pn.last_name || ', ' ||pn.first_name || COALESCE(' ' || NULLIF(pn.middle_name, ''), '') AS name,
 pr.birth_date_gmt as birth_date,
@@ -46,8 +46,7 @@ IN
 	SELECT
 
 	SUBSTRING(n.last_name,1,4) || ', ' ||SUBSTRING(n.first_name,1,3) || COALESCE(' ' || NULLIF(n.middle_name, ''), '') || ' ' || p.birth_date_gmt AS patron_name
-	-- count(*) as matches
-
+	
 	FROM
 	sierra_view.record_metadata AS r
 
@@ -64,13 +63,11 @@ IN
 	
 	WHERE 
 	r.record_type_code = 'p'
-	-- and r.creation_date_gmt >= '2017-05-01'
-
+	
 	GROUP BY
 	p.birth_date_gmt,
 	patron_name,
 	p.ptype_code
-	-- e.index_entry
 
 	HAVING
 	COUNT(*) > 1
@@ -100,7 +97,7 @@ dupes
 GROUP BY 5,2,3,4
 )t2
 ON t1.birth_date = t2.birth_date AND t1.patron_record_num = t2.max_record_num 
---WHERE t1.ptype_code = '2'
+WHERE t1.ptype_code IN ({{ptype}})
 GROUP BY 3,1,5,6,7,8,9
 HAVING COUNT(t1.name) = 1
 ORDER BY 4,6,1,3

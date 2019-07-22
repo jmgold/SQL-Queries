@@ -14,6 +14,8 @@ SUM(i.checkout_total) AS "Total_Checkouts",
 SUM(i.renewal_total) AS "Total_Renewals",
 SUM(i.checkout_total) + SUM(i.renewal_total) AS "Total_Circulation",
 ROUND(AVG(i.price) FILTER(WHERE i.price>'0' AND i.price <'10000'),2) AS "AVG_price",
+COUNT(i.id) FILTER(WHERE c.id IS NOT NULL) AS "total_checked_out",
+ROUND(CAST(COUNT(i.id) FILTER(WHERE c.id IS NOT NULL) AS NUMERIC (12,2)) / CAST(COUNT (i.id) AS NUMERIC (12,2)), 6) AS "Percentage_checked_out",
 COUNT (i.id) FILTER(WHERE i.last_checkout_gmt >= (localtimestamp - interval '1 year')) AS "have_circed_within_1_year",
 ROUND(CAST(COUNT(i.id) FILTER(WHERE i.last_checkout_gmt >= (localtimestamp - interval '1 year')) AS NUMERIC (12,2)) / CAST(COUNT (i.id) AS NUMERIC (12,2)), 6) AS "Percentage_1_year",
 COUNT (i.id) FILTER(WHERE i.last_checkout_gmt >= (localtimestamp - interval '3 years')) AS "have_circed_within_3_years",
@@ -37,6 +39,10 @@ i.id = l.item_record_id
 JOIN sierra_view.bib_record b
 ON
 l.bib_record_id = b.id
+LEFT JOIN
+sierra_view.checkout c
+ON
+i.id = c.item_record_id
 WHERE location_code ~ {{Location}} and item_status_code not IN ({{Item_Status_Codes}})
 GROUP BY 1
 ORDER BY 1;
