@@ -7,9 +7,17 @@ Identifies potentially duplicated patron records based on matching birth_date an
 Is passed variable for ptype(s)
 */
 
-DROP TABLE IF EXISTS dupes;
-CREATE TEMP TABLE dupes AS
-
+SELECT
+t1.created,
+MAX(t1.barcode) AS barcode,
+'p'||t1.patron_record_num||'a' AS patron_num,
+STRING_AGG(t1.name,'|') AS NAME,
+t1.birth_date,
+t1.ptype_code,
+t1.home_library_code,
+t1.activity_gmt,
+t1.expiration_date_gmt
+FROM (
 SELECT
 r.creation_date_gmt as created,
 e.index_entry as barcode,
@@ -72,19 +80,7 @@ IN
 	HAVING
 	COUNT(*) > 1
 )
-;
-
-SELECT
-t1.created,
-MAX(t1.barcode) AS barcode,
-'p'||t1.patron_record_num||'a' AS patron_num,
-STRING_AGG(t1.name,'|') AS NAME,
-t1.birth_date,
-t1.ptype_code,
-t1.home_library_code,
-t1.activity_gmt,
-t1.expiration_date_gmt
-FROM dupes AS t1
+) AS t1
 JOIN (
 SELECT
 MAX(patron_record_num) AS max_record_num,
@@ -93,7 +89,70 @@ ptype_code,
 birth_date,
 created
 FROM
-dupes
+(
+SELECT
+r.creation_date_gmt as created,
+e.index_entry as barcode,
+r.record_num AS patron_record_num,
+pn.last_name || ', ' ||pn.first_name || COALESCE(' ' || NULLIF(pn.middle_name, ''), '') AS name,
+pr.birth_date_gmt as birth_date,
+pr.ptype_code,
+pr.home_library_code,
+pr.activity_gmt,
+pr.expiration_date_gmt
+
+FROM
+sierra_view.patron_record_fullname as pn
+
+JOIN
+sierra_view.patron_record as pr
+ON
+  pr.record_id = pn.patron_record_id
+
+JOIN
+sierra_view.record_metadata as r
+ON
+  r.id = pr.record_id
+
+LEFT JOIN
+sierra_view.phrase_entry AS e
+ON
+  (e.record_id = r.id) AND (e.index_tag = 'b') AND (e.varfield_type_code = 'b')
+  
+WHERE
+SUBSTRING(pn.last_name,1,4) || ', ' ||SUBSTRING(pn.first_name,1,3) || COALESCE(' ' || NULLIF(pn.middle_name, ''), '') || ' ' || pr.birth_date_gmt 
+IN
+(
+	SELECT
+
+	SUBSTRING(n.last_name,1,4) || ', ' ||SUBSTRING(n.first_name,1,3) || COALESCE(' ' || NULLIF(n.middle_name, ''), '') || ' ' || p.birth_date_gmt AS patron_name
+	
+	FROM
+	sierra_view.record_metadata AS r
+
+	JOIN
+	sierra_view.patron_record AS p
+	ON
+	  p.record_id = r.id
+
+	JOIN
+	sierra_view.patron_record_fullname AS n
+	ON
+	  n.patron_record_id = r.id
+	
+	
+	WHERE 
+	r.record_type_code = 'p'
+	
+	GROUP BY
+	p.birth_date_gmt,
+	patron_name,
+	p.ptype_code
+
+	HAVING
+	COUNT(*) > 1
+)
+) AS t1
 GROUP BY 5,2,3,4
 )t2
 ON t1.birth_date = t2.birth_date AND t1.patron_record_num = t2.max_record_num 
