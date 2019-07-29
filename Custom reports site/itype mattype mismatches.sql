@@ -80,12 +80,20 @@ OR
 (b.material_code = '9' AND i.itype_code_num NOT IN ('150','151','152','155','157','160'))
 )
 JOIN
-sierra_view.material_property_myuser m
+sierra_view.material_property mp
 ON
-b.material_code = m.code
+b.material_code = mp.code
 JOIN
-sierra_view.itype_property_myuser it
+sierra_view.material_property_name m
+ON 
+mp.id = m.material_property_id
+JOIN
+sierra_view.itype_property ip
 ON
-i.itype_code_num = it.code
+i.itype_code_num = ip.code_num
+JOIN
+sierra_view.itype_property_name it
+ON 
+ip.id = it.itype_property_id
 WHERE i.itype_code_num NOT IN ('239','240','241','242')
 AND i.location_code ~ ({{location}})
