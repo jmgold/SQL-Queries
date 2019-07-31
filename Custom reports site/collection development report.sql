@@ -1,14 +1,11 @@
 /*
 Jeremy Goldstein
 Minuteman Lirary Network
-
 Gathers together various performance metrics for portions of a library's collection
-
 Is passed variables for owning location, item status to exclude from the report, and the field to group the collection by
-
 */
 SELECT
-{{Grouping}},
+{{grouping}},
 COUNT (i.id) AS "Item total",
 SUM(i.checkout_total) AS "Total_Checkouts",
 SUM(i.renewal_total) AS "Total_Renewals",
@@ -43,6 +40,30 @@ LEFT JOIN
 sierra_view.checkout c
 ON
 i.id = c.item_record_id
+JOIN
+sierra_view.material_property mp
+ON
+b.bcode2 = mp.code
+JOIN
+sierra_view.material_property_name m
+ON 
+mp.id = m.material_property_id
+JOIN
+sierra_view.itype_property ip
+ON
+i.itype_code_num = ip.code_num
+JOIN
+sierra_view.itype_property_name it
+ON 
+ip.id = it.itype_property_id
+JOIN
+sierra_view.language_property lp
+ON
+b.language_code = lp.code
+JOIN
+sierra_view.language_property_name ln
+ON
+lp.id = LN.language_property_id
 WHERE location_code ~ {{Location}} and item_status_code not IN ({{Item_Status_Codes}})
 GROUP BY 1
 ORDER BY 1;
