@@ -1,7 +1,7 @@
 /*Jeremy Goldstein
 Minuteman Library network
 
-Returns on the fly records more than 2 months old and not on an on the fly or ILL bib record
+Returns on the fly records that may need to be upgraded
 Is passed variables for owning location, created before date, and whether to exclude items attached to an on the fly bib record
 */
 

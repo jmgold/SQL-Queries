@@ -7,9 +7,9 @@ Is passed owning location as a variable
 */
 
 select 
-distinct id2reckey(bp.bib_record_id)||'a' AS record_num,
-i.location_code,
-bp.best_title
+distinct id2reckey(bp.bib_record_id)||'a' AS bib_number,
+i.location_code as location,
+bp.best_title as title
 from
 sierra_view.item_record as i
 left join

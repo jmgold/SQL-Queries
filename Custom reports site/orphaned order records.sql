@@ -17,7 +17,7 @@ sierra_view.bib_record_property b
 JOIN
 sierra_view.bib_record br
 ON
-b.bib_record_id = br.id AND br.bcode1 = 'm' AND br.bcode3 NOT IN ('b','g','c')
+b.bib_record_id = br.id AND br.bcode1 = 'm' AND br.bcode3 NOT IN ('b','g','c','z')
 JOIN
 sierra_view.bib_record_order_record_link l
 ON
