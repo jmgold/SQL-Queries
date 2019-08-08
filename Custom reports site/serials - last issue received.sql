@@ -7,7 +7,7 @@ Passed owning location as a variable
 */
 
 SELECT
-t1.rec_num,
+t1.rec_num AS bib_number,
 t1.title,
 t1.enum_level_a AS volume,
 t1.enum_level_b AS "number",
@@ -30,7 +30,11 @@ b.bib_record_id = l.bib_record_id
 JOIN
 sierra_view.holding_record h
 ON
-l.holding_record_id = h.id AND h.accounting_unit_code_num = {{Location}}
+l.holding_record_id = h.id
+JOIN
+sierra_view.holding_record_location hl
+ON
+h.id = hl.holding_record_id AND hl.location_code ~ {{Location}}
 JOIN
 sierra_view.holding_record_card hc
 ON
@@ -59,7 +63,11 @@ b.bib_record_id = l.bib_record_id
 JOIN
 sierra_view.holding_record h
 ON
-l.holding_record_id = h.id AND h.accounting_unit_code_num = {{Location}}
+l.holding_record_id = h.id 
+JOIN
+sierra_view.holding_record_location hl
+ON
+h.id = hl.holding_record_id AND hl.location_code ~ {{Location}}
 JOIN
 sierra_view.holding_record_card hc
 ON

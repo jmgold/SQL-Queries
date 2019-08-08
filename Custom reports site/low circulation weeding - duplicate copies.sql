@@ -9,34 +9,41 @@ Passed variables for owning location, item statuses to exclude, copies greater t
 */
 
 SELECT 
-id2reckey(b.bib_record_id)||'a' as "record_num",
-b.best_title,
-count(item.id) as "item_count",
-sum(item.last_year_to_date_checkout_total) as "last_ytd_checkouts",
-SUM(item.year_to_date_checkout_total) AS "ytd_checkouts",
-ROUND((SUM(item.year_to_date_checkout_total) + sum(item.last_year_to_date_checkout_total))::NUMERIC/count(item.id),2) AS turnover
-from 
-sierra_view.bib_record_property as b
+id2reckey(b.bib_record_id)||'a' AS bib_number
+b.best_title AS title,
+count(i.id) AS item_count,
+sum(i.last_year_to_date_checkout_total) AS last_ytd_checkouts,
+SUM(i.year_to_date_checkout_total) AS ytd_checkouts,
+ROUND((SUM(i.year_to_date_checkout_total) + sum(i.last_year_to_date_checkout_total))::NUMERIC/count(i.id),2) AS turnover
+
+FROM 
+sierra_view.bib_record_property AS b
 JOIN
 sierra_view.bib_record bib
 ON
 b.bib_record_id = bib.id
 AND bib.bcode1 = 'm'
-join
-sierra_view.bib_record_item_record_link as link
-on
-b.bib_record_id = link.bib_record_id
-join
-sierra_view.item_view as item
-on
-item.id = link.item_record_id
-AND item.item_status_code NOT IN ({{Item_Status_Codes}}) 
-AND item.location_code ~ {{Location}}
+JOIN
+sierra_view.bib_record_item_record_link AS l
+ON
+b.bib_record_id = l.bib_record_id
+JOIN
+sierra_view.item_record as i
+ON
+i.id = l.item_record_id
+JOIN
+sierra_view.record_metadata m
+ON
+i.id = m.id AND m.creation_date_gmt < {{created_date}}
+
+AND i.item_status_code NOT IN ({{Item_Status_Codes}}) 
+AND i.location_code ~ {{Location}}
 
 
-
+WHERE
+b.material_code IN {{mat_type}}
 group by 1, 2
-having count(item.id) > {{Item_Count}}
-AND (SUM(item.year_to_date_checkout_total) + sum(item.last_year_to_date_checkout_total))::NUMERIC/count(item.id) < {{Turnover}}
+having count(i.id) > {{Item_Count}}
+AND (SUM(i.year_to_date_checkout_total) + sum(i.last_year_to_date_checkout_total))::NUMERIC/count(i.id) < {{Turnover}}
 order BY 6,3 DESC
 ;

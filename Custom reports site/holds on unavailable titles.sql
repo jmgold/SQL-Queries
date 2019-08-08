@@ -3,34 +3,34 @@ SELECT
     WHEN rmbi.record_num IS NULL
     THEN rmbb.record_type_code||rmbb.record_num||'a'
     ELSE rmbi.record_type_code||rmbi.record_num||'a'
-  END                                                        AS "Bib Number",
+  END                                                        AS bib_number,
   CASE
     WHEN bpropb.best_title IS NULL
     THEN bpropi.best_title
     ELSE bpropb.best_title
-  END                                                        AS "Title",
+  END                                                        AS title,
   CASE
     WHEN mattypb.name IS NULL
     THEN mattypi.name
     ELSE mattypb.name
-  END                                                        AS "Mat Type",
+  END                                                        AS mat_type,
   concat(
     rmp.record_type_code,
     rmp.record_num,
     'a'
-  )                                                          AS "Patron Number",
+  )                                                          AS patron_number,
   CASE
     WHEN bpropb.bib_record_id IS NULL
     THEN 'Item'
     ELSE 'Bib'
-  END                                                        AS "Hold Type",
-  DATE(hld.placed_gmt)                                       AS "Date Placed",
+  END                                                        AS hold_type,
+  DATE(hld.placed_gmt)                                       AS date_placed,
   CASE
     WHEN hld.is_frozen IS FALSE THEN 'No'
     WHEN hld.is_frozen IS TRUE THEN 'Yes'
     ELSE ''
-  END                                                        AS "Frozen",
-  DATE(hld.expires_gmt)                                      AS "Date Expires"
+  END                                                        AS is_frozen,
+  DATE(hld.expires_gmt)                                      AS expiration_date
 FROM
   sierra_view.hold                                           AS hld
 JOIN

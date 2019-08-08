@@ -6,8 +6,8 @@ Is passed owning location as a variable
 */
 
 SELECT
-SUBSTRING(location_code FROM 1 FOR 3),
-record_type_code||record_num||'a',
+location_code AS location,
+record_type_code||record_num||'a' AS item_number,
 barcode
 from
 sierra_view.item_view

@@ -12,26 +12,7 @@ SELECT
 'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id)   AS encore_url,
 b.best_title as title,
 REPLACE(SPLIT_PART(SPLIT_PART(b.best_author,' (',1),', ',2),'.','')||' '||SPLIT_PART(b.best_author,', ',1) as author
---,CASE
---WHEN b.material_code IN ('a','2','3','9','c','e')
---THEN (SELECT
---'https://syndetics.com/index.aspx?isbn='||SUBSTRING(s.content FROM '[0-9]+')||'/SC.gif&client=minuteman'
---FROM
---sierra_view.subfield s
---WHERE
---b.bib_record_id = s.record_id AND s.marc_tag = '020' AND s.tag = 'a'
---ORDER BY s.occ_num
---LIMIT 1)
---WHEN b.material_code NOT IN ('a','2','3','9','c','e')
---THEN (SELECT
---'https://syndetics.com/index.aspx?upc='||SUBSTRING(s.content FROM '[0--9]+')||'/SC.gif&client=minuteman'
---FROM
---sierra_view.subfield s
---WHERE
---b.bib_record_id = s.record_id AND s.marc_tag = '024' AND s.tag = 'a'
---ORDER BY s.occ_num
---LIMIT 1)
---END AS field_booklist_entry_cover
+
 
 FROM
 sierra_view.bool_info bo

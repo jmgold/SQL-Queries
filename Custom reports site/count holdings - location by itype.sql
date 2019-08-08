@@ -8,7 +8,7 @@ location code by itype
 Passed variables for owning location and item statuses to exclude
 */
 SELECT
-i.location_code,
+i.location_code AS shelving_location,
 COUNT(i.id) FILTER(WHERE i.itype_code_num = 0) AS "0",
 COUNT(i.id) FILTER(WHERE i.itype_code_num = 1) AS "1",
 COUNT(i.id) FILTER(WHERE i.itype_code_num = 2) AS "2",
