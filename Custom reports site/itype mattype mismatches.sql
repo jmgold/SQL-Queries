@@ -6,7 +6,7 @@ Identifies items where the itype doesn't match the bib record the item is attach
 */
 
 SELECT
-ID2RECKEY(i.id)||'a' AS rec_num,
+ID2RECKEY(i.id)||'a' AS item_number,
 b.best_title AS title,
 m.name AS mat_type,
 it.name AS itype,
