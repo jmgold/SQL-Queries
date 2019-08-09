@@ -14,11 +14,11 @@ ROUND(a.avg_age,6) AS avg_age_in_days,
 --avg age in days for utilization calculation
 a.avg_utilization,
 i.checkout_total,
-m.creation_date_gmt::DATE,
+m.creation_date_gmt::DATE AS creation_date,
 --generalizes checkouts to 2 week loan period.
 --utilization is ratio of days when an item was used to days when it could have been used
 ROUND((CAST((i.checkout_total * 14) AS NUMERIC (12,2)) / (CURRENT_DATE - m.creation_date_gmt::DATE)),6) AS utilization,
-i.last_checkout_gmt::DATE
+i.last_checkout_gmt::DATE AS last_checkout_date
 
 FROM
 sierra_view.item_record i

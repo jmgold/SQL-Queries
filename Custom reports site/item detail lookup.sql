@@ -10,7 +10,7 @@ Accepts comma delimited list of barcodes as input
 SELECT
 p.barcode,
 upper(p.call_number_norm || COALESCE(' ' || v.field_content, '') ) as call_number,
-i.location_code AS locastion,
+i.location_code AS location,
 i.item_status_code AS status,
 b.best_title AS title,
 REPLACE(SPLIT_PART(SPLIT_PART(b.best_author,' (',1),', ',2),'.','')||' '||SPLIT_PART(b.best_author,', ',1) AS author,
@@ -18,11 +18,11 @@ i.last_checkout_gmt::DATE AS last_checkout_date,
 i.checkout_total,
 i.renewal_total,
 i.year_to_date_checkout_total, 
-i.record_creation_date_gmt AS created_date,
+i.record_creation_date_gmt::DATE AS created_date,
 i.last_year_to_date_checkout_total,
 b.publish_year,
 id2reckey(i.id)||'a' AS item_number,
-id2reckey(b.bib_record_id)||'a' AS bib_num
+id2reckey(b.bib_record_id)||'a' AS bib_number
 
 FROM
 sierra_view.item_record_property		AS p

@@ -8,26 +8,26 @@ Is passed variable for ptype(s)
 */
 
 SELECT
-t1.created,
+t1.created_date,
 MAX(t1.barcode) AS barcode,
-'p'||t1.patron_record_num||'a' AS patron_num,
-STRING_AGG(t1.name,'|') AS NAME,
+'p'||t1.patron_record_num||'a' AS patron_number,
+STRING_AGG(t1.name,'|') AS name,
 t1.birth_date,
 t1.ptype_code,
 t1.home_library_code,
-t1.activity_gmt,
-t1.expiration_date_gmt
+t1.activity_gmt AS last_active_date,
+t1.expiration_date_gmt AS expiration_date
 FROM (
 SELECT
-r.creation_date_gmt as created,
-e.index_entry as barcode,
+r.creation_date_gmt::DATE AS created_date,
+e.index_entry AS barcode,
 r.record_num AS patron_record_num,
 pn.last_name || ', ' ||pn.first_name || COALESCE(' ' || NULLIF(pn.middle_name, ''), '') AS name,
-pr.birth_date_gmt as birth_date,
+pr.birth_date_gmt AS birth_date,
 pr.ptype_code,
 pr.home_library_code,
-pr.activity_gmt,
-pr.expiration_date_gmt
+pr.activity_gmt::DATE,
+pr.expiration_date_gmt::DATE
 
 FROM
 sierra_view.patron_record_fullname as pn
