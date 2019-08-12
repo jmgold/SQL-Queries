@@ -6,7 +6,7 @@ Gathers the top titles owned by a selected peer library that are not owned local
 */
 
 SELECT
-'b'||mb.record_num||'a' AS bib_num,
+'b'||mb.record_num||'a' AS bib_number,
 b.best_title AS title,
 b.best_author AS author,
 {{grouping}}
