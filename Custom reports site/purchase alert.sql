@@ -5,28 +5,29 @@ Minuteman Library Network
 On Demand Purchase Alert
 */
 
-SELECT id2reckey(mv.bib_id)||'a' AS "Record Number",
-brp.best_title AS "Title", 
-brp.best_author AS "Author", 
-brp.publish_year AS "PublicationYear",
-mp.name   AS "MatType",
-mv.item_count AS "TotalItemCount", 
-max(mv.avail_item_count) AS "AvailableItemCount",
-mv.hold_count AS "TotalHoldCount",
+SELECT
+id2reckey(mv.bib_id)||'a' AS "bib_number",
+brp.best_title AS "title", 
+brp.best_author AS "author", 
+brp.publish_year AS "publication_year",
+mp.name   AS "mat_type",
+mv.item_count AS "total_item_count", 
+max(mv.avail_item_count) AS "available_item_count",
+mv.hold_count AS "total_hold_count",
 CASE
     WHEN max(mv.avail_item_count) + max(mv.order_copies)=0 THEN mv.hold_count
     ELSE round(cast((mv.hold_count) as numeric (12, 2))/CAST((max(mv.avail_item_count) + max(mv.order_copies)) AS numeric(12,2)),2)
     END
-AS "TotalRatio",
-MAX(mv.local_avail_item_count) AS "LocalAvailableItemCount",
-MAX(mv.order_copies) AS "LocalOrderCopies",
-mv.local_holds AS "LocalHoldCount",
+AS "network_wide_ratio",
+MAX(mv.local_avail_item_count) AS "local_available_item_count",
+MAX(mv.order_copies) AS "local_order_copies",
+mv.local_holds AS "local_hold_count",
 CASE
     WHEN MAX(mv.local_avail_item_count) + max(mv.order_copies)=0 THEN mv.local_holds
     ELSE round(cast((mv.local_holds) AS numeric (12, 2))/CAST((max(mv.local_avail_item_count) + max(mv.order_copies)) AS numeric(12,2)),2)
     END
-AS "LocalRatio",
-'http://find.minlib.net/iii/encore/record/C__R'||id2reckey(mv.bib_id)   AS "URL"
+AS "local_ratio",
+'http://find.minlib.net/iii/encore/record/C__R'||id2reckey(mv.bib_id)   AS "url"
 
 FROM sierra_view.bib_record_property brp
 JOIN

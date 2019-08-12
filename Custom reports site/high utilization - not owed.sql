@@ -9,7 +9,7 @@ Identifies the most heavily utilized titles not owned at a location
 SELECT
 b.best_title AS title,
 b.best_author AS author,
-'b'||mb.record_num||'a' AS bib_num,
+'b'||mb.record_num||'a' AS bib_number,
 AVG(i.checkout_total) AS avg_checkout_total,
 AVG(CURRENT_DATE - m.creation_date_gmt::DATE) AS avg_age,
 AVG(ROUND((CAST((i.checkout_total * 14) AS NUMERIC (12,2)) / (CURRENT_DATE - m.creation_date_gmt::DATE)),6)) AS avg_utilization,
