@@ -4,7 +4,23 @@ Minuteman Library Network
 
 Finds entries for x-order records on invoices
 */
-
+SELECT
+inumber,
+invoice_number,
+fund_code,
+fund_name,
+subfund,
+vendor_code,
+note,
+invoice_date,
+paid_date,
+copies,
+order_paid_amt,
+invoice_shipping,
+invoice_tax,
+invoice_total
+FROM
+(
 SELECT DISTINCT ON (1,2,3)
 ID2RECKEY(i.id)||'a' AS inumber,
 i.invoice_number_text AS invoice_number,
@@ -40,6 +56,6 @@ f.id = n.fund_master_id
 
 WHERE
 l.order_record_metadata_id IS NULL
-AND i.paid_date_gmt BETWEEN '2019-01-02' AND '2019-01-02'
-AND i.accounting_unit_code_num = '30'
-ORDER BY 1,2,3
+AND i.paid_date_gmt BETWEEN '2019-01-01' AND '2019-08-23'
+AND i.accounting_unit_code_num = '35'
+ORDER BY 1,2,3)a
