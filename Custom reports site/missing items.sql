@@ -49,7 +49,7 @@ i.id = m.id AND m.campus_code = ''
 JOIN
 sierra_view.bib_record br
 ON
-b.bib_record_id = br.id AND br.bcode3 NOT IN ('a','g','o','c','r','z','q','n')
+b.bib_record_id = br.id AND br.bcode3 NOT IN ('g','o','c','r','z','q','n')
 LEFT JOIN
 sierra_view.subfield v
 ON
@@ -59,11 +59,12 @@ WHERE
 b.material_code IN ({{mat_type}})
 GROUP BY 1,2,3
 HAVING 
-COUNT(v.*) = 0
-AND (SUM(i.last_year_to_date_checkout_total) + SUM(i.year_to_date_checkout_total))/COUNT(i.id) > 3
+(SUM(i.last_year_to_date_checkout_total) + SUM(i.year_to_date_checkout_total))/COUNT(i.id) > 3
+{{#if Exclude}}
+AND COUNT(v.*) = 0 
+{{/if Exclude}}
 
 ORDER BY 6 DESC
---LIMIT 50000
 )c
 ON
 bl.bib_record_id = c.bib_record_id
