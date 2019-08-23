@@ -5,7 +5,23 @@ Minuteman Library Network
 Finds entries for x-order records on invoices
 Passed date_field, start_date, end_date and accounting_unit as variables
 */
-
+SELECT
+inumber,
+invoice_number,
+fund_code,
+fund_name,
+subfund,
+vendor_code,
+note,
+invoice_date,
+paid_date,
+copies,
+order_paid_amt,
+invoice_shipping,
+invoice_tax,
+invoice_total
+FROM
+(
 SELECT DISTINCT ON (1,2,3)
 ID2RECKEY(i.id)||'a' AS inumber,
 i.invoice_number_text AS invoice_number,
@@ -45,3 +61,4 @@ l.order_record_metadata_id IS NULL
 AND {{date_field}} BETWEEN {{start_date}} AND {{end_date}}
 AND i.accounting_unit_code_num = {{accounting_unit}}
 ORDER BY 1,2,3
+)*
