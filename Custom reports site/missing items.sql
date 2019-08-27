@@ -29,7 +29,7 @@ id2reckey(b.bib_record_id)||'a' AS bib_number,
 b.bib_record_id,
 b.best_title AS title,
 COUNT (i.id) AS total_copies,
-COUNT (i.id) FILTER(WHERE i.item_status_code IN ('m','n','z','$') OR (i.item_status_code NOT IN ('m','n','z','$','w','o','r','e','q') AND i.last_checkout_gmt < (NOW() - INTERVAL '1 year') AND m.creation_date_gmt < (NOW() - INTERVAL '1 year')) ) AS total_missing,
+COUNT (i.id) FILTER(WHERE i.item_status_code IN ('m','n','z','$') OR (i.item_status_code NOT IN ('m','n','z','$','w','o','r','e','q','!') AND i.last_checkout_gmt < (NOW() - INTERVAL '1 year') AND m.creation_date_gmt < (NOW() - INTERVAL '1 year')) ) AS total_missing,
 ROUND(1.0 * (SUM(i.last_year_to_date_checkout_total) + SUM(i.year_to_date_checkout_total))/COUNT(i.id),2) AS recent_network_wide_turnover
 
 FROM
@@ -49,7 +49,7 @@ i.id = m.id AND m.campus_code = ''
 JOIN
 sierra_view.bib_record br
 ON
-b.bib_record_id = br.id AND br.bcode3 NOT IN ('g','o','c','r','z','q','n')
+b.bib_record_id = br.id AND br.bcode3 NOT IN ('g','o','c','r','z','q','n','!')
 LEFT JOIN
 sierra_view.subfield v
 ON
@@ -71,7 +71,7 @@ bl.bib_record_id = c.bib_record_id
 
 
 WHERE
-((i.item_status_code NOT IN ('n','$','w','o','r','e','q') 
+((i.item_status_code NOT IN ('n','$','w','o','r','e','q','!') 
 AND i.last_checkout_gmt < (NOW() - INTERVAL '1 year'))
 OR i.item_status_code IN ('m','z'))
 AND i.location_code ~ {{location}}

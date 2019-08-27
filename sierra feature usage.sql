@@ -36,7 +36,10 @@ ON
 loc.code = SUBSTRING(c.location_code,1,3)
 
 WHERE
-loc.code ~ '^[a-z]{3}$'
+loc.code ~ '^[a-z0-9]{3}$'
+
 GROUP BY 1
-ORDER BY 1 
+ORDER BY 1
+
+
 
