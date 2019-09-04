@@ -1,4 +1,4 @@
-﻿--Lazy way to generate staff picks booklist
+--Lazy way to generate staff picks booklist
 SELECT
 --link to Encore
 'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id)   AS field_booklist_entry_encore_url,
@@ -19,34 +19,10 @@ ON
 b.bib_record_id = v.id AND
 v.record_num IN (
 --Films
---Black Klansman
-'3776398',
---Spiderverse
-'3479082',
---The Wife
-'3776548',
---can you ever forgive me?
-'3802561',
---If Beale street could talk
-'3779420',
---Alita Battle Angel
-'3712422',
---how to train your dragon
-'2228515',
---Captain Marvel
-'3528152',
 --Nancy Drew and the Hidden Staircase
 '1991518',
---The Aftermath
-'3077051',
---Shazam
-'3237418',
---Pet Sematary
-'2059999',
 --Best of Enemies
 '3809346',
---Hellboy
-'3770951',
 --the impossible
 '3711179',
 --After
@@ -61,8 +37,6 @@ v.record_num IN (
 '2568060',
 --new mutants
 '1564040',
---Artemis Fowl
-'1995127',
 --scary stories to tell in the dark
 '1542820',
 --where'd you go bernadette
@@ -91,11 +65,31 @@ v.record_num IN (
 '3454594',
 --Motherless Brooklyn
 '1882244',
+--Artemis Fowl
+'1995127',
+--Call of the wild
+'1579606',
+--Death on the Nile
+'2917379',
+--DUne
+'1495014',
+--the good shepherd
+'3811449',
+--Invisible Man
+'2125458',
+--just mercy
+'3180431',
+--two kisses for maddy
+'2864654',
+--voyages of doctor dolittle
+'1860039',
+--Black Widow
+'3410594',
+--Eternals
+'3858608',
+--Little Women
+'1687579',
 --TV
---The Passage
-'2761859',
---Deadly Class
-'3237098',
 --what in god's name
 '2988897',
 --Umbrella Academy
@@ -106,8 +100,6 @@ v.record_num IN (
 '3188315',
 --Good Omens
 '2459591',
---Game of thrones
-'1581217',
 --Chilling Adventures of Sabrina
 '3524746',
 --Catch 22
@@ -115,7 +107,21 @@ v.record_num IN (
 --NOS4A2
 '3042545',
 --Lovecraft Country
-'3451427'
+'3451427',
+--turn of the screw
+'2996634',
+--Batwoman
+'2742916',
+--Watchmen
+'3198650',
+--His Dark Materials
+'2964361',
+--Expatriates
+'3284483',
+--wheel of time
+'1208377',
+--The witcher
+'2584155'
 )
 WHERE b.material_code ='a'
 GROUP BY 1,2,3 
