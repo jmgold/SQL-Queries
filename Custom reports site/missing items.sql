@@ -6,7 +6,7 @@ Identifies titles with copies that are likely missing given recent checkout hist
 */
 SELECT
 id2reckey(i.id)||'a' AS item_number,
-c.bib_number,
+id2reckey(c.bib_record_id)||'a' AS bib_number,
 c.title,
 i.last_checkout_gmt::DATE AS last_out_date,
 i.item_status_code,
@@ -25,11 +25,8 @@ i.id = bl.item_record_id
 JOIN
 (
 SELECT
-id2reckey(b.bib_record_id)||'a' AS bib_number,
 b.bib_record_id,
 b.best_title AS title,
-COUNT (i.id) AS total_copies,
-COUNT (i.id) FILTER(WHERE i.item_status_code IN ('m','n','z','$') OR (i.item_status_code NOT IN ('m','n','z','$','w','o','r','e','q','!') AND i.last_checkout_gmt < (NOW() - INTERVAL '1 year') AND m.creation_date_gmt < (NOW() - INTERVAL '1 year')) ) AS total_missing,
 ROUND(1.0 * (SUM(i.last_year_to_date_checkout_total) + SUM(i.year_to_date_checkout_total))/COUNT(i.id),2) AS recent_network_wide_turnover
 
 FROM
@@ -50,21 +47,23 @@ JOIN
 sierra_view.bib_record br
 ON
 b.bib_record_id = br.id AND br.bcode3 NOT IN ('g','o','c','r','z','q','n','!')
+--{{#if Exclude}}
 LEFT JOIN
 sierra_view.subfield v
 ON
 i.id = v.record_id AND v.field_type_code = 'v'
+--{{/if Exclude}}
 
 WHERE
 b.material_code IN ({{mat_type}})
-GROUP BY 1,2,3
+GROUP BY 1,2
 HAVING 
 (SUM(i.last_year_to_date_checkout_total) + SUM(i.year_to_date_checkout_total))/COUNT(i.id) > 3
 {{#if Exclude}}
 AND COUNT(v.*) = 0 
 {{/if Exclude}}
 
-ORDER BY 6 DESC
+ORDER BY 3 DESC
 )c
 ON
 bl.bib_record_id = c.bib_record_id

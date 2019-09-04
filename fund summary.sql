@@ -8,9 +8,9 @@ Reproduces fund view from the fund function in acquisitions for a specified acco
 SELECT
 DISTINCT f.fund_code,
 fn.name,
-ROUND(CAST(f.appropriation AS NUMERIC (12,2))/100,2)::MONEY,
-ROUND(CAST(f.expenditure AS NUMERIC (12,2))/100,2)::MONEY,
-ROUND(CAST(f.encumbrance AS NUMERIC (12,2))/100,2)::MONEY,
+ROUND(CAST(f.appropriation AS NUMERIC (12,2))/100,2)::MONEY AS appropriation,
+ROUND(CAST(f.expenditure AS NUMERIC (12,2))/100,2)::MONEY AS expenditure,
+ROUND(CAST(f.encumbrance AS NUMERIC (12,2))/100,2)::MONEY AS encumbrance,
 ROUND(CAST((f.appropriation - f.expenditure- f.encumbrance) AS NUMERIC (12,2))/100,2)::MONEY AS "free balance",
 ROUND(CAST((f.appropriation - f.expenditure) AS NUMERIC (12,2))/100,2)::MONEY AS "cash balance"
 
