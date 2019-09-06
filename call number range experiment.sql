@@ -1,6 +1,8 @@
 SELECT
 CASE
 	WHEN i.call_number_norm IS NULL THEN 'No Call number'
+	WHEN REPLACE(i.call_number_norm,' ','') ~ '^(audiobook|audcd\d|audio\d|bookon|bookson|cdaud|cd\d|cdbio|cdspoken|cdb|compactdisc|d|dspoken)' THEN 'Book On CD'
+	WHEN REPLACE(i.call_number_norm,' ','') ~ '^(com\s|cd|audcd|audio|compactdisc)' THEN 'CD'
 	WHEN REPLACE(i.call_number_norm,' ','') ~ '^00[0-9]' THEN '000'
 	WHEN REPLACE(i.call_number_norm,' ','') ~ '^01[0-9]' THEN '010'
 	WHEN REPLACE(i.call_number_norm,' ','') ~ '^02[0-9]' THEN '020'
@@ -169,6 +171,6 @@ ir.id = l.item_record_id
 JOIN
 sierra_view.bib_record_property b
 ON
-l.bib_record_id = b.bib_record_id AND b.material_code IN ('a','2')
+l.bib_record_id = b.bib_record_id AND b.material_code IN ('4','j')
 GROUP BY 1
 ORDER BY 1;
