@@ -39,10 +39,14 @@ l.bib_record_id = b.bib_record_id
 
 WHERE
 h.status = '0'
+{{#if Exclude_volume}}
 AND v.field_content IS NULL
+{{/if Exclude_volume}}
+{{#if Exclude_frozen}}
 AND h.is_frozen = FALSE
-AND h.placed_gmt < '2019-09-01'
-AND h.pickup_location_code ~ '^ca'
+{{/if Exclude_frozen}}
+AND h.placed_gmt < {{date_placed}}
+AND h.pickup_location_code ~ {{location}}
 
 GROUP BY 1,2
 HAVING 
