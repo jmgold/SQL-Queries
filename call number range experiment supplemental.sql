@@ -4,6 +4,7 @@ i.call_number_norm,
 CASE
 	--call number does not exist
 	WHEN i.call_number_norm = '' OR i.call_number_norm IS NULL THEN 'no call number'
+	WHEN TRIM(BOTH FROM i.call_number_norm) ~ '^[a-z][0-9]{3}(\.[0-9]*)?\s[a-z]*$' THEN SUBSTRING(REVERSE(REGEXP_REPLACE(REVERSE(TRIM(BOTH FROM i.call_number_norm)),'^\w+\s', '')),'^[a-z][0-9]{2}')||'0'
 	--call number contains no numbers and ends with a name in the form last, first and could use initials
 	WHEN i.call_number_norm !~ '\d' AND REVERSE(i.call_number_norm) ~ '^[a-z\.]+\s?(.[a-z]\s?)*,[\.a-z]' THEN REVERSE(REGEXP_REPLACE(REPLACE(REPLACE(REVERSE(TRIM(BOTH FROM i.call_number_norm)),' .',''),'.',''),'^\w+\s?,?\w+', ''))
 	--call number contains no numbers and multiple words
