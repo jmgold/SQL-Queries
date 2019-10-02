@@ -30,6 +30,14 @@ AS "local_ratio",
 'http://find.minlib.net/iii/encore/record/C__R'||id2reckey(mv.bib_id)   AS "url"
 
 FROM sierra_view.bib_record_property brp
+LEFT JOIN 
+sierra_view.bib_record_item_record_link bri
+ON
+brp.bib_record_id=bri.bib_record_id
+LEFT JOIN
+sierra_view.item_record ir
+ON
+bri.item_record_id = ir.id
 JOIN
 sierra_view.material_property_myuser mp
 ON
@@ -91,6 +99,7 @@ ON mv.bib_id=brp.bib_record_id
 WHERE brp.material_code IN ({{mat_type}})
 GROUP BY 1, 2, 3, 4, 5, 6, 8, 12, 14
 HAVING mv.local_holds >= {{min_local_holds}}
+{{age_limit}}
 --(max(mv.item_count) + max(mv.order_copies))=0
 --OR max(mv.hold_count)/(max(mv.item_count) + max(mv.order_copies))>=4
 ORDER BY 5, {{sort}} DESC
