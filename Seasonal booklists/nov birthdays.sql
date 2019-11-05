@@ -101,7 +101,7 @@ REGEXP_REPLACE(b.best_author,'\.$','') IN (
 'McKinley, Robin',
 'Giffen, Keith',
 'Swanwick, Michael',
-'Ford, Jeffrey, 1955-',
+'Ford, Jeffrey, 1955-'
 
 )
 --AND b.publish_year >= '2010'
