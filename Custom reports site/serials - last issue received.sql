@@ -20,7 +20,7 @@ b.best_title as title,
 MAX(hb.id) as max_id,
 hb.enum_level_a,
 hb.enum_level_b,
-hb.chron_level_i||'-'||hb.chron_level_j||'-'||hb.chron_level_k as cover_date
+CONCAT(hb.chron_level_i,'-',hb.chron_level_j,'-'||hb.chron_level_k) as cover_date
 FROM
 sierra_view.bib_record_property b
 JOIN
