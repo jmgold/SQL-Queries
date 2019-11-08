@@ -4,11 +4,14 @@ SELECT
 {{record_type}} AS rec_num
 
 FROM
+sierra_view.bib_record b
+LEFT JOIN
 sierra_view.bib_record_item_record_link l
+ON b.id = l.bib_record_id
 LEFT JOIN
 sierra_view.bib_record_order_record_link ol
 ON
-l.bib_record_id = ol.bib_record_id
+b.id = ol.bib_record_id
 LEFT JOIN
 sierra_view.item_record i
 ON
@@ -22,7 +25,7 @@ JOIN
 sierra_view.phrase_entry v
 ON
 {{index_field}}
-AND v.index_entry IN ({{values}})
+AND SUBSTRING(v.index_entry FROM '^[0-9]+') IN ({{values}})
 ) a
 WHERE
 rec_num IS NOT NULL
