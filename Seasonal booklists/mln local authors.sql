@@ -64,8 +64,12 @@ REGEXP_REPLACE(b.best_author,'\.$','') IN (
 'Preston, Douglas J',
 'Rey, H. A. (Hans Augusto), 1898-1977',
 'Skinner, B. F. (Burrhus Frederic), 1904-1990',
+'Fuller, Margaret, 1810-1850',
+'Liu, Ken, 1976-',
+'Du Bois, W. E. B. (William Edward Burghardt), 1868-1963',
 --Concord
 'Alcott, Louisa May, 1832-1888',
+'Alcott, Amos Bronson, 1799-1888',
 'Emerson, Ralph Waldo, 1803-1882',
 'Cornwell, Patricia Daniels',
 'Goodwin, Doris Kearns',
@@ -121,6 +125,7 @@ REGEXP_REPLACE(b.best_author,'\.$','') IN (
 --Waltham
 'Brockmann, Suzanne',
 'Wright, Franz, 1953-2015',
+'Farizan, Sara',
 --Woburn
 'Bogosian, Eric',
 --Weston
