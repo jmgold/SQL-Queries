@@ -44,4 +44,4 @@ ON
 (i.id = v.record_id) AND (v.varfield_type_code = 'v')
 
 WHERE
-p.barcode IN ({{values}})
+SUBSTRING(p.barcode FROM '^[0-9]+')::NUMERIC IN ({{values}})

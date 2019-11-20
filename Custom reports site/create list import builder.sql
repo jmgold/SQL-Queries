@@ -25,7 +25,7 @@ JOIN
 sierra_view.phrase_entry v
 ON
 {{index_field}}
-AND SUBSTRING(v.index_entry FROM '^[0-9]+') IN ({{values}})
+AND SUBSTRING(v.index_entry FROM '^[0-9]+')::NUMERIC IN ({{values}})
 ) a
 WHERE
 rec_num IS NOT NULL
