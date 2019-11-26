@@ -22,7 +22,7 @@ sierra_view.item_record i
 ON
 bi.item_record_id = i.id --AND SUBSTRING(i.location_code,4,1) NOT IN ('j')
 WHERE
-b.publish_year > '2009' AND b.material_code IN ('5','u')
+b.publish_year > '2009' AND b.material_code IN ('5','u') AND LOWER(b.best_title) NOT LIKE '%season%'
 GROUP BY 2,1
 ORDER BY 3 desc
 LIMIT 100
