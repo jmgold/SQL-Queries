@@ -6,9 +6,9 @@ COALESCE(CASE
    --call number does not exist
 	WHEN i.call_number_norm = '' OR i.call_number_norm IS NULL THEN 'no call number'
 	--biographies
-   WHEN TRIM(BOTH FROM i.call_number_norm) ~ '^(.*biography|biog|bio)' THEN SUBSTRING(REGEXP_REPLACE(i.call_number_norm,'\(|\)|\[|\]','','gi')FROM '^(.*biography|biog|bio)')
+   WHEN TRIM(BOTH FROM i.call_number_norm) ~ '^(.*biography|.*biog|.*bio)' THEN SUBSTRING(REGEXP_REPLACE(i.call_number_norm,'\(|\)|\[|\]','','gi')FROM '^(.*biography|.*biog|.*bio)')
 	--graphic novels & manga
-   WHEN TRIM(BOTH FROM i.call_number_norm) ~ '^(.*graphic|manga)' AND REGEXP_REPLACE(REVERSE(TRIM(BOTH FROM i.call_number_norm)), '^[0-9]{1,3}\s?\.?v|lov|c|#|s|nosaes|aes|tes|res|seires|p|tp|trap|loc|noitcelloc|b|kb|koob', '') !~ '\d' THEN SUBSTRING(REGEXP_REPLACE(i.call_number_norm,'\(|\)|\[|\]','','gi')FROM '^(.*graphic|manga|)')
+   WHEN TRIM(BOTH FROM i.call_number_norm) ~ '^(.*graphic|.*manga)' AND REGEXP_REPLACE(REVERSE(TRIM(BOTH FROM i.call_number_norm)), '^[0-9]{1,3}\s?\.?v|lov|c|#|s|nosaes|aes|tes|res|seires|p|tp|trap|loc|noitcelloc|b|kb|koob', '') !~ '\d' THEN SUBSTRING(REGEXP_REPLACE(i.call_number_norm,'\(|\)|\[|\]','','gi')FROM '^(.*graphic|manga)')
 	--call number contains no numbers and ends with a name in the form last, first and could use initials
 	WHEN TRIM(BOTH FROM i.call_number_norm) !~ '\d' AND REVERSE(REPLACE(TRIM(BOTH FROM i.call_number_norm),'-','')) ~ '^[a-z\.]+\s?(.[a-z]\s?)*,[\.a-z]' THEN REVERSE(REGEXP_REPLACE(REPLACE(REPLACE(REVERSE(REGEXP_REPLACE(REPLACE(TRIM(BOTH FROM i.call_number_norm),'-',''),'(\(|\)|\[|\])','','gi')),' .',''),'.',''),'^\w+\s?,?\w+', ''))
   	--call number contains no numbers and a single word
@@ -52,6 +52,6 @@ i.item_record_id = ir.id
 AND
 ir.itype_code_num != '241'
 AND
-ir.location_code ~ '^fst'
+ir.location_code ~ '^brk'
 GROUP BY 1,4
 ORDER BY 2, 1
