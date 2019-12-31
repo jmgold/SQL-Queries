@@ -30,6 +30,10 @@ round(100.0 * (cast(SUM(i.checkout_total) + SUM(i.renewal_total) as numeric (12,
 FROM
 sierra_view.item_record i
 JOIN
+sierra_view.item_record_property ip
+ON
+i.id = ip.item_record_id
+JOIN
 sierra_view.bib_record_item_record_link l
 ON
 i.id = l.item_record_id
