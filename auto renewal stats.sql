@@ -5,6 +5,6 @@ COUNT(C.id)
 FROM
 sierra_view.circ_trans C
 WHERE
-C.transaction_gmt >= NOW() - INTERVAL '1 month'
+C.transaction_gmt >= NOW() - INTERVAL '1 month' AND C.op_code = 'r'
 GROUP BY 1,2
 ORDER BY 1,3 desc
