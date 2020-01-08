@@ -21,46 +21,18 @@ v.record_num IN (
 --Films
 --Nancy Drew and the Hidden Staircase
 '1991518',
---Best of Enemies
-'3809346',
---the impossible
-'3711179',
---After
-'3205033',
---Infinity Gauntlet
-'3008111',
---a dog's purpose
-'3600873',
---sun is also a star
-'3539665',
---dark phoenix saga
-'2568060',
 --new mutants
 '1564040',
---scary stories to tell in the dark
-'1542820',
 --where'd you go bernadette
 '2988900',
---Three Seconds
-'2871608',
---It
-'1216711',
---Art of racing in the rain
-'2555380',
 --I Heard you Paint Houses
 '3803047',
 --the last thing he wanted
 '1578547',
 --Secrecy World
 '3680745',
---the art of racing in the rain
-'2585366',
 --the woman in the window
 '3650356',
---The Kitchen
-'3484012',
---The Goldfinch
-'3083504',
 --The Good Liar
 '3454594',
 --Motherless Brooklyn
@@ -71,7 +43,7 @@ v.record_num IN (
 '1579606',
 --Death on the Nile
 '2917379',
---DUne
+--Dune
 '1495014',
 --the good shepherd
 '3811449',
@@ -89,21 +61,39 @@ v.record_num IN (
 '3858608',
 --Little Women
 '1687579',
+--David Copperfield
+'1455663',
+--Emma
+'2221387',
+--Secret Garden
+'2637040',
+--The Witches
+'3149127',
+--The Rhythm Section
+'3800942',
+--Harley Quinn & Birds of Prey
+'3860987',
+--Peter Rabbit
+'1300398',
+--P.S. I Still love you
+'3226352',
+--Bloodshot
+'3273327',
+--The One and Only Ivan
+'2950294',
+--Dragon Rider
+'2253838',
+--Without Remorse
+'1461086',
 --TV
---what in god's name
-'2988897',
+--The Outsider
+'3723483',
 --Umbrella Academy
 '2588224',
 --Shrill
 '3483079',
---The Perfections
-'3188315',
---Good Omens
-'2459591',
 --Chilling Adventures of Sabrina
 '3524746',
---Catch 22
-'2905888',
 --NOS4A2
 '3042545',
 --Lovecraft Country
@@ -121,7 +111,25 @@ v.record_num IN (
 --wheel of time
 '1208377',
 --The witcher
-'2584155'
+'2584155',
+--Dracula
+'2534215',
+--Normal People
+'3780266',
+--Vision
+'3714481',
+--Bone Collector
+'1600077',
+--Y the last Man
+'3001999',
+--Locke & Key
+'2621071',
+--High Fidelity
+'1545789',
+--Little Fires Everywhere
+'3639155',
+--Snow Piercer
+'3146873'
 )
 WHERE b.material_code ='a'
 GROUP BY 1,2,3 
