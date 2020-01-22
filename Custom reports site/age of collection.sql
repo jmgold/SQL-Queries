@@ -6,7 +6,8 @@ Report provides an age of collection overview grouped around a selected fixed fi
 */
 SELECT
 {{grouping}},
-COUNT(DISTINCT i.id) FILTER (WHERE bp.publish_year > 2009) AS "2010",
+COUNT(DISTINCT i.id) FILTER (WHERE bp.publish_year > 2019) AS "2020-",
+COUNT(DISTINCT i.id) FILTER (WHERE bp.publish_year BETWEEN 2010 AND 2019) AS "2010-2019",
 COUNT(DISTINCT i.id) FILTER (WHERE bp.publish_year BETWEEN 2000 AND 2009) AS "2000-2009",
 COUNT(DISTINCT i.id) FILTER (WHERE bp.publish_year BETWEEN 1990 AND 1999) AS "1990-1999",
 COUNT(DISTINCT i.id) FILTER (WHERE bp.publish_year BETWEEN 1980 AND 1989) AS "1980-1989",

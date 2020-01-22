@@ -51,7 +51,7 @@ lp.id = LN.language_property_id
 WHERE
 c.op_code IN ('o', 'r')
 AND
-c.transaction_gmt::DATE >= {{relative_date}}
+c.transaction_gmt::DATE {{relative_date}}
 AND
 i.location_code ~ {{location}}
 GROUP BY 1
