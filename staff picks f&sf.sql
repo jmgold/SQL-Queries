@@ -50,6 +50,8 @@ v.record_num IN (
 '3822208',
 --her body and other parties
 '3653799',
+--Excellence
+'3859399',
 --20200205 Dev Singer
 '3853104',
 --20200205 Sophie Forrester
@@ -178,6 +180,12 @@ v.record_num IN (
 '3633283',
 --20200210 Sara Belisle
 '3540067'
+--20200212 Jeremy Robichaud
+'3650415',
+'2897852',
+'3585668',
+'3501864',
+'3212204'
 )
 GROUP BY b.bib_record_id,1,2,b.material_code,4 
 ) a
