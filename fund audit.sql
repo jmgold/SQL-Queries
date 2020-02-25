@@ -7,9 +7,11 @@ compares current funds to values of open orders and paid invoices
 
 SELECT
 DISTINCT f.fund_code,
-TRIM(fn.name) AS name,
+STRING_AGG(DISTINCT TRIM(fn.name), ', ') AS NAME,
 ROUND(CAST(f.appropriation AS NUMERIC (12,2))/100,2)::MONEY AS appropriation,
 ROUND(CAST(f.expenditure AS NUMERIC (12,2))/100,2)::MONEY AS expenditure,
+COALESCE(invoice_expenditure.invoice_total,0::MONEY) AS expenditure_invoices,
+COALESCE(invoice_expenditure.invoice_total,0::MONEY) - ROUND(CAST(f.expenditure AS NUMERIC (12,2))/100,2)::MONEY AS expentiture_difference,
 ROUND(CAST(f.encumbrance AS NUMERIC (12,2))/100,2)::MONEY AS encumbrance,
 COALESCE(order_encumbrance.encumbrance_orders,0::MONEY) AS encumbrance_orders,
 COALESCE(order_encumbrance.encumbrance_orders,0::MONEY) - ROUND(CAST(f.encumbrance AS NUMERIC (12,2))/100,2)::MONEY AS encumbrance_difference,
@@ -73,10 +75,41 @@ AND o.order_status_code IN ('o','q','g','d')
 GROUP BY 1) order_encumbrance
 ON
 fm.code = order_encumbrance.code
+LEFT JOIN (
+SELECT
+fm.code,
+SUM(il.paid_amt)::MONEY AS invoice_total
+
+FROM
+sierra_view.invoice_record i
+JOIN
+sierra_view.invoice_record_line il
+ON
+i.id = il.invoice_record_id
+JOIN
+sierra_view.accounting_unit a
+ON
+i.accounting_unit_code_num = a.code_num
+JOIN
+sierra_view.fund_master fm
+ON
+il.fund_code::INT = fm.code_num AND a.id = fm.accounting_unit_id
+
+WHERE
+a.code_num = '5'
+AND i.paid_date_gmt >= NOW() - INTERVAL '1 year'
+AND CASE
+	WHEN DATE_TRUNC('MONTH',NOW())::DATE >= TO_DATE(TO_CHAR(NOW()::DATE,'yyyy-07-01'),'yyyy-mm-dd') THEN i.invoice_date_gmt >= TO_DATE(TO_CHAR(NOW()::DATE,'yyyy-07-01'),'yyyy-mm-dd')
+	ELSE i.invoice_date_gmt >= TO_DATE(TO_CHAR((NOW()-INTERVAL '1 YEAR')::DATE,'yyyy-07-01'),'yyyy-mm-dd')
+	END
+
+GROUP BY 1) invoice_expenditure
+ON
+fm.code = invoice_expenditure.code
 
 WHERE
 f.acct_unit = '5'
 AND f.fund_type = 'fbal'
 
---GROUP BY 1,2,3,4,5,7,8
+GROUP BY 1,3,4,5,6,7,8,9,10,11
 ORDER BY 1

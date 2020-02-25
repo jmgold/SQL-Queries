@@ -106,7 +106,7 @@ REGEXP_REPLACE(b.best_author,'\.$','') IN (
 'Jin, Ha, 1956-',
 'Yolen, Jane',
 'Russ, Joanna, 1937-2011',
-'ohnson, Maureen, 1973-'
+'Johnson, Maureen, 1973-'
 )
 --AND b.publish_year >= '2010'
 
