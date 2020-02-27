@@ -668,7 +668,9 @@ v.record_num IN (
 --20200215 Katie OConnell
 '3812165',
 '3839843',
-'3780266'
+'3780266',
+--20200225 Jess Stitson
+'2224536'
 )
 GROUP BY b.bib_record_id,1,2,b.material_code 
 ) a
