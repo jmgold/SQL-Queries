@@ -9,7 +9,7 @@ SELECT
 'b'||mb.record_num||'a' AS bib_number,
 b.best_title AS title,
 b.best_author AS author,
-{{grouping}}
+SUM(i.checkout_total) + SUM(i.renewal_total) AS total_circulation
 
 /*
 Grouping options
@@ -32,7 +32,7 @@ b.bib_record_id = l.bib_record_id
 JOIN
 sierra_view.item_record i
 ON
-i.id = l.item_record_id AND i.item_status_code NOT IN ({{item_status_codes}})
+i.id = l.item_record_id AND i.item_status_code NOT IN ('w','m','z')
 JOIN
 sierra_view.record_metadata m
 ON
@@ -97,7 +97,7 @@ ON
 b.bib_record_id = h.bib_record_id
 
 WHERE
-b.material_code IN ({{mat_type}})
+b.material_code IN ('a')
 AND b.bib_record_id IN
 (
 SELECT
@@ -146,12 +146,12 @@ COALESCE(CASE
   /*leftover number suffixes*/
   WHEN TRIM(BOTH FROM ip.call_number_norm) ~ '\d' THEN REVERSE(REGEXP_REPLACE(REVERSE(REGEXP_REPLACE(REGEXP_REPLACE(TRIM(BOTH FROM ip.call_number_norm),'\(|\)|\[|\]','','gi'),'\d\w*','')),'^[\w\-\.\/'']*\s', ''))
   ELSE 'unknown'
-  END,'unknown') BETWEEN {{call_start}} AND {{call_end}}
+  END,'unknown') BETWEEN 'j 100' AND 'j 999'
 )
 GROUP BY
 1,2,3,h.count_holds_on_title
 HAVING
-COUNT(i.id) FILTER (WHERE i.location_code ~ '{{location}}') = 0
-AND COUNT(i.id) FILTER (WHERE i.location_code !~ '{{location}}' AND m.creation_date_gmt::DATE < {{created_date}}) > 0
+COUNT(i.id) FILTER (WHERE i.location_code ~ '^cam') = 0
+AND COUNT(i.id) FILTER (WHERE i.location_code !~ '^cam' AND m.creation_date_gmt::DATE < '2019-07-01') > 0
 ORDER BY 4 DESC
-LIMIT {{qty}}
+LIMIT 100

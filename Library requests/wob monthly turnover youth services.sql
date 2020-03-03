@@ -2,6 +2,7 @@
 Jeremy Goldstein
 Minuteman Library Network
 Monthly turnover report for Woburn childrens materials
+Requested by Dorrie Karlin
 */
 
 SELECT 
@@ -47,4 +48,4 @@ i.location_code ~ '^wob'
 GROUP BY 1
 ORDER BY 1) a
 WHERE
-"Category Name" IS NOT Null
+"Category Name" IS NOT NULL
