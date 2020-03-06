@@ -3,7 +3,8 @@ i.id AS invoice_record_id,
 fm.code AS fund_code,
 COUNT(DISTINCT l.id) AS count_line_item,
 SUM(l.paid_amt)::money AS expenditure,
-a.code_num
+a.code_num,
+SUM(l.copies_paid_cnt)
 
 FROM
 sierra_view.invoice_record i
@@ -29,8 +30,9 @@ GROUP BY 1,2,5)
 SELECT
 DISTINCT fi.fund_code,
 --captures line items but not copies
-expenditure + ((i.shipping_amt::money + i.total_tax_amt::money) / (SELECT COUNT(DISTINCT l.id) FROM sierra_view.invoice_record_line l JOIN invoice_fund fi ON l.invoice_record_id = fi.invoice_record_id ))
-,fi.code_num
+fi.expenditure + ((i.shipping_amt::money + i.total_tax_amt::money) / copy_count.total_copies)
+,fi.code_num,
+copy_count.total_copies
 FROM
 invoice_fund fi
 JOIN
@@ -41,3 +43,12 @@ JOIN
 sierra_view.invoice_record_line l
 ON
 i.id = l.invoice_record_id
+JOIN
+(SELECT
+l.invoice_record_id,
+SUM(l.copies_paid_cnt) AS total_copies
+FROM
+sierra_view.invoice_record_line l
+GROUP BY 1)AS copy_count
+ON
+i.id = copy_count.invoice_record_id
