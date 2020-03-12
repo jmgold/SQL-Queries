@@ -31,7 +31,7 @@ ON
 o.id = op.order_record_id AND o.order_status_code = 'q'
 
 WHERE
-o.accounting_unit_code_num = '5'
+o.accounting_unit_code_num = {{accounting_unit}}
 AND o.order_status_code IN ('o','q','g','d')
 
 GROUP BY 1)
@@ -67,7 +67,7 @@ ON
 fm.code = oe.code
 
 WHERE
-f.acct_unit = '5'
+f.acct_unit = {{accounting_unit}}
 AND f.fund_type = 'fbal'
 
 ORDER BY 1
