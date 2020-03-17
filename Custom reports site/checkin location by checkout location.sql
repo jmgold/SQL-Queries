@@ -1,3 +1,10 @@
+/*
+Jeremy Goldstien
+Minuteman Library Network
+
+Generates a crosstab report comparing the checkin and checkout locations for each item returned in the past month.
+*/
+
 --start of checkins with different location than checkout
 WITH checkout_location AS 
 (
