@@ -1,3 +1,11 @@
+/*
+Jeremy Goldstein
+Minuteman Library Network
+
+Returns details for holds at a pickup location
+Filters for pickup location, hold placed date and hold status
+*/
+
 WITH in_transit AS (
 SELECT
 m.id,
@@ -18,29 +26,31 @@ v.varfield_type_code = 'm'
 AND v.field_content LIKE '%IN TRANSIT%'
 )
 
+SELECT *
+FROM(
 SELECT
-DISTINCT h.id AS "Hold ID",
-h.placed_gmt::DATE AS "Date Placed",
-id2reckey(h.patron_record_id)||'a' AS "Patron Number",
-pn.last_name||', '||pn.first_name||' '||pn.middle_name AS "Name",
-b.best_title AS "Title",
-rec_num.record_type_code||rec_num.record_num||'a' AS "Record Number",
-pickup_loc.name AS "Pickup Location",
+DISTINCT h.id AS hold_id,
+h.placed_gmt::DATE AS date_placed,
+id2reckey(h.patron_record_id)||'a' AS patron_number,
+pn.last_name||', '||pn.first_name||' '||pn.middle_name AS name,
+b.best_title AS title,
+rec_num.record_type_code||rec_num.record_num||'a' AS record_number,
+pickup_loc.name AS pickup_location,
 CASE
 	WHEN h.is_frozen = 'true' THEN 'Frozen'
 	WHEN h.status = '0' THEN 'On hold'
 	WHEN h.status = 't' THEN 'In transit'
 	ELSE 'Ready for pickup'
-	END AS "Hold Status",
+	END AS hold_status,
 CASE
 	WHEN h.record_id = l.bib_record_id THEN 'bib'
 	ELSE 'item'
-	END AS "Hold Type",
-REPLACE(REPLACE(i.call_number,'|a',''),'|f','') AS "Call Number",
-ir.location_code AS "Item Location",
-t.transit_timestamp AS "In Transit Time",
-t.origin_loc AS "In Transit Origin",
-rm.record_last_updated_gmt::DATE AS "On Holdshelf Date"
+	END AS hold_type,
+REPLACE(REPLACE(i.call_number,'|a',''),'|f','') AS call_number,
+ir.location_code AS item_location,
+t.transit_timestamp AS in_transit_time,
+t.origin_loc AS in_transit_origin,
+rm.record_last_updated_gmt::DATE AS on_holdshelf_date
 FROM
 sierra_view.hold h
 JOIN
@@ -80,4 +90,10 @@ sierra_view.location_myuser pickup_loc
 ON
 SUBSTRING(h.pickup_location_code,1,3) = pickup_loc.code
 
-WHERE h.placed_gmt::DATE BETWEEN '2020-03-01' AND '2020-03-19'
+WHERE h.placed_gmt::DATE BETWEEN {{start_date}} AND {{end_date}}
+AND h.pickup_location_code ~ {{location}}
+)inner_query
+--values are 'In transit', 'Ready for pickup', 'On hold'
+WHERE inner_query.hold_status IN ({{hold_status}})
+
+ORDER BY 2,1
