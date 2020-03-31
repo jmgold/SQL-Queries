@@ -20,7 +20,7 @@ sierra_view.bib_record_item_record_link l
 ON
 i.id = l.item_record_id
 
-WHERE i.location_code ~ '^nat' AND i.is_available_at_library = 'true'
+WHERE i.location_code ~ '^nat' AND i.is_available_at_library = 'true' AND i.item_status_code = '-'
 )
 
 
@@ -108,7 +108,7 @@ h.id = hold_num.id
 JOIN
 sierra_view.item_record ir
 ON
-h.id = ir.id AND ir.location_code ~ '^nat' AND ir.is_available_at_library = 'true'
+h.id = ir.id AND ir.location_code ~ '^nat' AND ir.is_available_at_library = 'true' AND ir.item_status_code = '-'
 JOIN
 sierra_view.bib_record_item_record_link l
 ON
