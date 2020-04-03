@@ -4,6 +4,34 @@ Minuteman Lirary Network
 Gathers together various performance metrics for portions of a library's collection
 Is passed variables for owning location, item status to exclude from the report, and the field to group the collection by
 */
+/*
+Jeremy Goldstein
+Minuteman Lirary Network
+Gathers together various performance metrics for portions of a library's collection
+Is passed variables for owning location, item status to exclude from the report, and the field to group the collection by
+*/
+
+WITH call_number_mod AS(
+SELECT
+i.item_record_id,
+CASE
+	WHEN b.best_author_norm != '' AND i.call_number_norm ~ ('^.+'||SPLIT_PART(b.best_author_norm, ' ',1)) THEN SPLIT_PART(i.call_number_norm,SPLIT_PART(b.best_author_norm, ' ',1),1)
+	WHEN i.call_number_norm ~ ('^.+'||SPLIT_PART(REGEXP_REPLACE(b.best_title_norm,'\*|\+|\?|\{',''), ' ',1)) THEN SPLIT_PART(i.call_number_norm,SPLIT_PART(b.best_title_norm, ' ',1),1)
+	ELSE i.call_number_norm
+	END AS call_number_norm
+
+FROM
+sierra_view.item_record_property i
+JOIN
+sierra_view.bib_record_item_record_link l
+ON
+i.item_record_id = l.item_record_id
+JOIN
+sierra_view.bib_record_property b
+ON
+l.bib_record_id = b.bib_record_id
+)
+
 SELECT
 {{grouping}},
 COUNT (i.id) AS "Item total",
@@ -29,6 +57,10 @@ round(100.0 * (cast(COUNT(i.id) as numeric (12,2)) / (select cast(COUNT (i.id) a
 round(100.0 * (cast(SUM(i.checkout_total) + SUM(i.renewal_total) as numeric (12,2)) / (SELECT cast(SUM(i.checkout_total) + SUM(i.renewal_total) as numeric (12,2)) from sierra_view.item_record i WHERE i.location_code ~ '{{location}}' AND i.item_status_code NOT IN ({{Item_Status_Codes}}))), 6)||'%' as relative_circ
 FROM
 sierra_view.item_record i
+JOIN
+call_number_mod ic
+ON
+i.id = ic.item_record_id
 JOIN
 sierra_view.item_record_property ip
 ON

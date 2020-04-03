@@ -4,6 +4,26 @@ Minuteman Library Network
 
 Counts either items or titles owned by a location, grouped by a variety of categories.
 */
+WITH call_number_mod AS(
+SELECT
+i.item_record_id,
+CASE
+	WHEN b.best_author_norm != '' AND i.call_number_norm ~ ('^.+'||SPLIT_PART(b.best_author_norm, ' ',1)) THEN SPLIT_PART(i.call_number_norm,SPLIT_PART(b.best_author_norm, ' ',1),1)
+	WHEN i.call_number_norm ~ ('^.+'||SPLIT_PART(REGEXP_REPLACE(b.best_title_norm,'\*|\+|\?|\{',''), ' ',1)) THEN SPLIT_PART(i.call_number_norm,SPLIT_PART(b.best_title_norm, ' ',1),1)
+	ELSE i.call_number_norm
+	END AS call_number_norm
+
+FROM
+sierra_view.item_record_property i
+JOIN
+sierra_view.bib_record_item_record_link l
+ON
+i.item_record_id = l.item_record_id
+JOIN
+sierra_view.bib_record_property b
+ON
+l.bib_record_id = b.bib_record_id
+)
 
 SELECT
 {{Grouping}},
@@ -93,6 +113,10 @@ JOIN
 sierra_view.item_record i
 ON
 bi.item_record_id = i.id
+JOIN
+call_number_mod ic
+ON
+i.id = ic.item_record_id
 JOIN
 sierra_view.language_property_myuser ln
 ON

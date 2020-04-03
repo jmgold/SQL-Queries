@@ -20,7 +20,7 @@ sierra_view.bib_record_item_record_link l
 ON
 i.id = l.item_record_id
 
-WHERE i.location_code ~ '^nat' AND i.is_available_at_library = 'true' AND i.item_status_code = '-'
+WHERE i.location_code ~ '^act' AND i.is_available_at_library = 'true' AND i.item_status_code = '-'
 )
 
 
@@ -33,7 +33,7 @@ b.best_author AS Author,
 b.best_title AS Title,
 pickup_loc.name AS "Pickup Location",
 loc.name AS "Item Location",
-copies.itype_code_num AS Itype
+it.name AS Itype
 
 FROM
 sierra_view.hold h
@@ -45,7 +45,7 @@ h.record_id,
 ROW_NUMBER() OVER (PARTITION BY h.record_id ORDER BY h.placed_gmt) AS "hold_num"
 FROM
 sierra_view.hold h
-WHERE h.pickup_location_code ~ '^nat'
+WHERE h.pickup_location_code ~ '^act'
 )hold_num
 ON
 h.id = hold_num.id
@@ -73,9 +73,13 @@ JOIN
 sierra_view.location_myuser pickup_loc
 ON
 SUBSTRING(h.pickup_location_code,1,3) = pickup_loc.code
+JOIN
+sierra_view.itype_property_myuser it
+ON
+copies.itype_code_num = it.code
 
 WHERE
-h.pickup_location_code ~ '^nat'
+h.pickup_location_code ~ '^act'
 AND h.is_frozen = 'false' AND (h.placed_gmt::DATE + h.delay_days) < NOW()::DATE
 
 UNION
@@ -89,7 +93,7 @@ b.best_author AS Author,
 b.best_title AS Title,
 pickup_loc.name AS "Pickup Location",
 loc.name AS "Item Location",
-ir.itype_code_num AS Itype
+it.name AS Itype
 
 FROM
 sierra_view.hold h
@@ -101,14 +105,14 @@ h.record_id,
 ROW_NUMBER() OVER (PARTITION BY h.record_id ORDER BY h.placed_gmt) AS "hold_num"
 FROM
 sierra_view.hold h
-WHERE h.pickup_location_code ~ '^nat'
+WHERE h.pickup_location_code ~ '^act'
 )hold_num
 ON
 h.id = hold_num.id
 JOIN
 sierra_view.item_record ir
 ON
-h.id = ir.id AND ir.location_code ~ '^nat' AND ir.is_available_at_library = 'true' AND ir.item_status_code = '-'
+h.id = ir.id AND ir.location_code ~ '^act' AND ir.is_available_at_library = 'true' AND ir.item_status_code = '-'
 JOIN
 sierra_view.bib_record_item_record_link l
 ON
@@ -134,9 +138,13 @@ JOIN
 sierra_view.location_myuser pickup_loc
 ON
 SUBSTRING(h.pickup_location_code,1,3) = pickup_loc.code
+JOIN
+sierra_view.itype_property_myuser it
+ON
+ir.itype_code_num = it.code
 
 WHERE
-h.pickup_location_code ~ '^nat'
+h.pickup_location_code ~ '^act'
 AND h.is_frozen = 'false' AND (h.placed_gmt::DATE + h.delay_days) < NOW()::DATE
 
 ORDER BY 2,1

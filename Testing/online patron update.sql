@@ -26,7 +26,7 @@ WHEN LOWER(a.city) ~ 'needham' THEN 27
 WHEN (LOWER(a.city) ~ 'newton' OR LOWER(a.city) ~ 'auburndale' OR LOWER(a.city) ~ 'chestnut' OR LOWER(a.city) ~ 'nonatum' OR LOWER(a.city) ~ 'waban') THEN 29
 WHEN LOWER(a.city) ~ 'norwood' THEN 30
 WHEN LOWER(a.city) ~ 'sherborn' THEN 46
-WHEN LOWER(a.city) ~ 'somerville' THEN 32
+WHEN LOWER(a.city) ~ 'somerville' THEN 31
 WHEN LOWER(a.city) ~ 'stow' THEN 32
 WHEN LOWER(a.city) ~ 'sudbury' THEN 33
 WHEN LOWER(a.city) ~ 'waltham' THEN 34
