@@ -84,8 +84,8 @@ GROUP BY 1
 
 SELECT
 d.all_dates AS DATE,
-COUNT(DISTINCT f.id) FILTER (WHERE f.charge_code IN ({{charge_codes}})) AS count_fines_assessed,
-COALESCE(SUM(f.item_charge_amt + f.processing_fee_amt + f.billing_fee_amt) FILTER (WHERE f.charge_code IN ({{charge_codes}})),'0')::MONEY AS total_fines_assessed,
+COUNT(DISTINCT f.id) FILTER (WHERE f.charge_code IN ({{charge_codes}})) AS fines_assessed_count,
+COALESCE(SUM(f.item_charge_amt + f.processing_fee_amt + f.billing_fee_amt) FILTER (WHERE f.charge_code IN ({{charge_codes}})),'0')::MONEY AS fines_assessed_total,
 p.fines_paid_count,
 p.fines_paid_total,
 p.fines_waived_count,
