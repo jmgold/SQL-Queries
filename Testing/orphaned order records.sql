@@ -1,13 +1,3 @@
-/*
-Jeremy Goldstein
-Minuteman Library Network
-
-Identifies bib records where a library has attached a paid order record and 0 items
-Limited to full monographic records
-
-Is passed an owning location variable
-*/
-
 SELECT
 DISTINCT id2reckey(b.bib_record_id)||'a' AS rec_num,
 b.best_title AS title,
@@ -34,7 +24,7 @@ EXISTS
 FROM
 sierra_view.order_record_cmf cmf
 WHERE
-o.order_record_id = cmf.order_record_id AND cmf.location_code ~ {{location}}
+o.order_record_id = cmf.order_record_id AND cmf.location_code ~ '^fp'
 )
 
 AND NOT EXISTS (
@@ -44,7 +34,7 @@ sierra_view.bib_record_item_record_link bl
 JOIN
 sierra_view.item_record i 
 ON
-bl.item_record_id = i.id AND i.location_code ~ {{location}}
+bl.item_record_id = i.id AND i.location_code ~ '^fp'
 WHERE
 l.bib_record_id = bl.bib_record_id
 )

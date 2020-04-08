@@ -1,9 +1,4 @@
-/*
-Jeremy Goldstein
-Minuteman Lirary Network
-Gathers together various performance metrics for portions of a library's collection
-Is passed variables for owning location, item status to exclude from the report, and the field to group the collection by
-*/
+
 /*
 Jeremy Goldstein
 Minuteman Lirary Network
