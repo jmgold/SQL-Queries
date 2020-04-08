@@ -41,7 +41,7 @@ AND i.location_code ~ {{Location}}
 
 
 WHERE
-b.material_code IN {{mat_type}}
+b.material_code IN ({{mat_type}})
 group by 1, 2
 having count(i.id) > {{Item_Count}}
 AND (SUM(i.year_to_date_checkout_total) + sum(i.last_year_to_date_checkout_total))::NUMERIC/count(i.id) < {{Turnover}}
