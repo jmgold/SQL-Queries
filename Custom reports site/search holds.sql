@@ -8,22 +8,21 @@ Filters for pickup location, hold placed date and hold status
 
 WITH in_transit AS (
 SELECT
-m.id,
+ir.id,
 SPLIT_PART(v.field_content,': ',1) AS transit_timestamp,
 pickup_loc.name AS origin_loc
 FROM
+sierra_view.item_record ir
+JOIN
 sierra_view.varfield v
-JOIN 
-sierra_view.record_metadata m
 ON
-v.record_id = m.id AND m.record_type_code = 'i'
+ir.id = v.record_id AND v.varfield_type_code = 'm'
 JOIN
 sierra_view.location_myuser pickup_loc
 ON
 SUBSTRING(SPLIT_PART(SPLIT_PART(v.field_content,'from ',2),' to',1)FROM 1 FOR 3) = pickup_loc.code
 WHERE
-v.varfield_type_code = 'm'
-AND v.field_content LIKE '%IN TRANSIT%'
+ir.item_status_code = 't'
 )
 
 SELECT *
