@@ -16,55 +16,85 @@ SELECT
 COUNT(C.id) FILTER(WHERE C.op_code = 'o') AS total_checkouts,
 COUNT(C.id) FILTER(WHERE C.op_code = 'f') AS filled_holds,
 ROUND(100.0 * CAST(COUNT(C.id) FILTER(WHERE C.op_code = 'f')AS NUMERIC (12,2)) / (COUNT(C.id) FILTER(WHERE C.op_code = 'o')),2)||'%' AS pct_holds,
-COUNT(C.id) FILTER(WHERE C.item_location_code ~ 'nat' AND C.op_code = 'o') AS local_items,
-ROUND(100.0 * (CAST(COUNT(C.id) FILTER(WHERE C.item_location_code ~ 'nat'AND C.op_code = 'o')AS NUMERIC (12,2)) / COUNT(C.id) FILTER(WHERE C.op_code = 'o')),2)||'%' AS pct_local,
-COUNT(C.id) FILTER(WHERE C.item_location_code !~ 'nat'AND C.op_code = 'o') AS non_local_items,
-ROUND(100.0 * (CAST(COUNT(C.id) FILTER(WHERE C.item_location_code !~ 'nat'AND C.op_code = 'o')AS NUMERIC (12,2)) / COUNT(C.id) FILTER(WHERE C.op_code = 'o')),2)||'%' AS pct_non_local,
+COUNT(C.id) FILTER(WHERE C.item_location_code ~ {{location}} AND C.op_code = 'o') AS local_items,
+ROUND(100.0 * (CAST(COUNT(C.id) FILTER(WHERE C.item_location_code ~ {{location}} AND C.op_code = 'o')AS NUMERIC (12,2)) / COUNT(C.id) FILTER(WHERE C.op_code = 'o')),2)||'%' AS pct_local,
+COUNT(C.id) FILTER(WHERE C.item_location_code !~ {{location}} AND C.op_code = 'o') AS non_local_items,
+ROUND(100.0 * (CAST(COUNT(C.id) FILTER(WHERE C.item_location_code !~ {{location}} AND C.op_code = 'o')AS NUMERIC (12,2)) / COUNT(C.id) FILTER(WHERE C.op_code = 'o')),2)||'%' AS pct_non_local,
 ROUND(100 * (CAST(COUNT(C.id) FILTER(WHERE C.op_code = 'o') AS NUMERIC (12,2)) / 
 	(SELECT CAST(COUNT (C.id) as numeric (12,2)) FROM sierra_view.circ_trans C WHERE CASE 
-	WHEN {{location}} = 'Acton' THEN (C.loanrule_code_num BETWEEN 2 AND 12 OR C.loanrule_code_num BETWEEN 501 AND 509)
-	WHEN {{location}} = 'Arlington' THEN (C.loanrule_code_num BETWEEN 13 AND 23 OR C.loanrule_code_num BETWEEN 510 AND 518) 
-	WHEN {{location}} = 'Ashland' THEN (C.loanrule_code_num BETWEEN 24 AND 34 OR C.loanrule_code_num BETWEEN 519 AND 527) 
-	WHEN {{location}} = 'Bedford' THEN (C.loanrule_code_num BETWEEN 35 AND 45 OR C.loanrule_code_num BETWEEN 528 AND 536)
-	WHEN {{location}} = 'Belmont' THEN (C.loanrule_code_num BETWEEN 46 AND 56 OR C.loanrule_code_num BETWEEN 537 AND 545)
-	WHEN {{location}} = 'Brookline' THEN (C.loanrule_code_num BETWEEN 57 AND 67 OR C.loanrule_code_num BETWEEN 546 AND 554)
-	WHEN {{location}} = 'Cambridge' THEN (C.loanrule_code_num BETWEEN 68 AND 78 OR C.loanrule_code_num BETWEEN 555 AND 563)
-	WHEN {{location}} = 'Concord' THEN (C.loanrule_code_num BETWEEN 79 AND 89 OR C.loanrule_code_num BETWEEN 564 AND 572) 
-	WHEN {{location}} = 'Dedham' THEN (C.loanrule_code_num BETWEEN 90 AND 100 OR C.loanrule_code_num BETWEEN 573 AND 581)
-	WHEN {{location}} = 'Dean' THEN (C.loanrule_code_num BETWEEN 101 AND 111 OR C.loanrule_code_num BETWEEN 582 AND 590)
-	WHEN {{location}} = 'Dover' THEN (C.loanrule_code_num BETWEEN 112 AND 122 OR C.loanrule_code_num BETWEEN 591 AND 599)
-	WHEN {{location}} = 'Framingham' THEN (C.loanrule_code_num BETWEEN 123 AND 133 OR C.loanrule_code_num BETWEEN 600 AND 608)
-	WHEN {{location}} = 'Franklin' THEN (C.loanrule_code_num BETWEEN 134 AND 144 OR C.loanrule_code_num BETWEEN 609 AND 617)
-	WHEN {{location}} = 'Framingham State' THEN (C.loanrule_code_num BETWEEN 145 AND 155 OR C.loanrule_code_num BETWEEN 618 AND 626)
-	WHEN {{location}} = 'Holliston' THEN (C.loanrule_code_num BETWEEN 156 AND 166 OR C.loanrule_code_num BETWEEN 627 AND 635)
-	WHEN {{location}} = 'Lasell' THEN (C.loanrule_code_num BETWEEN 167 AND 177 OR C.loanrule_code_num BETWEEN 636 AND 644)
-	WHEN {{location}} = 'Lexington' THEN (C.loanrule_code_num BETWEEN 178 AND 188 OR C.loanrule_code_num BETWEEN 645 AND 653) 
-	WHEN {{location}} = 'Lincoln' THEN (C.loanrule_code_num BETWEEN 189 AND 199 OR C.loanrule_code_num BETWEEN 654 AND 662)
-	WHEN {{location}} = 'Maynard' THEN (C.loanrule_code_num BETWEEN 200 AND 210 OR C.loanrule_code_num BETWEEN 663 AND 671)
-	WHEN {{location}} = 'Medford' THEN (C.loanrule_code_num BETWEEN 222 AND 232 OR C.loanrule_code_num BETWEEN 681 AND 689) 
-	WHEN {{location}} = 'Millis' THEN (C.loanrule_code_num BETWEEN 233 AND 243 OR C.loanrule_code_num BETWEEN 690 AND 698) 
-	WHEN {{location}} = 'Medfield' THEN (C.loanrule_code_num BETWEEN 244 AND 254 OR C.loanrule_code_num BETWEEN 699 AND 707)
-	WHEN {{location}} = 'Medway' THEN (C.loanrule_code_num BETWEEN 266 AND 276 OR C.loanrule_code_num BETWEEN 717 AND 725) 
-	WHEN {{location}} = 'Natick' THEN (C.loanrule_code_num BETWEEN 277 AND 287 OR C.loanrule_code_num BETWEEN 726 AND 734)
-	WHEN {{location}} = 'Needham' THEN( C.loanrule_code_num BETWEEN 299 AND 309 OR C.loanrule_code_num BETWEEN 744 AND 752) 
-	WHEN {{location}} = 'Norwood' THEN (C.loanrule_code_num BETWEEN 310 AND 320 OR C.loanrule_code_num BETWEEN 753 AND 761) 
-	WHEN {{location}} = 'Newton' THEN (C.loanrule_code_num BETWEEN 321 AND 331 OR C.loanrule_code_num BETWEEN 762 AND 770) 
-	WHEN {{location}} = 'Olin' THEN (C.loanrule_code_num BETWEEN 289 AND 298 OR C.loanrule_code_num BETWEEN 734 AND 743)
-	WHEN {{location}} = 'Somerville' THEN (C.loanrule_code_num BETWEEN 332 AND 342 OR C.loanrule_code_num BETWEEN 771 AND 779) 
-	WHEN {{location}} = 'Stow' THEN (C.loanrule_code_num BETWEEN 343 AND 353 OR C.loanrule_code_num BETWEEN 780 AND 788) 
-	WHEN {{location}} = 'Sudbury' THEN (C.loanrule_code_num BETWEEN 354 AND 364 OR C.loanrule_code_num BETWEEN 789 AND 797)
-	WHEN {{location}} = 'Watertown' THEN (C.loanrule_code_num BETWEEN 365 AND 375 OR C.loanrule_code_num BETWEEN 798 AND 806) 
-	WHEN {{location}} = 'Wellesley' THEN (C.loanrule_code_num BETWEEN 376 AND 386 OR C.loanrule_code_num BETWEEN 807 AND 815) 
-	WHEN {{location}} = 'Winchester' THEN (C.loanrule_code_num BETWEEN 387 AND 397 OR C.loanrule_code_num BETWEEN 816 AND 824) 
-	WHEN {{location}} = 'Waltham' THEN (C.loanrule_code_num BETWEEN 398 AND 408 OR C.loanrule_code_num BETWEEN 825 AND 833) 
-	WHEN {{location}} = 'Woburn' THEN (C.loanrule_code_num BETWEEN 409 AND 419 OR C.loanrule_code_num BETWEEN 834 AND 842)
-	WHEN {{location}} = 'Weston' THEN (C.loanrule_code_num BETWEEN 420 AND 430 OR C.loanrule_code_num BETWEEN 843 AND 851) 
-	WHEN {{location}} = 'Westwood' THEN (C.loanrule_code_num BETWEEN 431 AND 441 OR C.loanrule_code_num BETWEEN 852 AND 860) 
-	WHEN {{location}} = 'Wayland' THEN (C.loanrule_code_num BETWEEN 442 AND 452 OR C.loanrule_code_num BETWEEN 861 AND 869) 
-	WHEN {{location}} = 'Pine Manor' THEN (C.loanrule_code_num BETWEEN 453 AND 463 OR C.loanrule_code_num BETWEEN 870 AND 878) 
-	WHEN {{location}} = 'Regis' THEN (C.loanrule_code_num BETWEEN 464 AND 474 OR C.loanrule_code_num BETWEEN 879 AND 887) 
-	WHEN {{location}} = 'Sherborn' THEN (C.loanrule_code_num BETWEEN 475 AND 485 OR C.loanrule_code_num BETWEEN 888 AND 896) 
-	ELSE C.loanrule_code_num = 0
+WHEN {{location}} ~ '^act' THEN C.stat_group_code_num BETWEEN '100' AND '109'
+	WHEN {{location}} ~ '^arl' THEN (C.stat_group_code_num BETWEEN '110' AND '119' OR C.stat_group_code_num = '996')
+	WHEN {{location}} ~ '^ar2' THEN C.stat_group_code_num BETWEEN '120' AND '129'
+	WHEN {{location}} ~ '^ar' THEN (C.stat_group_code_num BETWEEN '110' AND '129' OR C.stat_group_code_num = '996')
+	WHEN {{location}} ~ '^ash' THEN C.stat_group_code_num BETWEEN '130' AND '139'
+	WHEN {{location}} ~ '^bed' THEN C.stat_group_code_num BETWEEN '140' AND '149'
+	WHEN {{location}} ~ '^blm' THEN C.stat_group_code_num BETWEEN '150' AND '179'
+	WHEN {{location}} ~ '^brk' THEN C.stat_group_code_num BETWEEN '180' AND '189'
+	WHEN {{location}} ~ '^br2' THEN C.stat_group_code_num BETWEEN '190' AND '199'
+	WHEN {{location}} ~ '^br3' THEN C.stat_group_code_num BETWEEN '200' AND '209'
+	WHEN {{location}} ~ '^br' THEN C.stat_group_code_num BETWEEN '180' AND '209'
+	WHEN {{location}} ~ '^cam' THEN (C.stat_group_code_num BETWEEN '210' AND '219' OR C.stat_group_code_num = '994' OR C.stat_group_code_num = '997') 
+	WHEN {{location}} ~ '^ca3' THEN C.stat_group_code_num BETWEEN '230' AND '239'
+	WHEN {{location}} ~ '^ca4' THEN C.stat_group_code_num BETWEEN '240' AND '249'
+	WHEN {{location}} ~ '^ca5' THEN C.stat_group_code_num BETWEEN '250' AND '259'
+	WHEN {{location}} ~ '^ca6' THEN C.stat_group_code_num BETWEEN '260' AND '269'
+	WHEN {{location}} ~ '^ca7' THEN C.stat_group_code_num BETWEEN '270' AND '279'
+	WHEN {{location}} ~ '^ca8' THEN C.stat_group_code_num BETWEEN '280' AND '289'
+	WHEN {{location}} ~ '^ca9' THEN C.stat_group_code_num BETWEEN '290' AND '299'
+	WHEN {{location}} ~ '^ca' THEN (C.stat_group_code_num BETWEEN '210' AND '299' OR C.stat_group_code_num = '994' OR C.stat_group_code_num = '997')
+	WHEN {{location}} ~ '^con' THEN C.stat_group_code_num BETWEEN '300' AND '309'
+	WHEN {{location}} ~ '^co2' THEN C.stat_group_code_num BETWEEN '310' AND '319'
+	WHEN {{location}} ~ '^co' THEN C.stat_group_code_num BETWEEN '300' AND '319'
+	WHEN {{location}} ~ '^ddm' THEN C.stat_group_code_num BETWEEN '320' AND '329'
+	WHEN {{location}} ~ '^dd2' THEN C.stat_group_code_num BETWEEN '330' AND '339'
+	WHEN {{location}} ~ '^dd' THEN C.stat_group_code_num BETWEEN '320' AND '339'
+	WHEN {{location}} ~ '^dea' THEN C.stat_group_code_num BETWEEN '340' AND '349'
+	WHEN {{location}} ~ '^dov' THEN C.stat_group_code_num BETWEEN '350' AND '359'
+	WHEN {{location}} ~ '^fpl' THEN C.stat_group_code_num BETWEEN '360' AND '369'
+	WHEN {{location}} ~ '^fp3' THEN C.stat_group_code_num = '373'
+	WHEN {{location}} ~ '^fp2' THEN C.stat_group_code_num BETWEEN '370' AND '379'
+	WHEN {{location}} ~ '^fp' THEN C.stat_group_code_num BETWEEN '360' AND '379'
+	WHEN {{location}} ~ '^frk' THEN C.stat_group_code_num BETWEEN '380' AND '389'
+	WHEN {{location}} ~ '^fst' THEN C.stat_group_code_num BETWEEN '390' AND '399'
+	WHEN {{location}} ~ '^hol' THEN C.stat_group_code_num BETWEEN '400' AND '409'
+	WHEN {{location}} ~ '^las' THEN C.stat_group_code_num BETWEEN '410' AND '419'
+	WHEN {{location}} ~ '^lex' THEN C.stat_group_code_num BETWEEN '420' AND '439'
+	WHEN {{location}} ~ '^lin' THEN C.stat_group_code_num BETWEEN '440' AND '449'
+	WHEN {{location}} ~ '^may' THEN C.stat_group_code_num BETWEEN '450' AND '459'
+	WHEN {{location}} ~ '^med' THEN C.stat_group_code_num BETWEEN '480' AND '489'
+	WHEN {{location}} ~ '^mil' THEN C.stat_group_code_num BETWEEN '490' AND '499'
+	WHEN {{location}} ~ '^mld' THEN C.stat_group_code_num BETWEEN '500' AND '509'
+	WHEN {{location}} ~ '^mwy' THEN C.stat_group_code_num BETWEEN '520' AND '529'
+	WHEN {{location}} ~ '^nat' THEN C.stat_group_code_num BETWEEN '530' AND '539'
+	WHEN {{location}} ~ '^na2' THEN C.stat_group_code_num BETWEEN '540' AND '549'
+	WHEN {{location}} ~ '^na3' THEN C.stat_group_code_num BETWEEN '550' AND '559'
+	WHEN {{location}} ~ '^na' THEN C.stat_group_code_num BETWEEN '530' AND '559'
+	WHEN {{location}} ~ '^nee' THEN C.stat_group_code_num BETWEEN '570' AND '579'
+	WHEN {{location}} ~ '^nor' THEN C.stat_group_code_num BETWEEN '580' AND '589'
+	WHEN {{location}} ~ '^ntn' THEN C.stat_group_code_num BETWEEN '590' AND '639'
+	WHEN {{location}} ~ '^som' THEN C.stat_group_code_num BETWEEN '640' AND '649'
+	WHEN {{location}} ~ '^so2' THEN C.stat_group_code_num BETWEEN '650' AND '659'
+	WHEN {{location}} ~ '^so3' THEN C.stat_group_code_num BETWEEN '660' AND '669'
+	WHEN {{location}} ~ '^so' THEN C.stat_group_code_num BETWEEN '640' AND '679'
+	WHEN {{location}} ~ '^sto' THEN C.stat_group_code_num BETWEEN '680' AND '689'
+	WHEN {{location}} ~ '^sud' THEN C.stat_group_code_num BETWEEN '690' AND '699'
+	WHEN {{location}} ~ '^wlm' THEN C.stat_group_code_num BETWEEN '700' AND '709'
+	WHEN {{location}} ~ '^wat' THEN C.stat_group_code_num BETWEEN '710' AND '739'
+	WHEN {{location}} ~ '^wyl' THEN C.stat_group_code_num BETWEEN '740' AND '749'
+	WHEN {{location}} ~ '^wel' THEN C.stat_group_code_num BETWEEN '750' AND '759'
+	WHEN {{location}} ~ '^we2' THEN C.stat_group_code_num BETWEEN '760' AND '769'
+	WHEN {{location}} ~ '^we3' THEN C.stat_group_code_num BETWEEN '770' AND '779'
+	WHEN {{location}} ~ '^we' THEN C.stat_group_code_num BETWEEN '750' AND '779'
+	WHEN {{location}} ~ '^win' THEN C.stat_group_code_num BETWEEN '780' AND '789'
+	WHEN {{location}} ~ '^wob' THEN C.stat_group_code_num BETWEEN '790' AND '799'
+	WHEN {{location}} ~ '^wsn' THEN C.stat_group_code_num BETWEEN '800' AND '809'
+	WHEN {{location}} ~ '^wwd' THEN C.stat_group_code_num BETWEEN '810' AND '819'
+	WHEN {{location}} ~ '^ww2' THEN C.stat_group_code_num BETWEEN '820' AND '829'
+	WHEN {{location}} ~ '^ww' THEN C.stat_group_code_num BETWEEN '810' AND '829'
+	WHEN {{location}} ~ '^pmc' THEN C.stat_group_code_num BETWEEN '830' AND '839'
+	WHEN {{location}} ~ '^reg' THEN C.stat_group_code_num BETWEEN '840' AND '849'
+	WHEN {{location}} ~ '^shr' THEN C.stat_group_code_num BETWEEN '850' AND '859'
+	WHEN {{location}} ~ '\w' THEN C.stat_group_code_num BETWEEN '100' AND '999'
 	END AND C.op_code = 'o' AND C.transaction_gmt::DATE >= NOW()::DATE - INTERVAL '1 month')), 6)||'%' AS relative_checkout_total,
 COUNT(DISTINCT C.patron_record_id) AS unique_patrons,
 COALESCE(SUM(i.price) FILTER(WHERE C.op_code = 'o'),0)::MONEY AS total_value
@@ -94,49 +124,79 @@ C.stat_group_code_num = sg.code
 
 WHERE 
 CASE 
-	WHEN {{location}} = 'Acton' THEN (C.loanrule_code_num BETWEEN 2 AND 12 OR C.loanrule_code_num BETWEEN 501 AND 509)
-	WHEN {{location}} = 'Arlington' THEN (C.loanrule_code_num BETWEEN 13 AND 23 OR C.loanrule_code_num BETWEEN 510 AND 518) 
-	WHEN {{location}} = 'Ashland' THEN (C.loanrule_code_num BETWEEN 24 AND 34 OR C.loanrule_code_num BETWEEN 519 AND 527) 
-	WHEN {{location}} = 'Bedford' THEN (C.loanrule_code_num BETWEEN 35 AND 45 OR C.loanrule_code_num BETWEEN 528 AND 536)
-	WHEN {{location}} = 'Belmont' THEN (C.loanrule_code_num BETWEEN 46 AND 56 OR C.loanrule_code_num BETWEEN 537 AND 545)
-	WHEN {{location}} = 'Brookline' THEN (C.loanrule_code_num BETWEEN 57 AND 67 OR C.loanrule_code_num BETWEEN 546 AND 554)
-	WHEN {{location}} = 'Cambridge' THEN (C.loanrule_code_num BETWEEN 68 AND 78 OR C.loanrule_code_num BETWEEN 555 AND 563)
-	WHEN {{location}} = 'Concord' THEN (C.loanrule_code_num BETWEEN 79 AND 89 OR C.loanrule_code_num BETWEEN 564 AND 572) 
-	WHEN {{location}} = 'Dedham' THEN (C.loanrule_code_num BETWEEN 90 AND 100 OR C.loanrule_code_num BETWEEN 573 AND 581)
-	WHEN {{location}} = 'Dean' THEN (C.loanrule_code_num BETWEEN 101 AND 111 OR C.loanrule_code_num BETWEEN 582 AND 590)
-	WHEN {{location}} = 'Dover' THEN (C.loanrule_code_num BETWEEN 112 AND 122 OR C.loanrule_code_num BETWEEN 591 AND 599)
-	WHEN {{location}} = 'Framingham' THEN (C.loanrule_code_num BETWEEN 123 AND 133 OR C.loanrule_code_num BETWEEN 600 AND 608)
-	WHEN {{location}} = 'Franklin' THEN (C.loanrule_code_num BETWEEN 134 AND 144 OR C.loanrule_code_num BETWEEN 609 AND 617)
-	WHEN {{location}} = 'Framingham State' THEN (C.loanrule_code_num BETWEEN 145 AND 155 OR C.loanrule_code_num BETWEEN 618 AND 626)
-	WHEN {{location}} = 'Holliston' THEN (C.loanrule_code_num BETWEEN 156 AND 166 OR C.loanrule_code_num BETWEEN 627 AND 635)
-	WHEN {{location}} = 'Lasell' THEN (C.loanrule_code_num BETWEEN 167 AND 177 OR C.loanrule_code_num BETWEEN 636 AND 644)
-	WHEN {{location}} = 'Lexington' THEN (C.loanrule_code_num BETWEEN 178 AND 188 OR C.loanrule_code_num BETWEEN 645 AND 653) 
-	WHEN {{location}} = 'Lincoln' THEN (C.loanrule_code_num BETWEEN 189 AND 199 OR C.loanrule_code_num BETWEEN 654 AND 662)
-	WHEN {{location}} = 'Maynard' THEN (C.loanrule_code_num BETWEEN 200 AND 210 OR C.loanrule_code_num BETWEEN 663 AND 671)
-	WHEN {{location}} = 'Medford' THEN (C.loanrule_code_num BETWEEN 222 AND 232 OR C.loanrule_code_num BETWEEN 681 AND 689) 
-	WHEN {{location}} = 'Millis' THEN (C.loanrule_code_num BETWEEN 233 AND 243 OR C.loanrule_code_num BETWEEN 690 AND 698) 
-	WHEN {{location}} = 'Medfield' THEN (C.loanrule_code_num BETWEEN 244 AND 254 OR C.loanrule_code_num BETWEEN 699 AND 707)
-	WHEN {{location}} = 'Medway' THEN (C.loanrule_code_num BETWEEN 266 AND 276 OR C.loanrule_code_num BETWEEN 717 AND 725) 
-	WHEN {{location}} = 'Natick' THEN (C.loanrule_code_num BETWEEN 277 AND 287 OR C.loanrule_code_num BETWEEN 726 AND 734)
-	WHEN {{location}} = 'Needham' THEN( C.loanrule_code_num BETWEEN 299 AND 309 OR C.loanrule_code_num BETWEEN 744 AND 752) 
-	WHEN {{location}} = 'Norwood' THEN (C.loanrule_code_num BETWEEN 310 AND 320 OR C.loanrule_code_num BETWEEN 753 AND 761) 
-	WHEN {{location}} = 'Newton' THEN (C.loanrule_code_num BETWEEN 321 AND 331 OR C.loanrule_code_num BETWEEN 762 AND 770) 
-	WHEN {{location}} = 'Olin' THEN (C.loanrule_code_num BETWEEN 289 AND 298 OR C.loanrule_code_num BETWEEN 734 AND 743)
-	WHEN {{location}} = 'Somerville' THEN (C.loanrule_code_num BETWEEN 332 AND 342 OR C.loanrule_code_num BETWEEN 771 AND 779) 
-	WHEN {{location}} = 'Stow' THEN (C.loanrule_code_num BETWEEN 343 AND 353 OR C.loanrule_code_num BETWEEN 780 AND 788) 
-	WHEN {{location}} = 'Sudbury' THEN (C.loanrule_code_num BETWEEN 354 AND 364 OR C.loanrule_code_num BETWEEN 789 AND 797)
-	WHEN {{location}} = 'Watertown' THEN (C.loanrule_code_num BETWEEN 365 AND 375 OR C.loanrule_code_num BETWEEN 798 AND 806) 
-	WHEN {{location}} = 'Wellesley' THEN (C.loanrule_code_num BETWEEN 376 AND 386 OR C.loanrule_code_num BETWEEN 807 AND 815) 
-	WHEN {{location}} = 'Winchester' THEN (C.loanrule_code_num BETWEEN 387 AND 397 OR C.loanrule_code_num BETWEEN 816 AND 824) 
-	WHEN {{location}} = 'Waltham' THEN (C.loanrule_code_num BETWEEN 398 AND 408 OR C.loanrule_code_num BETWEEN 825 AND 833) 
-	WHEN {{location}} = 'Woburn' THEN (C.loanrule_code_num BETWEEN 409 AND 419 OR C.loanrule_code_num BETWEEN 834 AND 842)
-	WHEN {{location}} = 'Weston' THEN (C.loanrule_code_num BETWEEN 420 AND 430 OR C.loanrule_code_num BETWEEN 843 AND 851) 
-	WHEN {{location}} = 'Westwood' THEN (C.loanrule_code_num BETWEEN 431 AND 441 OR C.loanrule_code_num BETWEEN 852 AND 860) 
-	WHEN {{location}} = 'Wayland' THEN (C.loanrule_code_num BETWEEN 442 AND 452 OR C.loanrule_code_num BETWEEN 861 AND 869) 
-	WHEN {{location}} = 'Pine Manor' THEN (C.loanrule_code_num BETWEEN 453 AND 463 OR C.loanrule_code_num BETWEEN 870 AND 878) 
-	WHEN {{location}} = 'Regis' THEN (C.loanrule_code_num BETWEEN 464 AND 474 OR C.loanrule_code_num BETWEEN 879 AND 887) 
-	WHEN {{location}} = 'Sherborn' THEN (C.loanrule_code_num BETWEEN 475 AND 485 OR C.loanrule_code_num BETWEEN 888 AND 896) 
-	ELSE C.loanrule_code_num = 0
+WHEN {{location}} ~ '^act' THEN C.stat_group_code_num BETWEEN '100' AND '109'
+	WHEN {{location}} ~ '^arl' THEN (C.stat_group_code_num BETWEEN '110' AND '119' OR C.stat_group_code_num = '996')
+	WHEN {{location}} ~ '^ar2' THEN C.stat_group_code_num BETWEEN '120' AND '129'
+	WHEN {{location}} ~ '^ar' THEN (C.stat_group_code_num BETWEEN '110' AND '129' OR C.stat_group_code_num = '996')
+	WHEN {{location}} ~ '^ash' THEN C.stat_group_code_num BETWEEN '130' AND '139'
+	WHEN {{location}} ~ '^bed' THEN C.stat_group_code_num BETWEEN '140' AND '149'
+	WHEN {{location}} ~ '^blm' THEN C.stat_group_code_num BETWEEN '150' AND '179'
+	WHEN {{location}} ~ '^brk' THEN C.stat_group_code_num BETWEEN '180' AND '189'
+	WHEN {{location}} ~ '^br2' THEN C.stat_group_code_num BETWEEN '190' AND '199'
+	WHEN {{location}} ~ '^br3' THEN C.stat_group_code_num BETWEEN '200' AND '209'
+	WHEN {{location}} ~ '^br' THEN C.stat_group_code_num BETWEEN '180' AND '209'
+	WHEN {{location}} ~ '^cam' THEN (C.stat_group_code_num BETWEEN '210' AND '219' OR C.stat_group_code_num = '994' OR C.stat_group_code_num = '997') 
+	WHEN {{location}} ~ '^ca3' THEN C.stat_group_code_num BETWEEN '230' AND '239'
+	WHEN {{location}} ~ '^ca4' THEN C.stat_group_code_num BETWEEN '240' AND '249'
+	WHEN {{location}} ~ '^ca5' THEN C.stat_group_code_num BETWEEN '250' AND '259'
+	WHEN {{location}} ~ '^ca6' THEN C.stat_group_code_num BETWEEN '260' AND '269'
+	WHEN {{location}} ~ '^ca7' THEN C.stat_group_code_num BETWEEN '270' AND '279'
+	WHEN {{location}} ~ '^ca8' THEN C.stat_group_code_num BETWEEN '280' AND '289'
+	WHEN {{location}} ~ '^ca9' THEN C.stat_group_code_num BETWEEN '290' AND '299'
+	WHEN {{location}} ~ '^ca' THEN (C.stat_group_code_num BETWEEN '210' AND '299' OR C.stat_group_code_num = '994' OR C.stat_group_code_num = '997')
+	WHEN {{location}} ~ '^con' THEN C.stat_group_code_num BETWEEN '300' AND '309'
+	WHEN {{location}} ~ '^co2' THEN C.stat_group_code_num BETWEEN '310' AND '319'
+	WHEN {{location}} ~ '^co' THEN C.stat_group_code_num BETWEEN '300' AND '319'
+	WHEN {{location}} ~ '^ddm' THEN C.stat_group_code_num BETWEEN '320' AND '329'
+	WHEN {{location}} ~ '^dd2' THEN C.stat_group_code_num BETWEEN '330' AND '339'
+	WHEN {{location}} ~ '^dd' THEN C.stat_group_code_num BETWEEN '320' AND '339'
+	WHEN {{location}} ~ '^dea' THEN C.stat_group_code_num BETWEEN '340' AND '349'
+	WHEN {{location}} ~ '^dov' THEN C.stat_group_code_num BETWEEN '350' AND '359'
+	WHEN {{location}} ~ '^fpl' THEN C.stat_group_code_num BETWEEN '360' AND '369'
+	WHEN {{location}} ~ '^fp3' THEN C.stat_group_code_num = '373'
+	WHEN {{location}} ~ '^fp2' THEN C.stat_group_code_num BETWEEN '370' AND '379'
+	WHEN {{location}} ~ '^fp' THEN C.stat_group_code_num BETWEEN '360' AND '379'
+	WHEN {{location}} ~ '^frk' THEN C.stat_group_code_num BETWEEN '380' AND '389'
+	WHEN {{location}} ~ '^fst' THEN C.stat_group_code_num BETWEEN '390' AND '399'
+	WHEN {{location}} ~ '^hol' THEN C.stat_group_code_num BETWEEN '400' AND '409'
+	WHEN {{location}} ~ '^las' THEN C.stat_group_code_num BETWEEN '410' AND '419'
+	WHEN {{location}} ~ '^lex' THEN C.stat_group_code_num BETWEEN '420' AND '439'
+	WHEN {{location}} ~ '^lin' THEN C.stat_group_code_num BETWEEN '440' AND '449'
+	WHEN {{location}} ~ '^may' THEN C.stat_group_code_num BETWEEN '450' AND '459'
+	WHEN {{location}} ~ '^med' THEN C.stat_group_code_num BETWEEN '480' AND '489'
+	WHEN {{location}} ~ '^mil' THEN C.stat_group_code_num BETWEEN '490' AND '499'
+	WHEN {{location}} ~ '^mld' THEN C.stat_group_code_num BETWEEN '500' AND '509'
+	WHEN {{location}} ~ '^mwy' THEN C.stat_group_code_num BETWEEN '520' AND '529'
+	WHEN {{location}} ~ '^nat' THEN C.stat_group_code_num BETWEEN '530' AND '539'
+	WHEN {{location}} ~ '^na2' THEN C.stat_group_code_num BETWEEN '540' AND '549'
+	WHEN {{location}} ~ '^na3' THEN C.stat_group_code_num BETWEEN '550' AND '559'
+	WHEN {{location}} ~ '^na' THEN C.stat_group_code_num BETWEEN '530' AND '559'
+	WHEN {{location}} ~ '^nee' THEN C.stat_group_code_num BETWEEN '570' AND '579'
+	WHEN {{location}} ~ '^nor' THEN C.stat_group_code_num BETWEEN '580' AND '589'
+	WHEN {{location}} ~ '^ntn' THEN C.stat_group_code_num BETWEEN '590' AND '639'
+	WHEN {{location}} ~ '^som' THEN C.stat_group_code_num BETWEEN '640' AND '649'
+	WHEN {{location}} ~ '^so2' THEN C.stat_group_code_num BETWEEN '650' AND '659'
+	WHEN {{location}} ~ '^so3' THEN C.stat_group_code_num BETWEEN '660' AND '669'
+	WHEN {{location}} ~ '^so' THEN C.stat_group_code_num BETWEEN '640' AND '679'
+	WHEN {{location}} ~ '^sto' THEN C.stat_group_code_num BETWEEN '680' AND '689'
+	WHEN {{location}} ~ '^sud' THEN C.stat_group_code_num BETWEEN '690' AND '699'
+	WHEN {{location}} ~ '^wlm' THEN C.stat_group_code_num BETWEEN '700' AND '709'
+	WHEN {{location}} ~ '^wat' THEN C.stat_group_code_num BETWEEN '710' AND '739'
+	WHEN {{location}} ~ '^wyl' THEN C.stat_group_code_num BETWEEN '740' AND '749'
+	WHEN {{location}} ~ '^wel' THEN C.stat_group_code_num BETWEEN '750' AND '759'
+	WHEN {{location}} ~ '^we2' THEN C.stat_group_code_num BETWEEN '760' AND '769'
+	WHEN {{location}} ~ '^we3' THEN C.stat_group_code_num BETWEEN '770' AND '779'
+	WHEN {{location}} ~ '^we' THEN C.stat_group_code_num BETWEEN '750' AND '779'
+	WHEN {{location}} ~ '^win' THEN C.stat_group_code_num BETWEEN '780' AND '789'
+	WHEN {{location}} ~ '^wob' THEN C.stat_group_code_num BETWEEN '790' AND '799'
+	WHEN {{location}} ~ '^wsn' THEN C.stat_group_code_num BETWEEN '800' AND '809'
+	WHEN {{location}} ~ '^wwd' THEN C.stat_group_code_num BETWEEN '810' AND '819'
+	WHEN {{location}} ~ '^ww2' THEN C.stat_group_code_num BETWEEN '820' AND '829'
+	WHEN {{location}} ~ '^ww' THEN C.stat_group_code_num BETWEEN '810' AND '829'
+	WHEN {{location}} ~ '^pmc' THEN C.stat_group_code_num BETWEEN '830' AND '839'
+	WHEN {{location}} ~ '^reg' THEN C.stat_group_code_num BETWEEN '840' AND '849'
+	WHEN {{location}} ~ '^shr' THEN C.stat_group_code_num BETWEEN '850' AND '859'
+	WHEN {{location}} ~ '\w' THEN C.stat_group_code_num BETWEEN '100' AND '999'
 	END
 AND C.op_code IN ('o','f')
 AND C.transaction_gmt::DATE >= NOW()::DATE - INTERVAL '1 month'
@@ -150,55 +210,85 @@ SELECT
 COUNT(C.id) FILTER(WHERE C.op_code = 'o') AS total_checkouts,
 COUNT(C.id) FILTER(WHERE C.op_code = 'f') AS filled_holds,
 ROUND(100.0 * CAST(COUNT(C.id) FILTER(WHERE C.op_code = 'f')AS NUMERIC (12,2)) / (COUNT(C.id) FILTER(WHERE C.op_code = 'o')),2)||'%' AS pct_holds,
-COUNT(C.id) FILTER(WHERE C.item_location_code ~ 'nat' AND C.op_code = 'o') AS local_items,
-ROUND(100.0 * (CAST(COUNT(C.id) FILTER(WHERE C.item_location_code ~ 'nat'AND C.op_code = 'o')AS NUMERIC (12,2)) / COUNT(C.id) FILTER(WHERE C.op_code = 'o')),2)||'%' AS pct_local,
-COUNT(C.id) FILTER(WHERE C.item_location_code !~ 'nat'AND C.op_code = 'o') AS non_local_items,
-ROUND(100.0 * (CAST(COUNT(C.id) FILTER(WHERE C.item_location_code !~ 'nat'AND C.op_code = 'o')AS NUMERIC (12,2)) / COUNT(C.id) FILTER(WHERE C.op_code = 'o')),2)||'%' AS pct_non_local,
+COUNT(C.id) FILTER(WHERE C.item_location_code ~ {{location}} AND C.op_code = 'o') AS local_items,
+ROUND(100.0 * (CAST(COUNT(C.id) FILTER(WHERE C.item_location_code ~ {{location}} AND C.op_code = 'o')AS NUMERIC (12,2)) / COUNT(C.id) FILTER(WHERE C.op_code = 'o')),2)||'%' AS pct_local,
+COUNT(C.id) FILTER(WHERE C.item_location_code !~ {{location}} AND C.op_code = 'o') AS non_local_items,
+ROUND(100.0 * (CAST(COUNT(C.id) FILTER(WHERE C.item_location_code !~ {{location}} AND C.op_code = 'o')AS NUMERIC (12,2)) / COUNT(C.id) FILTER(WHERE C.op_code = 'o')),2)||'%' AS pct_non_local,
 ROUND(100 * (CAST(COUNT(C.id) FILTER(WHERE C.op_code = 'o') AS NUMERIC (12,2)) / 
 	(SELECT CAST(COUNT (C.id) as numeric (12,2)) FROM sierra_view.circ_trans C WHERE CASE 
-	WHEN {{location}} = 'Acton' THEN (C.loanrule_code_num BETWEEN 2 AND 12 OR C.loanrule_code_num BETWEEN 501 AND 509)
-	WHEN {{location}} = 'Arlington' THEN (C.loanrule_code_num BETWEEN 13 AND 23 OR C.loanrule_code_num BETWEEN 510 AND 518) 
-	WHEN {{location}} = 'Ashland' THEN (C.loanrule_code_num BETWEEN 24 AND 34 OR C.loanrule_code_num BETWEEN 519 AND 527) 
-	WHEN {{location}} = 'Bedford' THEN (C.loanrule_code_num BETWEEN 35 AND 45 OR C.loanrule_code_num BETWEEN 528 AND 536)
-	WHEN {{location}} = 'Belmont' THEN (C.loanrule_code_num BETWEEN 46 AND 56 OR C.loanrule_code_num BETWEEN 537 AND 545)
-	WHEN {{location}} = 'Brookline' THEN (C.loanrule_code_num BETWEEN 57 AND 67 OR C.loanrule_code_num BETWEEN 546 AND 554)
-	WHEN {{location}} = 'Cambridge' THEN (C.loanrule_code_num BETWEEN 68 AND 78 OR C.loanrule_code_num BETWEEN 555 AND 563)
-	WHEN {{location}} = 'Concord' THEN (C.loanrule_code_num BETWEEN 79 AND 89 OR C.loanrule_code_num BETWEEN 564 AND 572) 
-	WHEN {{location}} = 'Dedham' THEN (C.loanrule_code_num BETWEEN 90 AND 100 OR C.loanrule_code_num BETWEEN 573 AND 581)
-	WHEN {{location}} = 'Dean' THEN (C.loanrule_code_num BETWEEN 101 AND 111 OR C.loanrule_code_num BETWEEN 582 AND 590)
-	WHEN {{location}} = 'Dover' THEN (C.loanrule_code_num BETWEEN 112 AND 122 OR C.loanrule_code_num BETWEEN 591 AND 599)
-	WHEN {{location}} = 'Framingham' THEN (C.loanrule_code_num BETWEEN 123 AND 133 OR C.loanrule_code_num BETWEEN 600 AND 608)
-	WHEN {{location}} = 'Franklin' THEN (C.loanrule_code_num BETWEEN 134 AND 144 OR C.loanrule_code_num BETWEEN 609 AND 617)
-	WHEN {{location}} = 'Framingham State' THEN (C.loanrule_code_num BETWEEN 145 AND 155 OR C.loanrule_code_num BETWEEN 618 AND 626)
-	WHEN {{location}} = 'Holliston' THEN (C.loanrule_code_num BETWEEN 156 AND 166 OR C.loanrule_code_num BETWEEN 627 AND 635)
-	WHEN {{location}} = 'Lasell' THEN (C.loanrule_code_num BETWEEN 167 AND 177 OR C.loanrule_code_num BETWEEN 636 AND 644)
-	WHEN {{location}} = 'Lexington' THEN (C.loanrule_code_num BETWEEN 178 AND 188 OR C.loanrule_code_num BETWEEN 645 AND 653) 
-	WHEN {{location}} = 'Lincoln' THEN (C.loanrule_code_num BETWEEN 189 AND 199 OR C.loanrule_code_num BETWEEN 654 AND 662)
-	WHEN {{location}} = 'Maynard' THEN (C.loanrule_code_num BETWEEN 200 AND 210 OR C.loanrule_code_num BETWEEN 663 AND 671)
-	WHEN {{location}} = 'Medford' THEN (C.loanrule_code_num BETWEEN 222 AND 232 OR C.loanrule_code_num BETWEEN 681 AND 689) 
-	WHEN {{location}} = 'Millis' THEN (C.loanrule_code_num BETWEEN 233 AND 243 OR C.loanrule_code_num BETWEEN 690 AND 698) 
-	WHEN {{location}} = 'Medfield' THEN (C.loanrule_code_num BETWEEN 244 AND 254 OR C.loanrule_code_num BETWEEN 699 AND 707)
-	WHEN {{location}} = 'Medway' THEN (C.loanrule_code_num BETWEEN 266 AND 276 OR C.loanrule_code_num BETWEEN 717 AND 725) 
-	WHEN {{location}} = 'Natick' THEN (C.loanrule_code_num BETWEEN 277 AND 287 OR C.loanrule_code_num BETWEEN 726 AND 734)
-	WHEN {{location}} = 'Needham' THEN( C.loanrule_code_num BETWEEN 299 AND 309 OR C.loanrule_code_num BETWEEN 744 AND 752) 
-	WHEN {{location}} = 'Norwood' THEN (C.loanrule_code_num BETWEEN 310 AND 320 OR C.loanrule_code_num BETWEEN 753 AND 761) 
-	WHEN {{location}} = 'Newton' THEN (C.loanrule_code_num BETWEEN 321 AND 331 OR C.loanrule_code_num BETWEEN 762 AND 770) 
-	WHEN {{location}} = 'Olin' THEN (C.loanrule_code_num BETWEEN 289 AND 298 OR C.loanrule_code_num BETWEEN 734 AND 743)
-	WHEN {{location}} = 'Somerville' THEN (C.loanrule_code_num BETWEEN 332 AND 342 OR C.loanrule_code_num BETWEEN 771 AND 779) 
-	WHEN {{location}} = 'Stow' THEN (C.loanrule_code_num BETWEEN 343 AND 353 OR C.loanrule_code_num BETWEEN 780 AND 788) 
-	WHEN {{location}} = 'Sudbury' THEN (C.loanrule_code_num BETWEEN 354 AND 364 OR C.loanrule_code_num BETWEEN 789 AND 797)
-	WHEN {{location}} = 'Watertown' THEN (C.loanrule_code_num BETWEEN 365 AND 375 OR C.loanrule_code_num BETWEEN 798 AND 806) 
-	WHEN {{location}} = 'Wellesley' THEN (C.loanrule_code_num BETWEEN 376 AND 386 OR C.loanrule_code_num BETWEEN 807 AND 815) 
-	WHEN {{location}} = 'Winchester' THEN (C.loanrule_code_num BETWEEN 387 AND 397 OR C.loanrule_code_num BETWEEN 816 AND 824) 
-	WHEN {{location}} = 'Waltham' THEN (C.loanrule_code_num BETWEEN 398 AND 408 OR C.loanrule_code_num BETWEEN 825 AND 833) 
-	WHEN {{location}} = 'Woburn' THEN (C.loanrule_code_num BETWEEN 409 AND 419 OR C.loanrule_code_num BETWEEN 834 AND 842)
-	WHEN {{location}} = 'Weston' THEN (C.loanrule_code_num BETWEEN 420 AND 430 OR C.loanrule_code_num BETWEEN 843 AND 851) 
-	WHEN {{location}} = 'Westwood' THEN (C.loanrule_code_num BETWEEN 431 AND 441 OR C.loanrule_code_num BETWEEN 852 AND 860) 
-	WHEN {{location}} = 'Wayland' THEN (C.loanrule_code_num BETWEEN 442 AND 452 OR C.loanrule_code_num BETWEEN 861 AND 869) 
-	WHEN {{location}} = 'Pine Manor' THEN (C.loanrule_code_num BETWEEN 453 AND 463 OR C.loanrule_code_num BETWEEN 870 AND 878) 
-	WHEN {{location}} = 'Regis' THEN (C.loanrule_code_num BETWEEN 464 AND 474 OR C.loanrule_code_num BETWEEN 879 AND 887) 
-	WHEN {{location}} = 'Sherborn' THEN (C.loanrule_code_num BETWEEN 475 AND 485 OR C.loanrule_code_num BETWEEN 888 AND 896) 
-	ELSE C.loanrule_code_num = 0
+WHEN {{location}} ~ '^act' THEN C.stat_group_code_num BETWEEN '100' AND '109'
+	WHEN {{location}} ~ '^arl' THEN (C.stat_group_code_num BETWEEN '110' AND '119' OR C.stat_group_code_num = '996')
+	WHEN {{location}} ~ '^ar2' THEN C.stat_group_code_num BETWEEN '120' AND '129'
+	WHEN {{location}} ~ '^ar' THEN (C.stat_group_code_num BETWEEN '110' AND '129' OR C.stat_group_code_num = '996')
+	WHEN {{location}} ~ '^ash' THEN C.stat_group_code_num BETWEEN '130' AND '139'
+	WHEN {{location}} ~ '^bed' THEN C.stat_group_code_num BETWEEN '140' AND '149'
+	WHEN {{location}} ~ '^blm' THEN C.stat_group_code_num BETWEEN '150' AND '179'
+	WHEN {{location}} ~ '^brk' THEN C.stat_group_code_num BETWEEN '180' AND '189'
+	WHEN {{location}} ~ '^br2' THEN C.stat_group_code_num BETWEEN '190' AND '199'
+	WHEN {{location}} ~ '^br3' THEN C.stat_group_code_num BETWEEN '200' AND '209'
+	WHEN {{location}} ~ '^br' THEN C.stat_group_code_num BETWEEN '180' AND '209'
+	WHEN {{location}} ~ '^cam' THEN (C.stat_group_code_num BETWEEN '210' AND '219' OR C.stat_group_code_num = '994' OR C.stat_group_code_num = '997') 
+	WHEN {{location}} ~ '^ca3' THEN C.stat_group_code_num BETWEEN '230' AND '239'
+	WHEN {{location}} ~ '^ca4' THEN C.stat_group_code_num BETWEEN '240' AND '249'
+	WHEN {{location}} ~ '^ca5' THEN C.stat_group_code_num BETWEEN '250' AND '259'
+	WHEN {{location}} ~ '^ca6' THEN C.stat_group_code_num BETWEEN '260' AND '269'
+	WHEN {{location}} ~ '^ca7' THEN C.stat_group_code_num BETWEEN '270' AND '279'
+	WHEN {{location}} ~ '^ca8' THEN C.stat_group_code_num BETWEEN '280' AND '289'
+	WHEN {{location}} ~ '^ca9' THEN C.stat_group_code_num BETWEEN '290' AND '299'
+	WHEN {{location}} ~ '^ca' THEN (C.stat_group_code_num BETWEEN '210' AND '299' OR C.stat_group_code_num = '994' OR C.stat_group_code_num = '997')
+	WHEN {{location}} ~ '^con' THEN C.stat_group_code_num BETWEEN '300' AND '309'
+	WHEN {{location}} ~ '^co2' THEN C.stat_group_code_num BETWEEN '310' AND '319'
+	WHEN {{location}} ~ '^co' THEN C.stat_group_code_num BETWEEN '300' AND '319'
+	WHEN {{location}} ~ '^ddm' THEN C.stat_group_code_num BETWEEN '320' AND '329'
+	WHEN {{location}} ~ '^dd2' THEN C.stat_group_code_num BETWEEN '330' AND '339'
+	WHEN {{location}} ~ '^dd' THEN C.stat_group_code_num BETWEEN '320' AND '339'
+	WHEN {{location}} ~ '^dea' THEN C.stat_group_code_num BETWEEN '340' AND '349'
+	WHEN {{location}} ~ '^dov' THEN C.stat_group_code_num BETWEEN '350' AND '359'
+	WHEN {{location}} ~ '^fpl' THEN C.stat_group_code_num BETWEEN '360' AND '369'
+	WHEN {{location}} ~ '^fp3' THEN C.stat_group_code_num = '373'
+	WHEN {{location}} ~ '^fp2' THEN C.stat_group_code_num BETWEEN '370' AND '379'
+	WHEN {{location}} ~ '^fp' THEN C.stat_group_code_num BETWEEN '360' AND '379'
+	WHEN {{location}} ~ '^frk' THEN C.stat_group_code_num BETWEEN '380' AND '389'
+	WHEN {{location}} ~ '^fst' THEN C.stat_group_code_num BETWEEN '390' AND '399'
+	WHEN {{location}} ~ '^hol' THEN C.stat_group_code_num BETWEEN '400' AND '409'
+	WHEN {{location}} ~ '^las' THEN C.stat_group_code_num BETWEEN '410' AND '419'
+	WHEN {{location}} ~ '^lex' THEN C.stat_group_code_num BETWEEN '420' AND '439'
+	WHEN {{location}} ~ '^lin' THEN C.stat_group_code_num BETWEEN '440' AND '449'
+	WHEN {{location}} ~ '^may' THEN C.stat_group_code_num BETWEEN '450' AND '459'
+	WHEN {{location}} ~ '^med' THEN C.stat_group_code_num BETWEEN '480' AND '489'
+	WHEN {{location}} ~ '^mil' THEN C.stat_group_code_num BETWEEN '490' AND '499'
+	WHEN {{location}} ~ '^mld' THEN C.stat_group_code_num BETWEEN '500' AND '509'
+	WHEN {{location}} ~ '^mwy' THEN C.stat_group_code_num BETWEEN '520' AND '529'
+	WHEN {{location}} ~ '^nat' THEN C.stat_group_code_num BETWEEN '530' AND '539'
+	WHEN {{location}} ~ '^na2' THEN C.stat_group_code_num BETWEEN '540' AND '549'
+	WHEN {{location}} ~ '^na3' THEN C.stat_group_code_num BETWEEN '550' AND '559'
+	WHEN {{location}} ~ '^na' THEN C.stat_group_code_num BETWEEN '530' AND '559'
+	WHEN {{location}} ~ '^nee' THEN C.stat_group_code_num BETWEEN '570' AND '579'
+	WHEN {{location}} ~ '^nor' THEN C.stat_group_code_num BETWEEN '580' AND '589'
+	WHEN {{location}} ~ '^ntn' THEN C.stat_group_code_num BETWEEN '590' AND '639'
+	WHEN {{location}} ~ '^som' THEN C.stat_group_code_num BETWEEN '640' AND '649'
+	WHEN {{location}} ~ '^so2' THEN C.stat_group_code_num BETWEEN '650' AND '659'
+	WHEN {{location}} ~ '^so3' THEN C.stat_group_code_num BETWEEN '660' AND '669'
+	WHEN {{location}} ~ '^so' THEN C.stat_group_code_num BETWEEN '640' AND '679'
+	WHEN {{location}} ~ '^sto' THEN C.stat_group_code_num BETWEEN '680' AND '689'
+	WHEN {{location}} ~ '^sud' THEN C.stat_group_code_num BETWEEN '690' AND '699'
+	WHEN {{location}} ~ '^wlm' THEN C.stat_group_code_num BETWEEN '700' AND '709'
+	WHEN {{location}} ~ '^wat' THEN C.stat_group_code_num BETWEEN '710' AND '739'
+	WHEN {{location}} ~ '^wyl' THEN C.stat_group_code_num BETWEEN '740' AND '749'
+	WHEN {{location}} ~ '^wel' THEN C.stat_group_code_num BETWEEN '750' AND '759'
+	WHEN {{location}} ~ '^we2' THEN C.stat_group_code_num BETWEEN '760' AND '769'
+	WHEN {{location}} ~ '^we3' THEN C.stat_group_code_num BETWEEN '770' AND '779'
+	WHEN {{location}} ~ '^we' THEN C.stat_group_code_num BETWEEN '750' AND '779'
+	WHEN {{location}} ~ '^win' THEN C.stat_group_code_num BETWEEN '780' AND '789'
+	WHEN {{location}} ~ '^wob' THEN C.stat_group_code_num BETWEEN '790' AND '799'
+	WHEN {{location}} ~ '^wsn' THEN C.stat_group_code_num BETWEEN '800' AND '809'
+	WHEN {{location}} ~ '^wwd' THEN C.stat_group_code_num BETWEEN '810' AND '819'
+	WHEN {{location}} ~ '^ww2' THEN C.stat_group_code_num BETWEEN '820' AND '829'
+	WHEN {{location}} ~ '^ww' THEN C.stat_group_code_num BETWEEN '810' AND '829'
+	WHEN {{location}} ~ '^pmc' THEN C.stat_group_code_num BETWEEN '830' AND '839'
+	WHEN {{location}} ~ '^reg' THEN C.stat_group_code_num BETWEEN '840' AND '849'
+	WHEN {{location}} ~ '^shr' THEN C.stat_group_code_num BETWEEN '850' AND '859'
+	WHEN {{location}} ~ '\w' THEN C.stat_group_code_num BETWEEN '100' AND '999'
 	END AND C.op_code = 'o' AND C.transaction_gmt::DATE >= NOW()::DATE - INTERVAL '1 month')), 6)||'%' AS relative_checkout_total,
 COUNT(DISTINCT C.patron_record_id) AS unique_patrons,
 COALESCE(SUM(i.price) FILTER(WHERE C.op_code = 'o'),0)::MONEY AS total_value
@@ -216,49 +306,79 @@ C.itype_code_num = it.code
 
 WHERE 
 CASE 
-	WHEN {{location}} = 'Acton' THEN (C.loanrule_code_num BETWEEN 2 AND 12 OR C.loanrule_code_num BETWEEN 501 AND 509)
-	WHEN {{location}} = 'Arlington' THEN (C.loanrule_code_num BETWEEN 13 AND 23 OR C.loanrule_code_num BETWEEN 510 AND 518) 
-	WHEN {{location}} = 'Ashland' THEN (C.loanrule_code_num BETWEEN 24 AND 34 OR C.loanrule_code_num BETWEEN 519 AND 527) 
-	WHEN {{location}} = 'Bedford' THEN (C.loanrule_code_num BETWEEN 35 AND 45 OR C.loanrule_code_num BETWEEN 528 AND 536)
-	WHEN {{location}} = 'Belmont' THEN (C.loanrule_code_num BETWEEN 46 AND 56 OR C.loanrule_code_num BETWEEN 537 AND 545)
-	WHEN {{location}} = 'Brookline' THEN (C.loanrule_code_num BETWEEN 57 AND 67 OR C.loanrule_code_num BETWEEN 546 AND 554)
-	WHEN {{location}} = 'Cambridge' THEN (C.loanrule_code_num BETWEEN 68 AND 78 OR C.loanrule_code_num BETWEEN 555 AND 563)
-	WHEN {{location}} = 'Concord' THEN (C.loanrule_code_num BETWEEN 79 AND 89 OR C.loanrule_code_num BETWEEN 564 AND 572) 
-	WHEN {{location}} = 'Dedham' THEN (C.loanrule_code_num BETWEEN 90 AND 100 OR C.loanrule_code_num BETWEEN 573 AND 581)
-	WHEN {{location}} = 'Dean' THEN (C.loanrule_code_num BETWEEN 101 AND 111 OR C.loanrule_code_num BETWEEN 582 AND 590)
-	WHEN {{location}} = 'Dover' THEN (C.loanrule_code_num BETWEEN 112 AND 122 OR C.loanrule_code_num BETWEEN 591 AND 599)
-	WHEN {{location}} = 'Framingham' THEN (C.loanrule_code_num BETWEEN 123 AND 133 OR C.loanrule_code_num BETWEEN 600 AND 608)
-	WHEN {{location}} = 'Franklin' THEN (C.loanrule_code_num BETWEEN 134 AND 144 OR C.loanrule_code_num BETWEEN 609 AND 617)
-	WHEN {{location}} = 'Framingham State' THEN (C.loanrule_code_num BETWEEN 145 AND 155 OR C.loanrule_code_num BETWEEN 618 AND 626)
-	WHEN {{location}} = 'Holliston' THEN (C.loanrule_code_num BETWEEN 156 AND 166 OR C.loanrule_code_num BETWEEN 627 AND 635)
-	WHEN {{location}} = 'Lasell' THEN (C.loanrule_code_num BETWEEN 167 AND 177 OR C.loanrule_code_num BETWEEN 636 AND 644)
-	WHEN {{location}} = 'Lexington' THEN (C.loanrule_code_num BETWEEN 178 AND 188 OR C.loanrule_code_num BETWEEN 645 AND 653) 
-	WHEN {{location}} = 'Lincoln' THEN (C.loanrule_code_num BETWEEN 189 AND 199 OR C.loanrule_code_num BETWEEN 654 AND 662)
-	WHEN {{location}} = 'Maynard' THEN (C.loanrule_code_num BETWEEN 200 AND 210 OR C.loanrule_code_num BETWEEN 663 AND 671)
-	WHEN {{location}} = 'Medford' THEN (C.loanrule_code_num BETWEEN 222 AND 232 OR C.loanrule_code_num BETWEEN 681 AND 689) 
-	WHEN {{location}} = 'Millis' THEN (C.loanrule_code_num BETWEEN 233 AND 243 OR C.loanrule_code_num BETWEEN 690 AND 698) 
-	WHEN {{location}} = 'Medfield' THEN (C.loanrule_code_num BETWEEN 244 AND 254 OR C.loanrule_code_num BETWEEN 699 AND 707)
-	WHEN {{location}} = 'Medway' THEN (C.loanrule_code_num BETWEEN 266 AND 276 OR C.loanrule_code_num BETWEEN 717 AND 725) 
-	WHEN {{location}} = 'Natick' THEN (C.loanrule_code_num BETWEEN 277 AND 287 OR C.loanrule_code_num BETWEEN 726 AND 734)
-	WHEN {{location}} = 'Needham' THEN( C.loanrule_code_num BETWEEN 299 AND 309 OR C.loanrule_code_num BETWEEN 744 AND 752) 
-	WHEN {{location}} = 'Norwood' THEN (C.loanrule_code_num BETWEEN 310 AND 320 OR C.loanrule_code_num BETWEEN 753 AND 761) 
-	WHEN {{location}} = 'Newton' THEN (C.loanrule_code_num BETWEEN 321 AND 331 OR C.loanrule_code_num BETWEEN 762 AND 770) 
-	WHEN {{location}} = 'Olin' THEN (C.loanrule_code_num BETWEEN 289 AND 298 OR C.loanrule_code_num BETWEEN 734 AND 743)
-	WHEN {{location}} = 'Somerville' THEN (C.loanrule_code_num BETWEEN 332 AND 342 OR C.loanrule_code_num BETWEEN 771 AND 779) 
-	WHEN {{location}} = 'Stow' THEN (C.loanrule_code_num BETWEEN 343 AND 353 OR C.loanrule_code_num BETWEEN 780 AND 788) 
-	WHEN {{location}} = 'Sudbury' THEN (C.loanrule_code_num BETWEEN 354 AND 364 OR C.loanrule_code_num BETWEEN 789 AND 797)
-	WHEN {{location}} = 'Watertown' THEN (C.loanrule_code_num BETWEEN 365 AND 375 OR C.loanrule_code_num BETWEEN 798 AND 806) 
-	WHEN {{location}} = 'Wellesley' THEN (C.loanrule_code_num BETWEEN 376 AND 386 OR C.loanrule_code_num BETWEEN 807 AND 815) 
-	WHEN {{location}} = 'Winchester' THEN (C.loanrule_code_num BETWEEN 387 AND 397 OR C.loanrule_code_num BETWEEN 816 AND 824) 
-	WHEN {{location}} = 'Waltham' THEN (C.loanrule_code_num BETWEEN 398 AND 408 OR C.loanrule_code_num BETWEEN 825 AND 833) 
-	WHEN {{location}} = 'Woburn' THEN (C.loanrule_code_num BETWEEN 409 AND 419 OR C.loanrule_code_num BETWEEN 834 AND 842)
-	WHEN {{location}} = 'Weston' THEN (C.loanrule_code_num BETWEEN 420 AND 430 OR C.loanrule_code_num BETWEEN 843 AND 851) 
-	WHEN {{location}} = 'Westwood' THEN (C.loanrule_code_num BETWEEN 431 AND 441 OR C.loanrule_code_num BETWEEN 852 AND 860) 
-	WHEN {{location}} = 'Wayland' THEN (C.loanrule_code_num BETWEEN 442 AND 452 OR C.loanrule_code_num BETWEEN 861 AND 869) 
-	WHEN {{location}} = 'Pine Manor' THEN (C.loanrule_code_num BETWEEN 453 AND 463 OR C.loanrule_code_num BETWEEN 870 AND 878) 
-	WHEN {{location}} = 'Regis' THEN (C.loanrule_code_num BETWEEN 464 AND 474 OR C.loanrule_code_num BETWEEN 879 AND 887) 
-	WHEN {{location}} = 'Sherborn' THEN (C.loanrule_code_num BETWEEN 475 AND 485 OR C.loanrule_code_num BETWEEN 888 AND 896) 
-	ELSE C.loanrule_code_num = 0
+WHEN {{location}} ~ '^act' THEN C.stat_group_code_num BETWEEN '100' AND '109'
+	WHEN {{location}} ~ '^arl' THEN (C.stat_group_code_num BETWEEN '110' AND '119' OR C.stat_group_code_num = '996')
+	WHEN {{location}} ~ '^ar2' THEN C.stat_group_code_num BETWEEN '120' AND '129'
+	WHEN {{location}} ~ '^ar' THEN (C.stat_group_code_num BETWEEN '110' AND '129' OR C.stat_group_code_num = '996')
+	WHEN {{location}} ~ '^ash' THEN C.stat_group_code_num BETWEEN '130' AND '139'
+	WHEN {{location}} ~ '^bed' THEN C.stat_group_code_num BETWEEN '140' AND '149'
+	WHEN {{location}} ~ '^blm' THEN C.stat_group_code_num BETWEEN '150' AND '179'
+	WHEN {{location}} ~ '^brk' THEN C.stat_group_code_num BETWEEN '180' AND '189'
+	WHEN {{location}} ~ '^br2' THEN C.stat_group_code_num BETWEEN '190' AND '199'
+	WHEN {{location}} ~ '^br3' THEN C.stat_group_code_num BETWEEN '200' AND '209'
+	WHEN {{location}} ~ '^br' THEN C.stat_group_code_num BETWEEN '180' AND '209'
+	WHEN {{location}} ~ '^cam' THEN (C.stat_group_code_num BETWEEN '210' AND '219' OR C.stat_group_code_num = '994' OR C.stat_group_code_num = '997') 
+	WHEN {{location}} ~ '^ca3' THEN C.stat_group_code_num BETWEEN '230' AND '239'
+	WHEN {{location}} ~ '^ca4' THEN C.stat_group_code_num BETWEEN '240' AND '249'
+	WHEN {{location}} ~ '^ca5' THEN C.stat_group_code_num BETWEEN '250' AND '259'
+	WHEN {{location}} ~ '^ca6' THEN C.stat_group_code_num BETWEEN '260' AND '269'
+	WHEN {{location}} ~ '^ca7' THEN C.stat_group_code_num BETWEEN '270' AND '279'
+	WHEN {{location}} ~ '^ca8' THEN C.stat_group_code_num BETWEEN '280' AND '289'
+	WHEN {{location}} ~ '^ca9' THEN C.stat_group_code_num BETWEEN '290' AND '299'
+	WHEN {{location}} ~ '^ca' THEN (C.stat_group_code_num BETWEEN '210' AND '299' OR C.stat_group_code_num = '994' OR C.stat_group_code_num = '997')
+	WHEN {{location}} ~ '^con' THEN C.stat_group_code_num BETWEEN '300' AND '309'
+	WHEN {{location}} ~ '^co2' THEN C.stat_group_code_num BETWEEN '310' AND '319'
+	WHEN {{location}} ~ '^co' THEN C.stat_group_code_num BETWEEN '300' AND '319'
+	WHEN {{location}} ~ '^ddm' THEN C.stat_group_code_num BETWEEN '320' AND '329'
+	WHEN {{location}} ~ '^dd2' THEN C.stat_group_code_num BETWEEN '330' AND '339'
+	WHEN {{location}} ~ '^dd' THEN C.stat_group_code_num BETWEEN '320' AND '339'
+	WHEN {{location}} ~ '^dea' THEN C.stat_group_code_num BETWEEN '340' AND '349'
+	WHEN {{location}} ~ '^dov' THEN C.stat_group_code_num BETWEEN '350' AND '359'
+	WHEN {{location}} ~ '^fpl' THEN C.stat_group_code_num BETWEEN '360' AND '369'
+	WHEN {{location}} ~ '^fp3' THEN C.stat_group_code_num = '373'
+	WHEN {{location}} ~ '^fp2' THEN C.stat_group_code_num BETWEEN '370' AND '379'
+	WHEN {{location}} ~ '^fp' THEN C.stat_group_code_num BETWEEN '360' AND '379'
+	WHEN {{location}} ~ '^frk' THEN C.stat_group_code_num BETWEEN '380' AND '389'
+	WHEN {{location}} ~ '^fst' THEN C.stat_group_code_num BETWEEN '390' AND '399'
+	WHEN {{location}} ~ '^hol' THEN C.stat_group_code_num BETWEEN '400' AND '409'
+	WHEN {{location}} ~ '^las' THEN C.stat_group_code_num BETWEEN '410' AND '419'
+	WHEN {{location}} ~ '^lex' THEN C.stat_group_code_num BETWEEN '420' AND '439'
+	WHEN {{location}} ~ '^lin' THEN C.stat_group_code_num BETWEEN '440' AND '449'
+	WHEN {{location}} ~ '^may' THEN C.stat_group_code_num BETWEEN '450' AND '459'
+	WHEN {{location}} ~ '^med' THEN C.stat_group_code_num BETWEEN '480' AND '489'
+	WHEN {{location}} ~ '^mil' THEN C.stat_group_code_num BETWEEN '490' AND '499'
+	WHEN {{location}} ~ '^mld' THEN C.stat_group_code_num BETWEEN '500' AND '509'
+	WHEN {{location}} ~ '^mwy' THEN C.stat_group_code_num BETWEEN '520' AND '529'
+	WHEN {{location}} ~ '^nat' THEN C.stat_group_code_num BETWEEN '530' AND '539'
+	WHEN {{location}} ~ '^na2' THEN C.stat_group_code_num BETWEEN '540' AND '549'
+	WHEN {{location}} ~ '^na3' THEN C.stat_group_code_num BETWEEN '550' AND '559'
+	WHEN {{location}} ~ '^na' THEN C.stat_group_code_num BETWEEN '530' AND '559'
+	WHEN {{location}} ~ '^nee' THEN C.stat_group_code_num BETWEEN '570' AND '579'
+	WHEN {{location}} ~ '^nor' THEN C.stat_group_code_num BETWEEN '580' AND '589'
+	WHEN {{location}} ~ '^ntn' THEN C.stat_group_code_num BETWEEN '590' AND '639'
+	WHEN {{location}} ~ '^som' THEN C.stat_group_code_num BETWEEN '640' AND '649'
+	WHEN {{location}} ~ '^so2' THEN C.stat_group_code_num BETWEEN '650' AND '659'
+	WHEN {{location}} ~ '^so3' THEN C.stat_group_code_num BETWEEN '660' AND '669'
+	WHEN {{location}} ~ '^so' THEN C.stat_group_code_num BETWEEN '640' AND '679'
+	WHEN {{location}} ~ '^sto' THEN C.stat_group_code_num BETWEEN '680' AND '689'
+	WHEN {{location}} ~ '^sud' THEN C.stat_group_code_num BETWEEN '690' AND '699'
+	WHEN {{location}} ~ '^wlm' THEN C.stat_group_code_num BETWEEN '700' AND '709'
+	WHEN {{location}} ~ '^wat' THEN C.stat_group_code_num BETWEEN '710' AND '739'
+	WHEN {{location}} ~ '^wyl' THEN C.stat_group_code_num BETWEEN '740' AND '749'
+	WHEN {{location}} ~ '^wel' THEN C.stat_group_code_num BETWEEN '750' AND '759'
+	WHEN {{location}} ~ '^we2' THEN C.stat_group_code_num BETWEEN '760' AND '769'
+	WHEN {{location}} ~ '^we3' THEN C.stat_group_code_num BETWEEN '770' AND '779'
+	WHEN {{location}} ~ '^we' THEN C.stat_group_code_num BETWEEN '750' AND '779'
+	WHEN {{location}} ~ '^win' THEN C.stat_group_code_num BETWEEN '780' AND '789'
+	WHEN {{location}} ~ '^wob' THEN C.stat_group_code_num BETWEEN '790' AND '799'
+	WHEN {{location}} ~ '^wsn' THEN C.stat_group_code_num BETWEEN '800' AND '809'
+	WHEN {{location}} ~ '^wwd' THEN C.stat_group_code_num BETWEEN '810' AND '819'
+	WHEN {{location}} ~ '^ww2' THEN C.stat_group_code_num BETWEEN '820' AND '829'
+	WHEN {{location}} ~ '^ww' THEN C.stat_group_code_num BETWEEN '810' AND '829'
+	WHEN {{location}} ~ '^pmc' THEN C.stat_group_code_num BETWEEN '830' AND '839'
+	WHEN {{location}} ~ '^reg' THEN C.stat_group_code_num BETWEEN '840' AND '849'
+	WHEN {{location}} ~ '^shr' THEN C.stat_group_code_num BETWEEN '850' AND '859'
+	WHEN {{location}} ~ '\w' THEN C.stat_group_code_num BETWEEN '100' AND '999'
 END
 AND C.op_code IN ('o','f')
 AND C.transaction_gmt::DATE >= NOW()::DATE - INTERVAL '1 month'
