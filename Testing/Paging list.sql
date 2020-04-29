@@ -112,7 +112,7 @@ h.id = hold_num.id
 JOIN
 sierra_view.item_record ir
 ON
-h.id = ir.id AND ir.location_code ~ '^act' AND ir.is_available_at_library = 'true' AND ir.item_status_code = '-'
+h.record_id = ir.id AND ir.location_code ~ '^act' AND ir.is_available_at_library = 'true' AND ir.item_status_code = '-'
 JOIN
 sierra_view.bib_record_item_record_link l
 ON
