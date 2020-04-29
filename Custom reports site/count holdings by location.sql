@@ -4,30 +4,6 @@ Minuteman Library Network
 
 Counts either items or titles owned by a location, grouped by a variety of categories.
 */
-WITH call_number_mod AS(
-SELECT
-i.item_record_id,
-CASE
-	WHEN b.best_author_norm != '' AND i.call_number_norm ~ ('^.+'||SPLIT_PART(b.best_author_norm, ' ',1)) THEN SPLIT_PART(TRIM(BOTH FROM i.call_number_norm),SPLIT_PART(b.best_author_norm, ' ',1),1)
-	WHEN i.call_number_norm ~ ('^.+'||SPLIT_PART(REGEXP_REPLACE(b.best_title_norm,'\*|\+|\?|\{',''), ' ',1)) THEN SPLIT_PART(TRIM(BOTH FROM i.call_number_norm),SPLIT_PART(b.best_title_norm, ' ',1),1)
-	--only digits are a year at the end
-	WHEN REGEXP_REPLACE(REVERSE(TRIM(BOTH FROM i.call_number_norm)), '^[0-9]{3}[12]', '') !~ '\d' THEN TRIM(BOTH FROM REGEXP_REPLACE(i.call_number_norm,'\s?\d{4}$',''))
-   --only digits are a volume,copy,series, etc number at the end
-	WHEN REGEXP_REPLACE(REVERSE(TRIM(BOTH FROM i.call_number_norm)), '^[0-9]{1,3}\s?\.?(v|lov|c|#|s|nosaes|aes|tes|res|seires|p|tp|trap|loc|noitcelloc|b|kb|koob)', '') !~ '\d' THEN REVERSE(REGEXP_REPLACE(REVERSE(TRIM(BOTH FROM REGEXP_REPLACE(i.call_number_norm,'\(|\)|\[|\]','','gi'))),'^[0-9]{1,3}\s?\.?(v|lov|c|#|s|nosaes|aes|tes|res|seires|p|tp|trap|loc|noitcelloc|b|kb|koob)',''))
-	ELSE TRIM(BOTH FROM i.call_number_norm)
-	END AS call_number_norm
-
-FROM
-sierra_view.item_record_property i
-JOIN
-sierra_view.bib_record_item_record_link l
-ON
-i.item_record_id = l.item_record_id
-JOIN
-sierra_view.bib_record_property b
-ON
-l.bib_record_id = b.bib_record_id
-)
 
 SELECT
 {{Grouping}},
@@ -36,8 +12,7 @@ SELECT
 --ln.name AS "language",
 --m.name AS mat_type,
 --i.icode1 AS scat,
---it.name AS itype,
--- call_number_range,
+--it.name AS itype
 */
 
 COUNT({{bib_or_item}}) FILTER(WHERE SUBSTRING(i.location_code FROM 1 FOR 3) = 'act') AS "ACTON",
@@ -116,10 +91,6 @@ JOIN
 sierra_view.item_record i
 ON
 bi.item_record_id = i.id
-JOIN
-call_number_mod ic
-ON
-i.id = ic.item_record_id
 JOIN
 sierra_view.language_property_myuser ln
 ON
