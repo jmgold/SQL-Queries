@@ -1,3 +1,9 @@
+/*
+Jeremy Goldstein
+Minuteman Library Network
+Report attempts to produce an in use scat table (icode1) by finding the most commonly used call # range and itype among items using each value
+*/
+
 WITH call_number_mod AS(
 SELECT
 i.item_record_id,
@@ -25,7 +31,7 @@ l.bib_record_id = b.bib_record_id
 JOIN
 sierra_view.item_record ir
 ON
-i.item_record_id = ir.id AND ir.location_code ~ '^fpl'
+i.item_record_id = ir.id AND ir.location_code ~ {{location}}
 )
 
 SELECT
@@ -35,7 +41,7 @@ FIRST_VALUE(a.itype) OVER(PARTITION BY a.scat ORDER BY item_total DESC) AS itype
 FROM(
 SELECT
 i.icode1 AS scat,
-COALESCE(TRIM(BOTH FROM CASE
+TRIM(BOTH FROM COALESCE(TRIM(BOTH FROM CASE
    --call number does not exist
 	WHEN ic.call_number_norm = '' OR ic.call_number_norm IS NULL THEN 'no call number'
 	--biographies
@@ -63,7 +69,7 @@ COALESCE(TRIM(BOTH FROM CASE
 	--leftover number suffixes
    WHEN TRIM(BOTH FROM ic.call_number_norm) ~ '\d' THEN REVERSE(REGEXP_REPLACE(REVERSE(REGEXP_REPLACE(REGEXP_REPLACE(TRIM(BOTH FROM ic.call_number_norm),'\(|\)|\[|\]','','gi'),'\d\w*','')),'^[\w\-\.\/'']*\s', ''))
 	ELSE 'unknown'
-END,'unknown')) AS call_number_range,
+END,'unknown'))) AS call_number_range,
 it.name as itype,
 COUNT(i.id) AS item_total
 
@@ -78,7 +84,7 @@ sierra_view.itype_property_myuser it
 ON
 i.itype_code_num = it.code
 
-WHERE i.location_code ~ '^fpl'
+WHERE i.location_code ~ {{location}}
 
 GROUP BY 1,2,3)a
 ORDER BY 1
