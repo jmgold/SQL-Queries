@@ -9,7 +9,7 @@ b.best_title as title,
 SPLIT_PART(b.best_author,', ',1)||', '||REPLACE(TRANSLATE(SPLIT_PART(b.best_author,', ',2),'.',','),',','') AS field_booklist_entry_author,
 --Link to cover from Syndetics
 'https://syndetics.com/index.aspx?isbn='||SUBSTRING(MAX(s.content) FROM '[0-9]+')||'/SC.gif&client=minuteman' AS field_booklist_entry_cover,
-COUNT(f.item_record_metadata_id) AS fine_count
+COUNT(DISTINCT f.id) AS fine_count
 
 FROM
 sierra_view.bib_record_property b
@@ -24,7 +24,7 @@ b.bib_record_id = l.bib_record_id
 JOIN
 sierra_view.item_record i
 ON
-l.item_record_id = i.id
+l.item_record_id = i.id AND i.location_code ~ '^act'
 --Limit to titles not in children's or YA
 --AND SUBSTRING(i.location_code,4,1) NOT IN ('j','y')
 JOIN
@@ -36,6 +36,5 @@ WHERE
 --limit to book
 b.material_code = 'a'
 GROUP BY 1,2,3
-HAVING COUNT(i.id) FILTER(WHERE i.location_code ~ '^act') > 0
-ORDER BY COUNT(f.item_record_metadata_id) desc
+ORDER BY 5 desc
 LIMIT 50
