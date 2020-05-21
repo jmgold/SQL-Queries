@@ -34,7 +34,8 @@ WHEN C.loanrule_code_num BETWEEN 222 AND 232 OR C.loanrule_code_num BETWEEN 681 
 WHEN C.loanrule_code_num BETWEEN 233 AND 243 OR C.loanrule_code_num BETWEEN 690 AND 698 THEN 'mi'
 WHEN C.loanrule_code_num BETWEEN 244 AND 254 OR C.loanrule_code_num BETWEEN 699 AND 707 THEN 'ml'
 WHEN C.loanrule_code_num BETWEEN 266 AND 276 OR C.loanrule_code_num BETWEEN 717 AND 725 THEN 'mw'
-WHEN C.loanrule_code_num BETWEEN 277 AND 287 OR C.loanrule_code_num BETWEEN 726 AND 734 THEN 'na'
+WHEN C.loanrule_code_num BETWEEN 277 AND 287 OR C.loanrule_code_num BETWEEN 726 AND 733 THEN 'na'
+WHEN C.loanrule_code_num BETWEEN 289 AND 298 OR C.loanrule_code_num BETWEEN 734 AND 743 THEN 'ol'
 WHEN C.loanrule_code_num BETWEEN 299 AND 309 OR C.loanrule_code_num BETWEEN 744 AND 752 THEN 'ne'
 WHEN C.loanrule_code_num BETWEEN 310 AND 320 OR C.loanrule_code_num BETWEEN 753 AND 761 THEN 'no'
 WHEN C.loanrule_code_num BETWEEN 321 AND 331 OR C.loanrule_code_num BETWEEN 762 AND 770 THEN 'nt'
@@ -94,8 +95,9 @@ COUNT(C.id) FILTER (WHERE C.stat_group_code_num BETWEEN '520' AND '529') AS "MED
 COUNT(C.id) FILTER (WHERE C.stat_group_code_num BETWEEN '490' AND '499') AS "MILLIS",
 COUNT(C.id) FILTER (WHERE C.stat_group_code_num BETWEEN '530' AND '559') AS "NATICK",
 COUNT(C.id) FILTER (WHERE C.stat_group_code_num BETWEEN '570' AND '579') AS "NEEDHAM",
-COUNT(C.id) FILTER (WHERE C.stat_group_code_num BETWEEN '590' AND '639') AS "NEWTON",
+COUNT(C.id) FILTER (WHERE C.stat_group_code_num BETWEEN '590' AND '599') AS "NEWTON",
 COUNT(C.id) FILTER (WHERE C.stat_group_code_num BETWEEN '580' AND '589') AS "NORWOOD",
+COUNT(C.id) FILTER (WHERE C.stat_group_code_num BETWEEN '620' AND '629') AS "OLIN",
 COUNT(C.id) FILTER (WHERE C.stat_group_code_num BETWEEN '830' AND '839') AS "PINE MANOR COLLEGE",
 COUNT(C.id) FILTER (WHERE C.stat_group_code_num BETWEEN '840' AND '849') AS "REGIS",
 COUNT(C.id) FILTER (WHERE C.stat_group_code_num BETWEEN '850' AND '859') AS "SHERBORN",

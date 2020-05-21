@@ -15,7 +15,7 @@ h.patron_record_id = s.record_id AND s.field_type_code = 'z' AND s.occ_num = 0
 JOIN
 sierra_view.patron_record_fullname p
 ON
-h.patron_record_id = p.patron_record_id
+h.patron_record_id = p.patron_record_id AND p.display_order = '0'
 LEFT JOIN
 sierra_view.patron_record_phone ph1
 ON

@@ -11,7 +11,7 @@ SELECT
 i.id AS invoice_record_id,
 fm.code AS fund_code,
 fm.id AS fm_id,
-SUM(l.paid_amt) + (SUM(l.copies_paid_cnt) * ((i.shipping_amt + i.total_tax_amt + i.discount_amt) / copy_count.total_copies)) AS total,
+SUM(l.paid_amt) + (SUM(COALESCE(l.copies_paid_cnt,1)) * ((i.shipping_amt + i.total_tax_amt + i.discount_amt) / COALESCE(copy_count.total_copies,1))) AS total,
 a.code_num
 
 FROM
