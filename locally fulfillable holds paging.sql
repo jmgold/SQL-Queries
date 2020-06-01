@@ -45,7 +45,7 @@ h.record_id,
 ROW_NUMBER() OVER (PARTITION BY h.record_id ORDER BY h.placed_gmt) AS "hold_num"
 FROM
 sierra_view.hold h
-WHERE h.pickup_location_code ~ '^act'
+WHERE h.pickup_location_code ~ '^act' AND h.is_frozen = 'false' AND (h.placed_gmt::DATE + h.delay_days) < NOW()::DATE
 )hold_num
 ON
 h.id = hold_num.id
