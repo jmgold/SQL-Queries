@@ -52,7 +52,7 @@ ON
 cmf.fund_code::INT = f.code_num AND a.id = f.accounting_unit_id
 
 WHERE
-o.accounting_unit_code_num = '7'
+o.accounting_unit_code_num = {{accounting_unit}}
 
 GROUP BY 1,2,3,7,8
 
@@ -103,11 +103,13 @@ ON
 cmf.fund_code::INT = f.code_num AND a.id = f.accounting_unit_id
 
 WHERE
-o.accounting_unit_code_num = '7'
+o.accounting_unit_code_num = {{accounting_unit}}
 AND sent.id IS NULL
---AND o.order_status_code = 'o'
+{{#if include}}
+AND o.order_status_code IN ('o','q')
+{{/if include}}
 
 GROUP BY 1,2,3,7,8
 )inner_query
 
-WHERE inner_query.created_date BETWEEN '2019-07-01' AND '2020-06-01'
+WHERE inner_query.created_date BETWEEN {{start_date}} AND {{end_date}}
