@@ -670,7 +670,12 @@ v.record_num IN (
 '3839843',
 '3780266',
 --20200225 Jess Stitson
-'2224536'
+'2224536',
+--20200622 Brita Zitin
+'3816293',
+'3880738',
+'3894541',
+'3854158'
 )
 GROUP BY b.bib_record_id,1,2,b.material_code 
 ) a
