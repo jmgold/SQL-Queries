@@ -43,7 +43,7 @@ JOIN
 sierra_view.phrase_entry d
 ON
 b.bib_record_id = d.record_id AND varfield_type_code = 'd'
-AND (REPLACE(d.index_entry, ' ', '') LIKE '%foundingfathersoftheunitedstates%' OR REPLACE(d.index_entry, ' ', '') LIKE '%declarationofindependence%' OR REPLACE(d.index_entry, ' ', '') LIKE '%unitedstateshistoryrevolution1775%')
+AND (REPLACE(d.index_entry, ' ', '') LIKE '%foundingfathersoftheunitedstates%' OR REPLACE(d.index_entry, ' ', '') LIKE '%declarationofindependence%' OR REPLACE(d.index_entry, ' ', '') LIKE '%unitedstateshistoryrevolution1775%') AND NOT REPLACE(d.index_entry, ' ', '') LIKE '%israel%' AND NOT REPLACE(d.index_entry, ' ', '') LIKE '%fiction%'
 WHERE
 b.material_code = 'a' AND b.publish_year >= '2004'
 GROUP BY 1,2,3,4) a
