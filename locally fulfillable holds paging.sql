@@ -6,7 +6,9 @@ Rough approximation of paging list, looking for holds at a pickkup location that
 currently available items at that location
 */
 
-WITH available_copies AS(
+DROP TABLE IF EXISTS available_copies;
+
+CREATE TEMP TABLE available_copies AS(
 SELECT
 l.bib_record_id,
 i.itype_code_num,
@@ -21,7 +23,10 @@ ON
 i.id = l.item_record_id
 
 WHERE i.location_code ~ '^act' AND i.is_available_at_library = 'true' AND i.item_status_code = '-'
-)
+);
+
+CREATE INDEX copies_index ON available_copies(bib_record_id);
+ANALYZE available_copies;
 
 
 SELECT 
@@ -88,7 +93,7 @@ SELECT
 DISTINCT h.id AS Hold_Id,
 id2reckey(l.bib_record_id)||'a' AS "Bib Number",
 i.barcode AS Barcode,
-REPLACE(REPLACE(i.call_number,'|a',''),'|f','')||' '||v.field_content AS "Call Number",
+REPLACE(REPLACE(i.call_number,'|a',''),'|f','')||' '||COALESCE(v.field_content,'') AS "Call Number",
 b.best_author AS Author,
 b.best_title AS Title,
 pickup_loc.name AS "Pickup Location",
@@ -126,7 +131,7 @@ JOIN
 sierra_view.item_record_property i
 ON
 ir.id = i.item_record_id
-JOIN
+LEFT JOIN
 sierra_view.varfield v
 ON
 i.item_record_id = v.record_id AND v.varfield_type_code = 'v'
