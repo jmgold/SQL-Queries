@@ -16,3 +16,5 @@ ON
 h.record_id = i.id AND i.item_status_code != 't'
 WHERE
 h.status = 't'
+
+ORDER BY i.location_code, h.placed_gmt

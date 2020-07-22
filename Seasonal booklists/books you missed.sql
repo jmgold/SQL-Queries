@@ -26,7 +26,7 @@ ON
 b.bib_record_id = bi.bib_record_id
 JOIN sierra_view.record_metadata m
 ON
-bi.item_record_id = m.id AND m.creation_date_gmt::DATE BETWEEN '2020-03-12' AND '2020-06-01'
+bi.item_record_id = m.id AND m.creation_date_gmt::DATE BETWEEN (CURRENT_DATE - INTERVAL '6 months') AND (CURRENT_DATE - INTERVAL '2 months')
 WHERE b.material_code ='a'
 GROUP BY 1,2,3,4 
 ORDER BY COUNT(bi.bib_record_id) desc
