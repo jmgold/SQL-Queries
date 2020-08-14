@@ -9,7 +9,7 @@ SELECT
 'b'||mb.record_num||'a' AS bib_number,
 b.best_title AS title,
 b.best_author AS author,
-{{grouping}}
+{{grouping}} FILTER (WHERE i.location_code ~ '{{comp_location}}' AND m.creation_date_gmt::DATE < {{created_date}}) AS popularity_metric
 
 /*
 Grouping options
