@@ -25,4 +25,4 @@ WHERE
 h.status = 't'
 
 
-ORDER BY s.name, i.last_checkin_gmt, i.location_code, h.placed_gmt
+ORDER BY h.placed_gmt, s.name, i.last_checkin_gmt, i.location_code
