@@ -114,7 +114,13 @@ v.record_num IN (
 --what my mother doesn't know
 '2031969',
 --gossip girl
-'2077281'
+'2077281',
+--Prince & Knight
+'3734044',
+--handmaid's tale
+'1889809',
+--Harry Potter
+'1843295'
 )
 WHERE b.material_code ='a'
 GROUP BY 1,2,3 
