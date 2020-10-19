@@ -11,14 +11,16 @@ DISTINCT(COALESCE(REGEXP_REPLACE(i.call_number,'\|[a-z]',' ','g'), '')) AS call_
 {{#if include_nonroman}}
 CASE
 	WHEN vt.field_content IS NULL THEN b.best_title
-	ELSE REGEXP_REPLACE(SUBSTRING(vt.field_content FROM 11),'\|[a-z]',' ','g')
+	WHEN REGEXP_REPLACE(SPLIT_PART(SUBSTRING(vt.field_content FROM 10 FOR 2),'|',1),'\s?(\.|\,|\:|\/|\;|\=)\s?$','') ~ '\$\d' THEN REGEXP_REPLACE(SPLIT_PART(SUBSTRING(vt.field_content FROM 14),'|',1),'\s?(\.|\,|\:|\/|\;|\=)\s?$','')
+	ELSE REGEXP_REPLACE(SPLIT_PART(SUBSTRING(vt.field_content FROM 11),'|',1),'\s?(\.|\,|\:|\/|\;|\=)\s?$','')
 END AS title_nonroman,
 {{/if include_nonroman}}
 b.best_title AS title,
 {{#if include_nonroman}}
 CASE
 	WHEN va.field_content IS NULL THEN REPLACE(SPLIT_PART(SPLIT_PART(b.best_author,' (',1),', ',2),'.','')||' '||SPLIT_PART(b.best_author,', ',1)
-	ELSE REPLACE(SPLIT_PART(SPLIT_PART(REGEXP_REPLACE(SUBSTRING(va.field_content FROM 11),'\|[a-z]',' ','g'),' (',1),', ',2),'.','')||' '||SPLIT_PART(REGEXP_REPLACE(SUBSTRING(va.field_content FROM 11),'\|[a-z]',' ','g'),', ',1)
+	WHEN SUBSTRING(va.field_content FROM 10 FOR 2) ~ '\$\d' THEN REGEXP_REPLACE(SPLIT_PART(SUBSTRING(va.field_content FROM 14),'|',1),'\s?(\.|\,|\:|\/|\;)\s?$','')
+	ELSE REGEXP_REPLACE(SPLIT_PART(SUBSTRING(va.field_content FROM 11),'|',1),'\s?(\.|\,|\:|\/|\;)\s?$','')
 END AS author_nonroman,
 {{/if include_nonroman}}
 REPLACE(SPLIT_PART(SPLIT_PART(b.best_author,' (',1),', ',2),'.','')||' '||SPLIT_PART(b.best_author,', ',1) AS author,

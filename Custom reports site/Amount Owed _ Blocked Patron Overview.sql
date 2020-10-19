@@ -7,7 +7,13 @@ Takes a patron record fixed field as a variable to group on.
 */
 
 SELECT
-{{grouping}},
+{{GROUPING}},
+/*
+Possible values are
+p3.name AS MA_town
+pt.name AS ptype
+l.name as home_library
+*/
 COUNT(p.id) as total_patrons,
 COUNT(p.id) FILTER(WHERE ((p.mblock_code != '-') OR (p.owed_amt >= 10))) as total_blocked_patrons,
 COUNT (p.id) FILTER(WHERE ((p.mblock_code != '-') OR (p.owed_amt >= 10)) AND f.charge_code IN ('3','5')) AS total_lost_item_patrons,
