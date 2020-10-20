@@ -44,5 +44,6 @@ b.material_code IN ({{mat_type}})
 GROUP BY 1,2,3
 HAVING
 COUNT(i.id) FILTER (WHERE i.location_code ~ {{location}}) = 0
+--location will take the form ^oln, which in this example looks for all locations starting with the string oln.
 ORDER BY 6 DESC,1
 LIMIT {{qty}}

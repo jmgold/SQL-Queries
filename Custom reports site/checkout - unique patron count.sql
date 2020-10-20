@@ -15,6 +15,7 @@ CASE
 WHEN {{time_unit}} = 'date' THEN to_char(c.transaction_gmt, 'MM-DD-YY')
 WHEN {{time_unit}} = 'hour' THEN to_char(c.transaction_gmt, 'HH24')
 WHEN {{time_unit}} = 'dow' THEN 
+--time_unit values are date, hour, dow
 CASE
 WHEN EXTRACT (DOW from c.transaction_gmt) = '0' THEN 'Sunday'
 WHEN EXTRACT (DOW from c.transaction_gmt) = '1' THEN 'Monday'
@@ -39,6 +40,7 @@ c.op_code = 'o'
 and
 c.transaction_gmt > NOW()::DATE - INTERVAL '1 month'
 and s.location_code ~ {{location}}
+--location will take the form ^oln, which in this example looks for all locations starting with the string oln.
 GROUP BY 1
 )a
 ORDER BY

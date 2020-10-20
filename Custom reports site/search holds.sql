@@ -91,8 +91,10 @@ SUBSTRING(h.pickup_location_code,1,3) = pickup_loc.code
 
 WHERE h.placed_gmt::DATE BETWEEN {{start_date}} AND {{end_date}}
 AND h.pickup_location_code ~ {{location}}
+--location will take the form ^oln, which in this example looks for all locations starting with the string oln.
 )inner_query
---values are 'In transit', 'Ready for pickup', 'On hold'
+
 WHERE inner_query.hold_status IN ({{hold_status}})
+--values are 'In transit', 'Ready for pickup', 'On hold'
 
 ORDER BY 2,1

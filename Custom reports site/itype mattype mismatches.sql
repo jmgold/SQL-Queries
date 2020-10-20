@@ -97,3 +97,4 @@ ON
 ip.id = it.itype_property_id
 WHERE i.itype_code_num NOT IN ('239','240','241','242')
 AND i.location_code ~ ({{location}})
+--location will take the form ^oln, which in this example looks for all locations starting with the string oln.

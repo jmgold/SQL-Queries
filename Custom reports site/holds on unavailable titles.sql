@@ -71,6 +71,7 @@ LEFT JOIN
   mattypi.code = bpropi.material_code
 WHERE
   hld.pickup_location_code ~ {{location}}
+  --location will take the form ^oln, which in this example looks for all locations starting with the string oln.
   AND (hld.record_id IN (
 
     -- Here we select BIB Holds where no attached 

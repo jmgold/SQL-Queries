@@ -63,6 +63,7 @@ ON l.bib_record_id = a.bib_record_id
 
 WHERE
 i.location_code ~ {{location}}
+--location will take the form ^oln, which in this example looks for all locations starting with the string oln.
 AND m.creation_date_gmt::DATE < {{created_date}}
 AND (CAST((i.checkout_total * 14) AS NUMERIC (12,2)) / (CURRENT_DATE - m.creation_date_gmt::DATE)) < (((a.avg_checkout_total * 14) / a.avg_age) /2)
 AND i.item_status_code NOT IN ({{item_status_codes}})

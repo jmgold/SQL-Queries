@@ -31,5 +31,6 @@ WHERE
 i.item_status_code = '!'
 AND h.record_id IS NULL
 AND SUBSTRING (i.location_code,1,3) ~ {{location}}
+--location will take the form ^oln, which in this example looks for all locations starting with the string oln.
 
 ORDER BY 1

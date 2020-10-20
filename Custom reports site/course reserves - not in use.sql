@@ -36,6 +36,7 @@ i.id = note.record_id AND note.varfield_type_code = 'r' AND note.field_content L
 WHERE
 ci.course_record_id IS NULL AND b.bcode3 = 'r'
 AND i.location_code ~ {{Location}}
+--location will take the form ^oln, which in this example looks for all locations starting with the string oln.
 
 order BY 2,3
 ;

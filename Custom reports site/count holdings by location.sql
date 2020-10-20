@@ -8,17 +8,17 @@ Counts either items or titles owned by a location, grouped by a variety of categ
 SELECT
 {{Grouping}},
 /*
---alternative groupings
---ln.name AS "language",
---m.name AS mat_type,
---i.icode1 AS scat,
---it.name AS itype
+alternative groupings
+i.location_code AS location
+i.icode1 AS scat_code
+m.name AS mat_type
+ln.name AS language
+it.name AS itype
 */
 
 COUNT({{bib_or_item}}) FILTER(WHERE SUBSTRING(i.location_code FROM 1 FOR 3) = 'act') AS "ACTON",
 /*
-Change i.id to DISTINCT b.id to gather title count instead, like so
-COUNT(DISTINCT b.id) FILTER(WHERE SUBSTRING(i.location_code FROM 1 FOR 3) = 'act') AS ACTON,
+i.id or DISTINCT b.id
 */
 COUNT({{bib_or_item}}) FILTER(WHERE SUBSTRING(i.location_code FROM 1 FOR 3) = 'arl') AS "ARLINGTON",
 COUNT({{bib_or_item}}) FILTER(WHERE SUBSTRING(i.location_code FROM 1 FOR 3) = 'ar2') AS "ARLINGTON/FOX",
