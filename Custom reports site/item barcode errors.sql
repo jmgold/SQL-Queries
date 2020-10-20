@@ -16,5 +16,6 @@ REPLACE(barcode,' ','') !~ '^30022|30308|30423|31155|31189|31213|31323|31619|317
 AND barcode != ''
 AND barcode !~ 'cmcat$'
 AND itype_code_num != '241'
-AND location_code ~ {{Location}}
+AND location_code ~ {{location}}
+--location will take the form ^oln, which in this example looks for all locations starting with the string oln.
 ORDER BY 1

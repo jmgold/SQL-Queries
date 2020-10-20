@@ -65,6 +65,7 @@ h.patron_record_id = email.record_id AND email.varfield_type_code = 'z'
 WHERE
 --h.status = '0'
 h.pickup_location_code ~ {{location}}
+--location will take the form ^oln, which in this example looks for all locations starting with the string oln.
 AND h.expires_gmt - NOW() < '{{expiration}} days'
 AND h.status = '0'
 

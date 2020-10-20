@@ -22,6 +22,7 @@ ON
 i.id = l.item_record_id
 --AND i.icode1 IN ('1','2') 
 AND i.location_code ~ '{{location}}'
+--location will take the form ^oln, which in this example looks for all locations starting with the string oln.
 AND i.item_status_code NOT IN ({{item_status_codes}})
 JOIN
 sierra_view.record_metadata m
@@ -71,6 +72,7 @@ sierra_view.item_record i
 ON
 ip.item_record_id = i.id
 AND i.location_code ~ '{{location}}'
+--location will take the form ^oln, which in this example looks for all locations starting with the string oln.
 AND i.item_status_code NOT IN ({{item_status_codes}})
 LEFT JOIN
 sierra_view.checkout C

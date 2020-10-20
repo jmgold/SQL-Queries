@@ -34,6 +34,7 @@ ON
 l.bib_record_id = b.bib_record_id
 
 WHERE h.pickup_location_code ~ {{location}}
+--location will take the form ^oln, which in this example looks for all locations starting with the string oln.
 AND h.status IN ('b','i')
 GROUP BY 1,2,3,4,5
 

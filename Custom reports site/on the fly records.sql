@@ -37,9 +37,11 @@ i.item_message_code = 'f'
 and
 i.record_creation_date_gmt::DATE < {{Created_Date}}
 {{#if Exclude}}
+--exclude items attached to an on the fly bib record
 and b.title not like '%fly'
 {{/if Exclude}}
 and b.title not like '%MLN ILL%'
 AND i.item_status_code != 'w'
-AND i.location_code ~ {{Location}}
+AND i.location_code ~ {{location}}
+--location will take the form ^oln, which in this example looks for all locations starting with the string oln.
 order by 3, 4;

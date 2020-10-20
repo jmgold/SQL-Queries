@@ -17,5 +17,6 @@ sierra_view.circ_trans C
 WHERE
 C.transaction_gmt >= NOW() - INTERVAL '1 month' AND C.op_code = 'r'
 AND C.item_location_code ~ {{location}}
+--location will take the form ^oln, which in this example looks for all locations starting with the string oln.
 GROUP BY 1
 ORDER BY 1

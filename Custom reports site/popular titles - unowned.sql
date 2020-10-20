@@ -15,7 +15,7 @@ b.best_author AS author,
 Grouping options
 AVG(ROUND((CAST((i.checkout_total * 14) AS NUMERIC (12,2)) / (CURRENT_DATE - m.creation_date_gmt::DATE)),6)) FILTER (WHERE m.creation_date_gmt::DATE != CURRENT_DATE) AS utilization
 ROUND(CAST(SUM(i.checkout_total) + SUM(i.renewal_total) AS NUMERIC (12,2))/CAST(COUNT (i.id) AS NUMERIC (12,2)), 2) AS turnover
-ROUND((COUNT(i.id) * (AVG(i.price) FILTER(WHERE i.price>'0' AND i.price <'10000'))/(NULLIF((SUM(i.checkout_total) + SUM(i.renewal_total)),0))),2) AS cost_per_circ
+SUM(i.year_to_date_checkout_total) + SUM(i.last_year_to_date_checkout_total) AS total_checkouts
 SUM(i.checkout_total) + SUM(i.renewal_total) AS total_circulation
 SUM(i.checkout_total) AS total_checkouts
 SUM(i.year_to_date_checkout_total) AS total_year_to_date_checkouts
@@ -152,6 +152,7 @@ GROUP BY
 1,2,3,h.count_holds_on_title
 HAVING
 COUNT(i.id) FILTER (WHERE i.location_code ~ '{{location}}') = 0
+--location will take the form ^oln, which in this example looks for all locations starting with the string oln.
 AND COUNT(i.id) FILTER (WHERE i.location_code !~ '{{location}}' AND m.creation_date_gmt::DATE < {{created_date}}) > 0
 ORDER BY 4 DESC
 LIMIT {{qty}}

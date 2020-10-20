@@ -57,8 +57,8 @@ f.id = n.fund_master_id
 
 WHERE
 l.order_record_metadata_id IS NULL
---date_field either i.invoice_date_gmt or i.paid_date_gmt
 AND {{date_field}} BETWEEN {{start_date}} AND {{end_date}}
+--date_field either i.invoice_date_gmt or i.paid_date_gmt
 AND i.accounting_unit_code_num = {{accounting_unit}}
 ORDER BY 1,2,3
 )*

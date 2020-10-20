@@ -47,6 +47,7 @@ AND h.is_frozen = FALSE
 {{/if Exclude_frozen}}
 AND h.placed_gmt < {{date_placed}}
 AND h.pickup_location_code ~ {{location}}
+--location will take the form ^oln, which in this example looks for all locations starting with the string oln.
 
 GROUP BY 1,2
 HAVING 
@@ -86,6 +87,7 @@ AND h.is_frozen = FALSE
 {{/if Exclude_frozen}}
 AND h.placed_gmt < {{date_placed}}
 AND h.pickup_location_code ~ {{location}}
+--location will take the form ^oln, which in this example looks for all locations starting with the string oln.
 AND checkout.id IS NULL
 
 GROUP BY 1,2,3

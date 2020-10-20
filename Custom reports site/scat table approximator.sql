@@ -32,6 +32,7 @@ JOIN
 sierra_view.item_record ir
 ON
 i.item_record_id = ir.id AND ir.location_code ~ {{location}}
+--location will take the form ^oln, which in this example looks for all locations starting with the string oln.
 )
 
 SELECT
@@ -85,6 +86,7 @@ ON
 i.itype_code_num = it.code
 
 WHERE i.location_code ~ {{location}}
+--location will take the form ^oln, which in this example looks for all locations starting with the string oln.
 
 GROUP BY 1,2,3)a
 ORDER BY 1
