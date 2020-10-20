@@ -5,9 +5,12 @@ Minuteman Library Network
 Rolls up circulation figures for all issues of a title
 */
 SELECT
---bp.best_title AS title,
---INITCAP(REGEXP_REPLACE(REPLACE(REPLACE(bp.best_title,'.',''),',',''),'\s[\d]{4}$',''))
 {{title}} AS title,
+/*
+Options to account for annual circulation records with titles taking the form [Magazine name], [YYYY]
+bp.best_title AS title,
+INITCAP(REGEXP_REPLACE(REPLACE(REPLACE(bp.best_title,'.',''),',',''),'\s[\d]{4}$',''))
+*/
 COUNT(i.id) AS total_issues,
 SUM(i.last_year_to_date_checkout_total) AS last_year_checkout_total,
 SUM(i.year_to_date_checkout_total) AS year_to_date_checkout_total,
@@ -34,6 +37,7 @@ JOIN
 sierra_view.item_record i
 ON
 l.item_record_id =i.id AND i.location_code ~ {{location}}
+--location will take the form ^oln, which in this example looks for all locations starting with the string oln.
 
 WHERE
 b.bcode3 = 'a'

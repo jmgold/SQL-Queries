@@ -37,8 +37,8 @@ ON
 i.id = m.id AND m.creation_date_gmt < {{created_date}}
 
 AND i.item_status_code NOT IN ({{Item_Status_Codes}}) 
-AND i.location_code ~ {{Location}}
-
+AND i.location_code ~ {{location}}
+--location will take the form ^oln, which in this example looks for all locations starting with the string oln.
 
 WHERE
 b.material_code IN ({{mat_type}})

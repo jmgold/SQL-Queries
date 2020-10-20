@@ -34,7 +34,8 @@ l.holding_record_id = h.id
 JOIN
 sierra_view.holding_record_location hl
 ON
-h.id = hl.holding_record_id AND hl.location_code ~ {{Location}}
+h.id = hl.holding_record_id AND hl.location_code ~ {{location}}
+--location will take the form ^oln, which in this example looks for all locations starting with the string oln.
 JOIN
 sierra_view.holding_record_card hc
 ON
@@ -67,7 +68,8 @@ l.holding_record_id = h.id
 JOIN
 sierra_view.holding_record_location hl
 ON
-h.id = hl.holding_record_id AND hl.location_code ~ {{Location}}
+h.id = hl.holding_record_id AND hl.location_code ~ {{location}}
+--location will take the form ^oln, which in this example looks for all locations starting with the string oln.
 JOIN
 sierra_view.holding_record_card hc
 ON

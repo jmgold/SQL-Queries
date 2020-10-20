@@ -35,6 +35,7 @@ FROM
 sierra_view.order_record_cmf cmf
 WHERE
 o.order_record_id = cmf.order_record_id AND cmf.location_code ~ {{location}}
+--location will take the form ^oln, which in this example looks for all locations starting with the string oln.
 )
 
 AND NOT EXISTS (
@@ -45,6 +46,7 @@ JOIN
 sierra_view.item_record i 
 ON
 bl.item_record_id = i.id AND i.location_code ~ {{location}}
+--location will take the form ^oln, which in this example looks for all locations starting with the string oln.
 WHERE
 l.bib_record_id = bl.bib_record_id
 )

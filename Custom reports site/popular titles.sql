@@ -19,7 +19,7 @@ SUM(i.checkout_total) AS total_checkouts
 SUM(i.year_to_date_checkout_total) AS total_year_to_date_checkouts
 SUM(i.last_year_to_date_checkout_total) AS total_last_year_to_date_checkouts
 h.count_holds_on_title AS total_holds
-SUM(i.checkout_total) + SUM(i.last_year_to_date_checkout_total) AS checkout_total
+SUM(i.year_to_date_checkout_total) + SUM(i.last_year_to_date_checkout_total) AS checkout_total
 */
 
 FROM
@@ -32,12 +32,15 @@ JOIN
 sierra_view.item_record i
 ON
 i.id = l.item_record_id AND i.location_code ~ {{location}} 
-	AND i.item_status_code NOT IN ({{item_status_codes}})
-	AND {{age_level}}
-	--SUBSTRING(i.location_code,4,1) NOT IN ('y','j')
-	--SUBSTRING(i.location_code,4,1) = 'j'
-	--SUBSTRING(i.location_code,4,1) = 'y'
-	--i.location_code ~ '\w'
+--location will take the form ^oln, which in this example looks for all locations starting with the string oln.
+AND i.item_status_code NOT IN ({{item_status_codes}})
+AND {{age_level}}
+	/*
+	SUBSTRING(i.location_code,4,1) NOT IN ('y','j') --adult
+	SUBSTRING(i.location_code,4,1) = 'j' --juv
+	SUBSTRING(i.location_code,4,1) = 'y' --ya
+	i.location_code ~ '\w' --all
+	*/
 JOIN
 sierra_view.record_metadata m
 ON
