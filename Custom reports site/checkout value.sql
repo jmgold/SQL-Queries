@@ -70,8 +70,9 @@ i.icode1 AS scat_code
 i.location_code AS location
 */
 CAST(SUM(i.price) AS MONEY) AS value,
-COUNT(c.id) AS circ_count,
-(CAST(SUM(i.price) AS MONEY) / COUNT(c.id)) as value_per_circ
+COUNT(DISTINCT c.id) AS circ_count,
+(CAST(SUM(i.price) AS MONEY) / COUNT(DISTINCT c.id)) as value_per_circ
+
 FROM
 sierra_view.circ_trans c
 JOIN
@@ -90,25 +91,22 @@ JOIN sierra_view.bib_record b
 ON
 l.bib_record_id = b.id
 JOIN
-sierra_view.material_property mp
+sierra_view.bib_record_property bp
 ON
-b.bcode2 = mp.code
+b.id = bp.bib_record_id
 JOIN
-sierra_view.material_property_name m
-ON 
-mp.id = m.material_property_id
-JOIN
-sierra_view.itype_property ip
+sierra_view.material_property_myuser M
 ON
-i.itype_code_num = ip.code_num
+bp.material_code = m.code
 JOIN
-sierra_view.itype_property_name it
-ON 
-ip.id = it.itype_property_id
+sierra_view.itype_property_myuser it
+ON
+i.itype_code_num = it.code
 JOIN
 sierra_view.language_property_myuser ln
 ON
 b.language_code = ln.code
+
 WHERE
 c.op_code IN ('o', 'r')
 AND
