@@ -9,8 +9,8 @@ to look for possible data entry errors
 WITH item_group AS
 (
 SELECT
-{{field_one}},
-{{field_two}},
+{{field_one}} AS field_one,
+{{field_two}} AS field_two,
 --field options are
 --i.location_code,
 --i.itype_code_num,
@@ -41,7 +41,7 @@ GROUP BY 1,2
 )
 
 SELECT
-id2reckey(i.id)||'a',
+id2reckey(i.id)||'a' AS item_number,
 {{field_one}},
 {{field_two}}
 --field options are
@@ -54,14 +54,6 @@ id2reckey(i.id)||'a',
 FROM
 sierra_view.item_record i
 JOIN
-item_group ig
-ON
-{{field_one}} = ig||RIGHT({{field_one}}, LEN({{field_one}}) -1)
---should produce an equation like i.itype_code_num = ig.itype_code_num
-AND {{field_two}} = ig||RIGHT({{field_two}}, LEN({{field_two}}) -1) --i.icode1 = ig.icode1 --
-AND ig.item_count <= {{item_limit}}
-AND i.location_code ~ '{{location}}'
-JOIN
 sierra_view.bib_record_item_record_link l
 ON
 i.id = l.item_record_id
@@ -73,3 +65,21 @@ JOIN
 sierra_view.bib_record_property p
 ON
 b.id = p.bib_record_id
+JOIN
+item_group ig
+ON
+	CASE WHEN '{{field_one}}' = 'i.location_code' THEN (i.location_code::VARCHAR = ig.field_one::VARCHAR)
+	WHEN '{{field_one}}' = 'i.itype_code_num' THEN (i.itype_code_num::VARCHAR = ig.field_one::VARCHAR)
+	WHEN '{{field_one}}' = 'i.icode1' THEN (i.icode1::VARCHAR = ig.field_one::VARCHAR)
+	WHEN '{{field_one}}' = 'b.language_code' THEN (b.language_code::VARCHAR = ig.field_one::VARCHAR)
+	WHEN '{{field_one}}' = 'p.material_code' THEN (p.material_code::VARCHAR = ig.field_one::VARCHAR)
+	END
+AND 
+	CASE WHEN '{{field_two}}' = 'i.location_code' THEN (i.location_code::VARCHAR = ig.field_two::VARCHAR)
+	WHEN '{{field_two}}' = 'i.itype_code_num' THEN (i.itype_code_num::VARCHAR = ig.field_two::VARCHAR)
+	WHEN '{{field_two}}' = 'i.icode1' THEN (i.icode1::VARCHAR = ig.field_two::VARCHAR)
+	WHEN '{{field_two}}' = 'b.language_code' THEN (b.language_code::VARCHAR = ig.field_two::VARCHAR)
+	WHEN '{{field_two}}' = 'p.material_code' THEN (p.material_code::VARCHAR = ig.field_two::VARCHAR)
+	END
+AND ig.item_count <= {{item_limit}}
+AND i.location_code ~ '{{location}}'
