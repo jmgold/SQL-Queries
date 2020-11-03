@@ -25,8 +25,9 @@ l.bib_record_id = b.bib_record_id
 )
 
 SELECT
-ip.call_number_norm AS original,
-i.call_number_norm AS modified,
+ip.call_number,
+ip.call_number_norm AS call_number_norm,
+i.call_number_norm AS call_number_modified,
 COALESCE(CASE
    --call number does not exist
 	WHEN i.call_number_norm = '' OR i.call_number_norm IS NULL THEN 'no call number'
@@ -58,8 +59,9 @@ COALESCE(CASE
    WHEN i.call_number_norm ~ '\d' THEN REVERSE(REGEXP_REPLACE(REVERSE(REGEXP_REPLACE(REGEXP_REPLACE(i.call_number_norm,'\(|\)|\[|\]','','gi'),'\d\w*','')),'^[\w\-\.\/\'']*\s', ''))
 	ELSE 'unknown'
 END,'unknown') AS call_number_range,
-SUM(ARRAY_LENGTH(REGEXP_SPLIT_TO_ARRAY(TRIM(BOTH FROM i.call_number_norm),'\s'),1)) AS word_count,
-id2reckey(ir.id)||'a'
+--SUM(ARRAY_LENGTH(REGEXP_SPLIT_TO_ARRAY(TRIM(BOTH FROM i.call_number_norm),'\s'),1)) AS word_count,
+id2reckey(ir.id)||'a' AS item_number,
+b.publish_year
 
 FROM
 call_number_mod i
@@ -76,5 +78,13 @@ AND
 ir.itype_code_num != '241'
 AND
 ir.location_code ~ '^cam'
-GROUP BY 1,2,5
-ORDER BY 3, 2
+JOIN
+sierra_view.bib_record_item_record_link l
+ON
+ir.id = l.item_record_id
+JOIN
+sierra_view.bib_record_property b
+ON
+l.bib_record_id = b.bib_record_id
+--GROUP BY 1,2,5
+ORDER BY 1
