@@ -6,7 +6,7 @@ Provides various performance metrics for checkouts over the prior month
 
 SELECT
 
-{{GROUPING}},
+{{grouping}},
 /*Possible groupings
 --it.name AS itype,
 --C.icode1::VARCHAR AS scat,
