@@ -21,7 +21,7 @@ SUM(i.use3_count) AS use_3_count,
 SUM(i.copy_use_count) AS copy_use_count,
 SUM(i.internal_use_count) AS internal_use_count,
 MAX(i.last_checkout_gmt::DATE) AS last_checkout_date,
-STRING_AGG(id2reckey(b.id)||'a',', ') AS bib_numbers
+STRING_AGG(DISTINCT id2reckey(b.id)||'a',', ') AS bib_numbers
 
 FROM
 sierra_view.bib_record b
