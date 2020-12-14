@@ -19,11 +19,11 @@ rm.previous_last_updated_gmt,
 b.language_code,
 lang.name AS language_name,
 bp.bib_level_code,
-b1.name AS bib_level_name,
-b.bcode2,
-b2.name AS bcode2_name,
+bl.name AS bib_level_name,
+b.bcode3,
+b3.name AS bcode3_name,
 bp.material_code AS material_type_code,
-b3.name AS material_type_name,
+mat.name AS material_type_name,
 b.country_code,
 b.is_on_course_reserve,
 b.skip_num,
@@ -51,17 +51,17 @@ sierra_view.language_property_myuser lang
 ON
 b.language_code = lang.code
 JOIN
-sierra_view.bib_level_property_myuser b1
+sierra_view.bib_level_property_myuser bl
 ON
-bp.bib_level_code = b1.code
+bp.bib_level_code = bl.code
 JOIN
-sierra_view.user_defined_bcode1_myuser b2
+sierra_view.user_defined_bcode3_myuser b3
 ON
-b.bcode2 = b2.code
+b.bcode3 = b3.code
 JOIN
-sierra_view.material_property_myuser b3
+sierra_view.material_property_myuser mat
 ON
-bp.material_code = b3.code
+bp.material_code = mat.code
 JOIN
 sierra_view.bib_record_location loc
 ON

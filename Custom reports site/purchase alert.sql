@@ -19,6 +19,7 @@ CASE
     ELSE round(cast((mv.hold_count) as numeric (12, 2))/CAST((max(mv.avail_item_count) + max(mv.order_copies)) AS numeric(12,2)),2)
     END
 AS "network_wide_ratio",
+COUNT(ir.id) FILTER(WHERE ir.location_code ~ {{location}}) AS "total_local_item_count",
 MAX(mv.local_avail_item_count) AS "local_available_item_count",
 MAX(mv.order_copies) AS "local_order_copies",
 mv.local_holds AS "local_hold_count",
@@ -101,13 +102,14 @@ HAVING
 COUNT(DISTINCT h.id)>0) mv
 ON mv.bib_id=brp.bib_record_id
 WHERE brp.material_code IN ({{mat_type}})
-GROUP BY 1, 2, 3, 4, 5, 6, 8, 12, 14
+GROUP BY 1, 2, 3, 4, 5, 6, 8, 13, 15
 HAVING mv.local_holds >= {{min_local_holds}}
 {{age_limit}}
 /*
 AND COUNT(ir.id) FILTER (WHERE (ir.itype_code_num NOT BETWEEN '100' AND '183' OR SUBSTRING(ir.location_code,4,1) NOT IN ('j','y'))) > 0 -- adult
 AND COUNT(ir.id) FILTER (WHERE (ir.itype_code_num BETWEEN '150' AND '183' OR SUBSTRING(ir.location_code,4,1) = 'j')) > 0 --juv
 AND COUNT(ir.id) FILTER (WHERE (ir.itype_code_num BETWEEN '100' AND '133' OR SUBSTRING(ir.location_code,4,1) = 'y')) > 0 --ya
+AND COUNT(ir.id) >= 0 --all ages
 */
 --(max(mv.item_count) + max(mv.order_copies))=0
 --OR max(mv.hold_count)/(max(mv.item_count) + max(mv.order_copies))>=4
