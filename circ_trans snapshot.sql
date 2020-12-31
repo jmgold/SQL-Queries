@@ -20,7 +20,7 @@ COUNT(c.id) FILTER(WHERE c.op_code IN ('n','nb','ni','h','hb','hi')) AS hold_pla
 
 FROM
 sierra_view.circ_trans C
-JOIN
+LEFT JOIN
 sierra_view.item_record i
 ON
 C.item_record_id = i.id
