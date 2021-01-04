@@ -47,7 +47,7 @@ h.update_cnt,
 h.piece_cnt,
 h.is_suppressed,
 STRING_AGG(loc.location_code,',') AS location_codes,
-STRING_AGG(l.name,',') AS locations_names
+STRING_AGG(l.name,',') AS location_names
 
 FROM
 holding_location hl
