@@ -26,6 +26,7 @@ SELECT
 'b'||mb.record_num||'a' AS bib_number,
 b.best_title AS title,
 b.best_author AS author,
+b.publish_year,
 {{grouping}}
 /*
 Grouping options
@@ -82,6 +83,6 @@ AND br.language_code IN ({{language}})
 AND m.creation_date_gmt::DATE < {{created_date}}
 
 GROUP BY
-2,3,1,h.count_holds_on_title
-ORDER BY 4 DESC
+2,3,1,4,h.count_holds_on_title
+ORDER BY 5 DESC
 LIMIT {{qty}}
