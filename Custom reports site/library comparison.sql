@@ -26,6 +26,7 @@ SELECT
 'b'||mb.record_num||'a' AS bib_number,
 b.best_title AS title,
 b.best_author AS author,
+b.publish_year,
 CASE 
 	WHEN '{{grouping}}' = 'Total Checkouts' THEN SUM(i.checkout_total) FILTER (WHERE i.location_code ~ '{{comp_location}}' AND m.creation_date_gmt::DATE < {{created_date}})
 	WHEN '{{grouping}}' = 'Total Checkouts: Last Year' THEN SUM(i.last_year_to_date_checkout_total) FILTER (WHERE i.location_code ~ '{{comp_location}}' AND m.creation_date_gmt::DATE < {{created_date}})
@@ -59,6 +60,13 @@ JOIN
 sierra_view.item_record i
 ON
 i.id = l.item_record_id AND i.item_status_code NOT IN ({{item_status_codes}})
+AND {{age_level}}
+	/*
+	SUBSTRING(i.location_code,4,1) NOT IN ('y','j') --adult
+	SUBSTRING(i.location_code,4,1) = 'j' --juv
+	SUBSTRING(i.location_code,4,1) = 'y' --ya
+	i.location_code ~ '\w' --all
+	*/
 JOIN
 sierra_view.record_metadata m
 ON
@@ -80,10 +88,10 @@ b.bib_record_id = h.bib_record_id
 WHERE
 b.material_code IN ({{mat_type}})
 GROUP BY
-1,2,3,h.count_holds_on_title
+1,2,3,4,h.count_holds_on_title
 HAVING
 COUNT(i.id) FILTER (WHERE i.location_code ~ '{{location}}') = 0
 --location will take the form ^oln, which in this example looks for all locations starting with the string oln.
 AND COUNT(i.id) FILTER (WHERE i.location_code ~ '{{comp_location}}' AND m.creation_date_gmt::DATE < {{created_date}}) > 0
-ORDER BY 4 DESC
+ORDER BY 5 DESC
 LIMIT {{qty}}

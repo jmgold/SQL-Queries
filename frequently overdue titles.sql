@@ -30,7 +30,7 @@ JOIN
 sierra_view.fine f
 ON
 --Limit to overdue charge_code
-i.id = f.item_record_metadata_id AND f.charge_code = '2'
+i.id = f.item_record_metadata_id AND f.charge_code IN  ('2','4','6') AND f.assessed_gmt::DATE >= NOW() - INTERVAL '2 years'
 WHERE
 --limit to book
 b.material_code = 'a'
