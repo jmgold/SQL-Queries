@@ -67,4 +67,11 @@ i.location_code ~ {{location}}
 AND m.creation_date_gmt::DATE < {{created_date}}
 AND (CAST((i.checkout_total * 14) AS NUMERIC (12,2)) / (CURRENT_DATE - m.creation_date_gmt::DATE)) < (((a.avg_checkout_total * 14) / a.avg_age) /2)
 AND i.item_status_code NOT IN ({{item_status_codes}})
+AND {{age_level}}
+	/*
+	SUBSTRING(i.location_code,4,1) NOT IN ('y','j') --adult
+	SUBSTRING(i.location_code,4,1) = 'j' --juv
+	SUBSTRING(i.location_code,4,1) = 'y' --ya
+	i.location_code ~ '\w' --all
+	*/
 ORDER BY 1,2

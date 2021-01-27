@@ -16,7 +16,7 @@ sierra_view.order_record o
 JOIN
 sierra_view.order_record_cmf cmf
 ON
-o.id = cmf.order_record_id
+o.id = cmf.order_record_id AND cmf.location_code != 'multi'
 JOIN
 sierra_view.accounting_unit a
 ON
