@@ -15,9 +15,10 @@ ON
 bi.item_record_id = i.id AND i.item_status_code NOT IN ({{item_status_codes}})
 {{#if limit_available}}and i.is_available_at_library = 'true'{{/if limit_available}}
 JOIN
-sierra_view.varfield_view v
+sierra_view.phrase_entry p
 ON
-b.bib_record_id = v.record_id AND v.varfield_type_code = 'd' AND LOWER(v.field_content) LIKE LOWER('%{{subject}}%')
+b.bib_record_id = p.record_id AND p.index_tag = 'd' AND REPLACE(p.index_entry, ' ', '') LIKE TRANSLATE(REGEXP_REPLACE(LOWER('%{{subject}}%'),'\|[a-z]','','g'), ' .,-()', '')
+
 WHERE
 b.material_code IN ({{mat_type}})
 GROUP BY
