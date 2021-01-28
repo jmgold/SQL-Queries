@@ -66,19 +66,11 @@ sierra_view.bib_record br
 ON
 l.bib_record_id = br.id
 AND br.bcode3 NOT IN ('g','o','r','z','l','q','n')
-JOIN 
-(SELECT
-DISTINCT br.id
-FROM
-sierra_view.bib_record br
 JOIN
 sierra_view.phrase_entry p
 ON
 br.id = p.record_id AND p.index_tag = 'd' AND REPLACE(p.index_entry, ' ', '') LIKE TRANSLATE(REGEXP_REPLACE(LOWER('%{{subject}}%'),'\|[a-z]','','g'), ' .,-()', '')
 --subject cannot contain apostrophe's but other formatting such as delimiters will work.
-) subject
-ON
-br.id = subject.id
 JOIN
 sierra_view.record_metadata mb
 ON
