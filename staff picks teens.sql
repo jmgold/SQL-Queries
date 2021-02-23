@@ -125,7 +125,11 @@ v.record_num IN (
 '3276861',
 '3213370',
 '3657334',
-'3649157'
+'3649157',
+--20210209 Karen Stevens
+'3725546',
+'3815636',
+'3982970'
 )
 GROUP BY b.bib_record_id,1,2,b.material_code 
 ) a
