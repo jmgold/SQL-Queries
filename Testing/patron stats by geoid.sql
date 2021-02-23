@@ -1,12 +1,13 @@
 SELECT
-SUBSTRING(a.postal_code,'^\d{5}') AS zip,
-/*
+--SUBSTRING(a.postal_code,'^\d{5}') AS zip,
+
 --replace zip with block group
 CASE
+	WHEN s.content IS NULL THEN 'na'
 	WHEN s.content = '' THEN s.content
 	ELSE s.content||c.content||t.content||SUBSTRING(b.content,1,1)
 END AS geoid,
-*/
+
 COUNT(DISTINCT p.id) AS patron_count,
 SUM(p.checkout_total) AS checkout_total,
 SUM(p.renewal_total) AS renewal_total,
@@ -17,7 +18,6 @@ ROUND(AVG(DATE_PART('year',AGE(CURRENT_DATE,p.birth_date_gmt::DATE)))) AS avg_ag
 COUNT(DISTINCT p.id) FILTER(WHERE rm.creation_date_gmt::DATE >= CURRENT_DATE - INTERVAL '1 year') AS new_patron_count,
 COUNT(DISTINCT p.id) FILTER(WHERE p.activity_gmt::DATE >= CURRENT_DATE - INTERVAL '1 year') AS active_patron_count,
 ROUND(100.0 * (CAST(COUNT(DISTINCT p.id) FILTER(WHERE p.activity_gmt::DATE >= CURRENT_DATE - INTERVAL '1 year') AS NUMERIC (12,2))) / CAST(COUNT(DISTINCT p.id) AS NUMERIC (12,2)), 4) ||'%' AS pct_active,
-MODE() WITHIN GROUP(order by(p.activity_gmt::DATE))AS avg_last_active_date,
 COUNT(DISTINCT p.id) FILTER(WHERE ((p.mblock_code != '-') OR (p.owed_amt >= 10))) as total_blocked_patrons,
 ROUND(100.0 * (CAST(COUNT(DISTINCT p.id) FILTER(WHERE ((p.mblock_code != '-') OR (p.owed_amt >= 10))) as numeric (12,2)) / cast(COUNT(DISTINCT p.id) as numeric (12,2))),4) ||'%' AS pct_blocked
 
@@ -37,27 +37,26 @@ LEFT JOIN
 sierra_view.hold h
 ON
 p.id = h.patron_record_id
-/*
-for census field
-JOIN
+--for census field
+LEFT JOIN
 sierra_view.subfield s
 ON
 s.record_id = p.id AND s.field_type_code = 'k' AND s.tag = 's'
-JOIN
+LEFT JOIN
 sierra_view.subfield c
 ON
 c.record_id = p.id AND c.field_type_code = 'k' AND c.tag = 'c'
-JOIN
+LEFT JOIN
 sierra_view.subfield t
 ON
 t.record_id = p.id AND t.field_type_code = 'k' AND t.tag = 't'
-JOIN
+LEFT JOIN
 sierra_view.subfield b
 ON
 b.record_id = p.id AND b.field_type_code = 'k' AND b.tag = 'b'
-*/
 
-WHERE p.ptype_code IN ('12')
+
+WHERE p.ptype_code IN ('8')
 
 GROUP BY 1
 ORDER BY 2 DESC
