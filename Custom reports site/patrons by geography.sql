@@ -8,28 +8,15 @@ join results to census data
 */
 
 SELECT
-{{geo}},
-/*Possible options
-SUBSTRING(a.postal_code,'^\d{5}') AS zip_code
-
 CASE
-	WHEN stateid.content IS NULL THEN 'no data'
-	WHEN stateid.content = '' THEN stateid.content
-	ELSE stateid.content||county.content||tract.content||SUBSTRING(block.content,1,1)
-END AS geoid
-
-CASE
-	WHEN stateid.content IS NULL THEN 'no data'
-	WHEN stateid.content = '' THEN stateid.content
-	ELSE stateid.content||county.content||tract.content
-END AS geoid
-
-CASE
-	WHEN stateid.content IS NULL THEN 'no data'
-	WHEN stateid.content = '' THEN stateid.content
-	ELSE stateid.content||county.content
-END AS geoid
-*/
+	WHEN '{{geo}}' = 'zip' THEN SUBSTRING(a.postal_code,'^\d{5}')
+	WHEN v.field_content IS NULL THEN 'no data'
+	WHEN v.field_content = '' THEN v.field_content
+	WHEN '{{geo}}' = 'county' THEN SUBSTRING(REGEXP_REPLACE(v.field_content,'\|(s|c|t|b)','','g'),1,5)
+	WHEN '{{geo}}' = 'tract' THEN SUBSTRING(REGEXP_REPLACE(v.field_content,'\|(s|c|t|b)','','g'),1,11)
+	WHEN '{{geo}}' = 'block group' THEN SUBSTRING(REGEXP_REPLACE(v.field_content,'\|(s|c|t|b)','','g'),1,12)
+END AS geoid,
+--Possible options are zip, county, tract, block group
 COUNT(DISTINCT p.id) AS total_patrons,
 SUM(p.checkout_total) AS total_checkouts,
 SUM(p.renewal_total) AS total_renewals,
@@ -43,8 +30,14 @@ COUNT(DISTINCT p.id) FILTER(WHERE p.activity_gmt::DATE >= {{active_date}}) AS to
 --set date you wish to use to determine if a patron is considered to be active
 ROUND(100.0 * (CAST(COUNT(DISTINCT p.id) FILTER(WHERE p.activity_gmt::DATE >= {{active_date}}) AS NUMERIC (12,2))) / CAST(COUNT(DISTINCT p.id) AS NUMERIC (12,2)), 4) ||'%' AS pct_active,
 COUNT(DISTINCT p.id) FILTER(WHERE ((p.mblock_code != '-') OR (p.owed_amt >= 10))) as total_blocked_patrons,
-ROUND(100.0 * (CAST(COUNT(DISTINCT p.id) FILTER(WHERE ((p.mblock_code != '-') OR (p.owed_amt >= 10))) as numeric (12,2)) / cast(COUNT(DISTINCT p.id) as numeric (12,2))),4) ||'%' AS pct_blocked
-
+ROUND(100.0 * (CAST(COUNT(DISTINCT p.id) FILTER(WHERE ((p.mblock_code != '-') OR (p.owed_amt >= 10))) as numeric (12,2)) / cast(COUNT(DISTINCT p.id) as numeric (12,2))),4) ||'%' AS pct_blocked,
+CASE
+	WHEN '{{geo}}' = 'zip' THEN 'https://censusreporter.org/profiles/86000US'||SUBSTRING(a.postal_code,'^\d{5}')
+	WHEN v.field_content IS NULL OR v.field_content = '' THEN 'na'
+	WHEN '{{geo}}' = 'county' THEN 'https://censusreporter.org/profiles/05000US'||SUBSTRING(REGEXP_REPLACE(v.field_content,'\|(s|c|t|b)','','g'),1,5)
+	WHEN '{{geo}}' = 'tract' THEN 'https://censusreporter.org/profiles/14000US'||SUBSTRING(REGEXP_REPLACE(v.field_content,'\|(s|c|t|b)','','g'),1,11)
+	WHEN '{{geo}}' = 'block group' THEN 'https://censusreporter.org/profiles/15000US'||SUBSTRING(REGEXP_REPLACE(v.field_content,'\|(s|c|t|b)','','g'),1,12)
+END AS census_reporter_url
 FROM
 sierra_view.patron_record p
 JOIN
@@ -62,24 +55,12 @@ ON
 p.id = h.patron_record_id
 --for census field
 LEFT JOIN
-sierra_view.subfield stateid
+sierra_view.varfield v
 ON
-stateid.record_id = p.id AND stateid.field_type_code = 'k' AND stateid.tag = 's'
-LEFT JOIN
-sierra_view.subfield county
-ON
-county.record_id = p.id AND county.field_type_code = 'k' AND county.tag = 'c'
-LEFT JOIN
-sierra_view.subfield tract
-ON
-tract.record_id = p.id AND tract.field_type_code = 'k' AND tract.tag = 't'
-LEFT JOIN
-sierra_view.subfield block
-ON
-block.record_id = p.id AND block.field_type_code = 'k' AND block.tag = 'b'
+v.record_id = p.id AND v.varfield_type_code = 'k' AND v.field_content ~ '^\|s\d{2}'
 
 
 WHERE p.ptype_code IN ({{ptype}})
 
-GROUP BY 1
+GROUP BY 1,14
 ORDER BY 2 DESC
