@@ -19,6 +19,7 @@ CASE
     ELSE round(cast((mv.hold_count) as numeric (12, 2))/CAST((max(mv.avail_item_count) + max(mv.order_copies)) AS numeric(12,2)),2)
     END
 AS "network_wide_ratio",
+COUNT(ir.id) FILTER(WHERE ir.location_code ~ {{location}}) AS "total_local_item_count",
 MAX(mv.local_avail_item_count) AS "local_available_item_count",
 MAX(mv.order_copies) AS "local_order_copies",
 mv.local_holds AS "local_hold_count",
@@ -46,6 +47,7 @@ JOIN (
 SELECT b.id AS "bib_id", 
 COUNT(DISTINCT h.id) AS "hold_count",
 COUNT(DISTINCT CASE WHEN h.pickup_location_code ~ {{location}} THEN h.id END) AS "local_holds",
+--location will take the form ^oln, which in this example looks for all locations starting with the string oln.
 CASE
     WHEN count(DISTINCT i.id) IS NULL THEN 0
     ELSE count(DISTINCT i.id)
@@ -53,6 +55,7 @@ CASE
 AS "item_count",
 count(DISTINCT ia.id) AS "avail_item_count", 
 count(DISTINCT CASE WHEN ia.location_code ~ {{location}} THEN ia.id END) AS "local_avail_item_count",
+--location will take the form ^oln, which in this example looks for all locations starting with the string oln.
 MAX(o1.order_count) AS "order_count",
 CASE
     WHEN max(o1.order_copies) IS NULL THEN 0
@@ -79,6 +82,7 @@ ON
 ia.id=bri.item_record_id
 AND ia.item_status_code NOT IN ('m','n','o','e','z','s','$','a','b','d','g','w')
 AND ((ia.location_code !~ {{location}} AND ia.itype_code_num not in ('5','21','109','133','160','183','239','240','241','244','248','249')) OR ia.location_code ~ {{location}})
+--location will take the form ^oln, which in this example looks for all locations starting with the string oln.
 LEFT JOIN (
         SELECT count(oc.order_record_id) AS "order_count",
         SUM(oc.copies) AS "order_copies",
@@ -88,6 +92,7 @@ LEFT JOIN (
         ON o.id=bro.order_record_id
         JOIN sierra_view.order_record_cmf oc
         ON oc.order_record_id=bro.order_record_id AND oc.location_code ~ {{location}}
+        --location will take the form ^oln, which in this example looks for all locations starting with the string oln.
         WHERE o.order_status_code = 'o'
         GROUP BY bro.bib_record_id
 ) o1 ON o1.bib_id=b.id
@@ -97,10 +102,17 @@ HAVING
 COUNT(DISTINCT h.id)>0) mv
 ON mv.bib_id=brp.bib_record_id
 WHERE brp.material_code IN ({{mat_type}})
-GROUP BY 1, 2, 3, 4, 5, 6, 8, 12, 14
+GROUP BY 1, 2, 3, 4, 5, 6, 8, 13, 15
 HAVING mv.local_holds >= {{min_local_holds}}
 {{age_limit}}
+/*
+AND COUNT(ir.id) FILTER (WHERE (ir.itype_code_num NOT BETWEEN '100' AND '183' OR SUBSTRING(ir.location_code,4,1) NOT IN ('j','y'))) > 0 -- adult
+AND COUNT(ir.id) FILTER (WHERE (ir.itype_code_num BETWEEN '150' AND '183' OR SUBSTRING(ir.location_code,4,1) = 'j')) > 0 --juv
+AND COUNT(ir.id) FILTER (WHERE (ir.itype_code_num BETWEEN '100' AND '133' OR SUBSTRING(ir.location_code,4,1) = 'y')) > 0 --ya
+AND COUNT(ir.id) >= 0 --all ages
+*/
 --(max(mv.item_count) + max(mv.order_copies))=0
 --OR max(mv.hold_count)/(max(mv.item_count) + max(mv.order_copies))>=4
 ORDER BY 5, {{sort}} DESC
+--sort = 9 or mv.local_holds
 LIMIT {{qty}};

@@ -60,6 +60,7 @@ GROUP BY 1,2
 HAVING 
 (SUM(i.last_year_to_date_checkout_total) + SUM(i.year_to_date_checkout_total))/COUNT(i.id) > 3
 {{#if Exclude}}
+--use to weed out items with volume fields, which in some cases may throw off results
 AND COUNT(v.*) = 0 
 {{/if Exclude}}
 
@@ -74,6 +75,7 @@ WHERE
 AND i.last_checkout_gmt < (NOW() - INTERVAL '1 year'))
 OR i.item_status_code IN ('m','z'))
 AND i.location_code ~ {{location}}
+--location will take the form ^oln, which in this example looks for all locations starting with the string oln.
 AND NOT EXISTS (
 SELECT
 i.id

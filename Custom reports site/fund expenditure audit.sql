@@ -46,6 +46,11 @@ i.id = copy_count.invoice_record_id
 WHERE
 --i.paid_date_gmt or i.invoice_date_gmt
 {{date_field}}::DATE >= {{date_limit}}
+/*
+date_field options are
+i.invoice_date_gmt
+i.paid_date_gmt
+*/
 AND i.status_code = 'c'
 
 GROUP BY 1,2,3,5,i.shipping_amt,i.total_tax_amt,i.discount_amt,copy_count.total_copies)

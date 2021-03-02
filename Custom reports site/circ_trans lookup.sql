@@ -65,11 +65,13 @@ C.patron_record_id = p.id
 
 WHERE
 C.transaction_gmt BETWEEN {{start_time}} AND {{end_time}}
+--if filters include/exclude row based on boolean checkbox
 {{#if include_op}}AND C.op_code IN ({{op_code}}){{/if include_op}}
 {{#if include_stat}}AND C.stat_group_code_num IN ({{stat_group}}){{/if include_stat}}
 {{#if include_item_barcode}}AND i.barcode = {{barcode}}{{/if include_item_barcode}}
 {{#if include_patron_barcode}}AND p.barcode = {{patron_barcode}}{{/if include_patron_barcode}}
 {{#if include_title}}AND b.best_title_norm LIKE '%{{title}}%'{{/if include_title}}
 {{#if include_location}}AND SUBSTRING(C.item_location_code,1,3) ~ {{location}} {{/if include_location}}
+--location will take the form ^oln, which in this example looks for all locations starting with the string oln.
 
 ORDER BY 1

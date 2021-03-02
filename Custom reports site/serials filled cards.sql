@@ -65,6 +65,7 @@ JOIN
 sierra_view.holding_record_location hl
 ON
 h.id = hl.holding_record_id AND hl.location_code ~ {{location}}
+--location will take the form ^oln, which in this example looks for all locations starting with the string oln.
 JOIN
 sierra_view.user_defined_scode2_myuser s
 ON

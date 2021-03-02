@@ -26,6 +26,7 @@ JOIN
 sierra_view.item_record i
 ON
 l.item_record_id = i.id AND i.item_status_code NOT IN ({{item_status_codes}}) AND i.location_code ~ {{location}}
+--location will take the form ^oln, which in this example looks for all locations starting with the string oln.
 JOIN
 sierra_view.record_metadata m
 ON

@@ -45,7 +45,8 @@ l.item_record_id IN (
 	HAVING
 	count(item_record_id) > 1
 )
-AND i.location_code ~ {{location}} 
+AND i.location_code ~ {{location}}
+--location will take the form ^oln, which in this example looks for all locations starting with the string oln.
 
 ORDER BY 1,4;
 
