@@ -19,10 +19,14 @@ END AS geoid,
 --Possible options are zip, county, tract, block group
 COUNT(DISTINCT t.id) FILTER(WHERE t.op_code = 'i') AS "5_week_checkin_count",
 COUNT(DISTINCT t.id) FILTER(WHERE t.op_code = 'i' AND t.due_date_gmt::DATE > t.transaction_gmt::DATE) AS "5_week_overdue_checkin",
+ROUND(100.0 * (CAST(COUNT(DISTINCT t.id) FILTER(WHERE t.op_code = 'i' AND t.due_date_gmt::DATE > t.transaction_gmt::DATE) AS NUMERIC (12,2))) / NULLIF(CAST(COUNT(DISTINCT t.id) FILTER(WHERE t.op_code = 'i') AS NUMERIC (12,2)),0), 4) ||'%' AS pct_overdue_checkin,
 COUNT(DISTINCT t.id) FILTER(WHERE t.op_code = 'o') AS "5_week_checkout_count",
 COUNT(DISTINCT t.id) FILTER(WHERE t.op_code = 'o' AND SUBSTRING(t.item_location_code,1,3) ~ {{location}}) AS "5_week_local_checkout_count",
 COUNT(DISTINCT t.id) FILTER(WHERE t.op_code = 'o' AND SUBSTRING(t.item_location_code,1,3) !~ {{location}}) AS "5_week_network_checkout_count",
 COUNT(DISTINCT t.id) FILTER(WHERE t.op_code = 'f') AS "5_week_filled_hold_count",
+COUNT(DISTINCT t.patron_record_id) FILTER(WHERE t.op_code = 'o') AS "5_week_unique_patron_checkout_count",
+COUNT(DISTINCT t.patron_record_id) FILTER(WHERE t.op_code = 'i') AS "5_week_unique_patron_checkin_count",
+COUNT(DISTINCT t.patron_record_id) FILTER(WHERE t.op_code = 'f') AS "5_week_unique_patron_filled_hold_count",
 CASE
 	WHEN '{{geo}}' = 'zip' THEN 'https://censusreporter.org/profiles/86000US'||SUBSTRING(a.postal_code,'^\d{5}')
 	WHEN v.field_content IS NULL OR v.field_content = '' THEN 'na'
@@ -136,7 +140,6 @@ CASE
 	WHEN  {{location}} = '^pmc' THEN t.stat_group_code_num BETWEEN '830' AND '839'
 	WHEN  {{location}} = '^reg' THEN t.stat_group_code_num BETWEEN '840' AND '849'
 	WHEN  {{location}} = '^shr' THEN t.stat_group_code_num BETWEEN '850' AND '859'
-	WHEN  {{location}} = '\w' THEN t.stat_group_code_num BETWEEN '100' AND '999'
 END
-GROUP BY 1,8
+GROUP BY 1,12
 ORDER BY 2 DESC
