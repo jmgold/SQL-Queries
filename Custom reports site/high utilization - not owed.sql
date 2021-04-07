@@ -12,7 +12,7 @@ b.best_author AS author,
 'b'||mb.record_num||'a' AS bib_number,
 AVG(i.checkout_total) AS avg_checkout_total,
 AVG(CURRENT_DATE - m.creation_date_gmt::DATE) AS avg_age,
-AVG(ROUND((CAST((i.checkout_total * 14) AS NUMERIC (12,2)) / (CURRENT_DATE - m.creation_date_gmt::DATE)),6)) AS avg_utilization,
+AVG(ROUND((CAST((i.checkout_total * 14) AS NUMERIC (12,2)) / (CASE WHEN CURRENT_DATE - m.creation_date_gmt::DATE = 0 THEN 1 ELSE CURRENT_DATE - m.creation_date_gmt::DATE END)),6)) AS avg_utilization,
 COUNT(l.id) AS item_total,
 MAX(i.last_checkout_gmt::DATE) AS last_checkout_date
 
