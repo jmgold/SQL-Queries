@@ -2,7 +2,8 @@ SELECT
 p.ptype_code,
 pt.name AS ptype_name,
 COUNT(p.id) FILTER(WHERE v.field_content IS NOT NULL) AS total_complete,
-COUNT(p.id) FILTER(WHERE v.field_content IS NULL) AS total_to_do
+COUNT(p.id) FILTER(WHERE v.field_content IS NULL) AS total_to_do,
+COUNT(p.id) FILTER(WHERE v.field_content ~ '^\|s\|c\|t\|b') AS total_no_match
 FROM
 sierra_view.patron_record p
 JOIN
