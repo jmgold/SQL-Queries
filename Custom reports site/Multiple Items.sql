@@ -87,4 +87,17 @@ sierra_view.record_metadata rm
 ON
 i.id = rm.id AND rm.creation_date_gmt < {{created_date}}
 
+--use to weed out items with volume fields, which in some cases may throw off results
+--{{#if Exclude}}
+LEFT JOIN
+sierra_view.subfield v
+ON
+i.id = v.record_id AND v.field_type_code = 'v'
+
+GROUP BY 1,2,3,4,5,6,7,8,9,10,11,12
+
+HAVING
+COUNT(v.*) = 0 
+--{{/if Exclude}}
+
 ORDER BY 1,6,7

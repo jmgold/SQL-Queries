@@ -5,6 +5,7 @@ Minuteman Library Network
 Identifies titles with copies that are likely missing given recent checkout history and the number of billed/lost/missing copies
 */
 SELECT
+REPLACE(ip.call_number,'|a','') AS call_number,
 id2reckey(i.id)||'a' AS item_number,
 id2reckey(c.bib_record_id)||'a' AS bib_number,
 c.title,
@@ -14,6 +15,10 @@ i.location_code,
 c.recent_network_wide_turnover
 FROM
 sierra_view.item_record i
+JOIN
+sierra_view.item_record_property ip
+ON
+i.id = ip.item_record_id
 JOIN
 sierra_view.record_metadata m
 ON
