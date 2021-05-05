@@ -2,7 +2,7 @@
 Jeremy Goldstein
 Minuteman Library Network
 
-Gathers the top titles, grouped by a choice of performance metrics
+Gathers the top titles, limited by one or more languages, grouped by a choice of performance metrics
 */
 WITH hold_count AS
 	(SELECT
@@ -79,6 +79,7 @@ b.bib_record_id = h.bib_record_id
 
 WHERE
 b.material_code IN ({{mat_type}})
+AND br.language_code IN ({{language}})
 AND m.creation_date_gmt::DATE < {{created_date}}
 
 GROUP BY
