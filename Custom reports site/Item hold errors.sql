@@ -7,6 +7,7 @@ Identifies item level holds that should be transferred to bib level holds
 
 SELECT
 ID2RECKEY(l.bib_record_id)||'a' AS bib_number,
+m.record_type_code||m.record_num||'a' AS item_number,
 b.best_title AS title,
 STRING_AGG(DISTINCT h.pickup_location_code,', ') AS pickup_location_code,
 COUNT(h.id) AS total_item_level_holds,
@@ -49,7 +50,7 @@ AND h.placed_gmt < {{date_placed}}
 AND h.pickup_location_code ~ {{location}}
 --location will take the form ^oln, which in this example looks for all locations starting with the string oln.
 
-GROUP BY 1,2
+GROUP BY 1,2,3
 HAVING 
 COUNT(i.id) FILTER (WHERE i.is_available_at_library = TRUE) > 0
 
@@ -57,6 +58,7 @@ UNION
 
 SELECT
 id2reckey(b.bib_record_id)||'a',
+id2reckey(i.id)||'a',
 b.best_title,
 h.pickup_location_code,
 COUNT(h.id),
@@ -90,6 +92,6 @@ AND h.pickup_location_code ~ {{location}}
 --location will take the form ^oln, which in this example looks for all locations starting with the string oln.
 AND checkout.id IS NULL
 
-GROUP BY 1,2,3
+GROUP BY 1,2,3,4
 
-ORDER BY 3,5
+ORDER BY 4,6
