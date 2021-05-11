@@ -9,12 +9,14 @@ Passed variables for owning location, item statuses to exclude, copies greater t
 */
 
 SELECT 
-id2reckey(b.bib_record_id)||'a' AS bib_number
+id2reckey(b.bib_record_id)||'a' AS bib_number,
 b.best_title AS title,
 count(i.id) AS item_count,
 sum(i.last_year_to_date_checkout_total) AS last_ytd_checkouts,
 SUM(i.year_to_date_checkout_total) AS ytd_checkouts,
-ROUND((SUM(i.year_to_date_checkout_total) + sum(i.last_year_to_date_checkout_total))::NUMERIC/count(i.id),2) AS turnover
+ROUND((SUM(i.year_to_date_checkout_total) + sum(i.last_year_to_date_checkout_total))::NUMERIC/count(i.id),2) AS turnover,
+STRING_AGG(id2reckey(i.id)||'a',',') AS item_numbers,
+STRING_AGG(DISTINCT TRIM(REPLACE(ip.call_number,'|a','')),',') AS call_numbers
 
 FROM 
 sierra_view.bib_record_property AS b
@@ -31,6 +33,10 @@ JOIN
 sierra_view.item_record as i
 ON
 i.id = l.item_record_id
+JOIN
+sierra_view.item_record_property ip
+ON
+i.id = ip.item_record_id
 JOIN
 sierra_view.record_metadata m
 ON
