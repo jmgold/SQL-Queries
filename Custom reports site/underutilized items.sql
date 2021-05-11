@@ -9,6 +9,7 @@ SELECT
 a.title,
 id2reckey(a.bib_record_id)||'a' AS bib_number,
 id2reckey(i.id)||'a' AS item_number,
+TRIM(REPLACE(ip.call_number,'|a','')) AS call_number,
 ROUND(a.avg_checkout_total,6) AS avg_checkout_total,
 ROUND(a.avg_age,6) AS avg_age_in_days,
 --avg age in days for utilization calculation
@@ -18,10 +19,15 @@ m.creation_date_gmt::DATE AS creation_date,
 --generalizes checkouts to 2 week loan period.
 --utilization is ratio of days when an item was used to days when it could have been used
 ROUND((CAST((i.checkout_total * 14) AS NUMERIC (12,2)) / (CURRENT_DATE - m.creation_date_gmt::DATE)),6) AS utilization,
-i.last_checkout_gmt::DATE AS last_checkout_date
+i.last_checkout_gmt::DATE AS last_checkout_date,
+a.avg_utilization - (ROUND((CAST((i.checkout_total * 14) AS NUMERIC (12,2)) / (CURRENT_DATE - m.creation_date_gmt::DATE)),6)) AS utilization_difference
 
 FROM
 sierra_view.item_record i
+JOIN
+sierra_view.item_record_property ip
+ON
+i.id = ip.item_record_id
 JOIN
 sierra_view.bib_record_item_record_link l
 ON
@@ -62,8 +68,7 @@ GROUP BY 1,2) a
 ON l.bib_record_id = a.bib_record_id
 
 WHERE
-i.location_code ~ {{location}}
---location will take the form ^oln, which in this example looks for all locations starting with the string oln.
+i.location_code ~ '{{location}}'
 AND m.creation_date_gmt::DATE < {{created_date}}
 AND (CAST((i.checkout_total * 14) AS NUMERIC (12,2)) / (CURRENT_DATE - m.creation_date_gmt::DATE)) < (((a.avg_checkout_total * 14) / a.avg_age) /2)
 AND i.item_status_code NOT IN ({{item_status_codes}})
@@ -74,4 +79,4 @@ AND {{age_level}}
 	SUBSTRING(i.location_code,4,1) = 'y' --ya
 	i.location_code ~ '\w' --all
 	*/
-ORDER BY 1,2
+ORDER BY 12 DESC, 4
