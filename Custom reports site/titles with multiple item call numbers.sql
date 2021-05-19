@@ -68,7 +68,7 @@ inner_query
 ON
 l.bib_record_id = inner_query.bib_record_id AND inner_query.unique_count > 1
 JOIN
-item_record i
+sierra_view.item_record i
 ON
 l.item_record_id = i.id AND i.location_code ~ '{{location}}'
 --location will take the form ^oln, which in this example looks for all locations starting with the string oln.
