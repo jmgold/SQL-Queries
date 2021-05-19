@@ -35,7 +35,7 @@ i.id = v.record_id AND v.field_type_code = 'v'
 {{/if Exclude}}
 
 WHERE
-i.location_code ~ {{location}}
+i.location_code ~ '{{location}}'
 --location will take the form ^oln, which in this example looks for all locations starting with the string oln.
 AND i.item_status_code NOT IN ({{item_status_codes}})
 AND {{age_level}}
@@ -70,7 +70,7 @@ l.bib_record_id = inner_query.bib_record_id AND inner_query.unique_count > 1
 JOIN
 item_record i
 ON
-l.item_record_id = i.id AND i.location_code ~ {{location}}
+l.item_record_id = i.id AND i.location_code ~ '{{location}}'
 --location will take the form ^oln, which in this example looks for all locations starting with the string oln.
 AND i.item_status_code NOT IN ({{item_status_codes}})
 AND {{age_level}}
