@@ -1,10 +1,8 @@
 /*
 Jeremy Goldstein
 Minuteman Library Network
-
 use to gather bibs where a library owns multiple circulating copies of a title.
 and recent circ suggests that some copies could be weeded
-
 Passed variables for owning location, item statuses to exclude, copies greater than x and turnover less than y
 */
 
@@ -12,9 +10,9 @@ SELECT
 id2reckey(b.bib_record_id)||'a' AS bib_number,
 b.best_title AS title,
 count(i.id) AS item_count,
-sum(i.last_year_to_date_checkout_total) AS last_ytd_checkouts,
+SUM(i.last_year_to_date_checkout_total) AS last_ytd_checkouts,
 SUM(i.year_to_date_checkout_total) AS ytd_checkouts,
-ROUND((SUM(i.year_to_date_checkout_total) + sum(i.last_year_to_date_checkout_total))::NUMERIC/count(i.id),2) AS turnover,
+ROUND((SUM(i.year_to_date_checkout_total) + SUM(i.last_year_to_date_checkout_total))::NUMERIC/count(i.id),2) AS turnover,
 STRING_AGG(id2reckey(i.id)||'a',',') AS item_numbers,
 STRING_AGG(DISTINCT TRIM(REPLACE(ip.call_number,'|a','')),',') AS call_numbers
 
@@ -41,15 +39,23 @@ JOIN
 sierra_view.record_metadata m
 ON
 i.id = m.id AND m.creation_date_gmt < {{created_date}}
-
 AND i.item_status_code NOT IN ({{Item_Status_Codes}}) 
 AND i.location_code ~ {{location}}
 --location will take the form ^oln, which in this example looks for all locations starting with the string oln.
+{{#if Exclude}}
+LEFT JOIN
+sierra_view.subfield v
+ON
+i.id = v.record_id AND v.field_type_code = 'v'
+{{/if Exclude}}
 
 WHERE
 b.material_code IN ({{mat_type}})
-group by 1, 2
-having count(i.id) > {{Item_Count}}
+GROUP BY 1, 2
+HAVING COUNT(i.id) > {{Item_Count}}
 AND (SUM(i.year_to_date_checkout_total) + sum(i.last_year_to_date_checkout_total))::NUMERIC/count(i.id) < {{Turnover}}
-order BY 6,3 DESC
-;
+{{#if Exclude}}
+--use to weed out items with volume fields, which in some cases may throw off results
+AND COUNT(v.*) = 0 
+{{/if Exclude}}
+ORDER BY 6,3 DESC
