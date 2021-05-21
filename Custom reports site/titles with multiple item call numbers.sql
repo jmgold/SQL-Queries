@@ -57,7 +57,7 @@ COUNT(v.*) = 0
 
 SELECT
 id2reckey(inner_query.bib_record_id)||'a' AS bib_number,
-inner_query.best_title,
+inner_query.best_title AS title,
 inner_query.item_count,
 STRING_AGG(DISTINCT TRIM(REPLACE(ip.call_number,'|a','')),'| ') AS call_numbers
 
