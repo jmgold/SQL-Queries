@@ -21,89 +21,53 @@ v.record_num IN (
 --Films
 --Nancy Drew and the Hidden Staircase
 '1991518',
---new mutants
-'1564040',
---where'd you go bernadette
-'2988900',
---I Heard you Paint Houses
-'3803047',
---the last thing he wanted
-'1578547',
---Secrecy World
-'3680745',
---the woman in the window
-'3650356',
---The Good Liar
-'3454594',
---Motherless Brooklyn
-'1882244',
---Artemis Fowl
-'1995127',
---Call of the wild
-'1579606',
+--Infinite
+'3995130',
+--those who wish me dead
+'3137743',
 --Death on the Nile
 '2917379',
 --Dune
 '1495014',
---the good shepherd
-'3811449',
---Invisible Man
-'2125458',
---just mercy
-'3180431',
---two kisses for maddy
-'2864654',
---voyages of doctor dolittle
-'1860039',
+--Deep Water
+'2178263',
 --Black Widow
 '3410594',
 --Eternals
 '3858608',
---Little Women
-'1687579',
---David Copperfield
-'1455663',
---Emma
-'2221387',
---Secret Garden
-'2637040',
---The Witches
-'3149127',
---The Rhythm Section
-'3800942',
---Harley Quinn & Birds of Prey
-'3860987',
---Peter Rabbit
-'1300398',
---P.S. I Still love you
-'3226352',
---Bloodshot
-'3273327',
---The One and Only Ivan
-'2950294',
---Dragon Rider
-'2253838',
+--Blonde
+'1908073',
+--The Nightingale
+'3187187',
+--Nightmare Alley
+'2891526',
 --Without Remorse
 '1461086',
+--woman in the window
+'3650356',
+--Shang-Chi
+'3749678',
+--Suicide Squad
+'3426716',
+--boy called christmas
+'3563957',
+--Passing
+'2693833',
 --TV
---The Outsider
-'3723483',
 --Umbrella Academy
 '2588224',
---Shrill
-'3483079',
---Chilling Adventures of Sabrina
-'3524746',
---NOS4A2
-'3042545',
 --Lovecraft Country
 '3451427',
---turn of the screw
-'2996634',
+--underground railroad
+'3491331',
+--mysterious benedict society
+'2467715',
+--lisey's story
+'2406908',
+--all creatures great and small
+'3168726',
 --Batwoman
 '2742916',
---Watchmen
-'3198650',
 --His Dark Materials
 '2964361',
 --Expatriates
@@ -112,24 +76,22 @@ v.record_num IN (
 '1208377',
 --The witcher
 '2584155',
---Dracula
-'2534215',
---Normal People
-'3780266',
---Vision
-'3714481',
+--Lupin
+'3777924',
 --Bone Collector
 '1600077',
 --Y the last Man
 '3001999',
 --Locke & Key
 '2621071',
---High Fidelity
-'1545789',
---Little Fires Everywhere
-'3639155',
 --Snow Piercer
-'3146873'
+'3146873',
+--Loki
+'3891151',
+--shadow and bone
+'2998490',
+--Nine Perfect Strangers
+'3766686'
 )
 WHERE b.material_code ='a'
 GROUP BY 1,2,3 
