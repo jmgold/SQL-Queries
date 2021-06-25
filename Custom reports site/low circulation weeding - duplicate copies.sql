@@ -14,7 +14,9 @@ SUM(i.last_year_to_date_checkout_total) AS last_ytd_checkouts,
 SUM(i.year_to_date_checkout_total) AS ytd_checkouts,
 ROUND((SUM(i.year_to_date_checkout_total) + SUM(i.last_year_to_date_checkout_total))::NUMERIC/count(i.id),2) AS turnover,
 STRING_AGG(id2reckey(i.id)||'a',',') AS item_numbers,
-STRING_AGG(DISTINCT TRIM(REPLACE(ip.call_number,'|a','')),',') AS call_numbers
+STRING_AGG(DISTINCT TRIM(REPLACE(ip.call_number,'|a','')),',') AS call_numbers,
+STRING_AGG(DISTINCT i.icode1::VARCHAR,', ') AS scat_codes,
+STRING_AGG(DISTINCT i.itype_code_num::VARCHAR,', ') AS itypes
 
 FROM 
 sierra_view.bib_record_property AS b
