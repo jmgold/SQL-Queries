@@ -29,5 +29,5 @@ b.material_code = m.code
 
 WHERE
 m.code NOT IN ('b','h','l','w','s','y')
-GROUP BY 1,2
+GROUP BY 1
 ORDER BY 1,2

@@ -67,8 +67,27 @@ sierra_view.item_record i
 ON
 rm.id = i.id AND i.itype_code_num != '241' AND i.location_code ~ '{{location}}'
 
-
 GROUP BY 1,2,4,5, p1.index_entry
+
+UNION
+
+SELECT
+i.location_code,
+rm.record_type_code||rm.record_num||'a',
+ip.barcode,
+'NA',
+'Missing Barcode'
+
+FROM
+sierra_view.record_metadata rm
+JOIN
+sierra_view.item_record i
+ON
+rm.id = i.id AND i.itype_code_num != '241' AND i.location_code ~ '{{location}}'
+JOIN
+sierra_view.item_record_property ip
+ON
+i.id = ip.item_record_id AND ip.barcode = ''
 )a
 
 GROUP BY 1,2,4,5
