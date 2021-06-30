@@ -12,7 +12,7 @@ ON
 bp.bib_record_id = bi.bib_record_id
 JOIN
 sierra_view.item_record i
-ON bi.item_record_id = i.id AND i.location_code LIKE 'act%' AND i.item_status_code NOT IN ('m', 'n', 'z', '$', 'w', 'd')
+ON bi.item_record_id = i.id AND i.location_code LIKE 'br%' AND i.item_status_code NOT IN ('m', 'n', 'z', '$', 'w', 'd')
 LEFT JOIN
 sierra_view.varfield vi
 ON
