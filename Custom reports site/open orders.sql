@@ -7,11 +7,12 @@ Report identifies all order records that are currently contributing to the encum
 
 SELECT
 rm.record_type_code||rm.record_num||'a' AS order_number,
-b.best_title,
+b.best_title AS title,
 o.order_date_gmt::DATE AS order_date,
 o.order_status_code AS status,
 f.fund_code,
 fn.name AS fund,
+o.vendor_record_code AS vendor,
 cmf.copies,
 o.estimated_price::MONEY AS eprice,
 ROUND(SUM(o.estimated_price * (cmf.copies - COALESCE(op.copies,0))),2)::MONEY AS encumbered_amt
@@ -62,5 +63,5 @@ o.id = op.order_record_id AND o.order_status_code = 'q'
 WHERE o.order_date_gmt::DATE < {{order_date}}
 AND o.accounting_unit_code_num = {{accounting_unit}}
 AND order_status_code IN ('o','q','g','d')
-GROUP BY 1,2,3,4,5,6,7,8
+GROUP BY 1,2,3,4,5,6,7,8,9
 ORDER BY 3,2;
