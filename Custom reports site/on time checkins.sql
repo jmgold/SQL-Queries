@@ -197,8 +197,8 @@ UNION
 SELECT
 'TOTAL',
 COUNT(t.id) AS total_checkins,
+COUNT(t.id) FILTER (WHERE t.due_date_gmt::DATE - t.transaction_gmt::DATE > 1) AS returned_greater_than_1_day_early,
 COUNT(t.id) FILTER (WHERE t.due_date_gmt::DATE - t.transaction_gmt::DATE = 1) AS returned_1_day_early,
-COUNT(t.id) FILTER (WHERE t.due_date_gmt::DATE - t.transaction_gmt::DATE BETWEEN 2 AND 7) AS returned_2_to_7_days_early,
 COUNT(t.id) FILTER (WHERE t.due_date_gmt::DATE = t.transaction_gmt::DATE) AS returned_on_time,
 COUNT(t.id) FILTER (WHERE t.transaction_gmt::DATE - t.due_date_gmt::DATE = 1) AS returned_1_day_late,
 COUNT(t.id) FILTER (WHERE t.transaction_gmt::DATE - t.due_date_gmt::DATE BETWEEN 2 AND 7) AS returned_2_to_7_days_late,
