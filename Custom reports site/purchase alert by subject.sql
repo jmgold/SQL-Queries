@@ -112,7 +112,7 @@ GROUP BY 1, 2, 3, 4, 5, 6, 8, 13, 15
 HAVING mv.local_holds >= {{min_local_holds}}
 {{age_limit}}
 /*
-AND COUNT(ir.id) FILTER (WHERE (ir.itype_code_num NOT BETWEEN '100' AND '183' OR SUBSTRING(ir.location_code,4,1) NOT IN ('j','y'))) > 0 -- adult
+AND COUNT(ir.id) FILTER (WHERE (ir.itype_code_num NOT BETWEEN '100' AND '183' AND SUBSTRING(ir.location_code,4,1) NOT IN ('j','y'))) > 0 -- adult
 AND COUNT(ir.id) FILTER (WHERE (ir.itype_code_num BETWEEN '150' AND '183' OR SUBSTRING(ir.location_code,4,1) = 'j')) > 0 --juv
 AND COUNT(ir.id) FILTER (WHERE (ir.itype_code_num BETWEEN '100' AND '133' OR SUBSTRING(ir.location_code,4,1) = 'y')) > 0 --ya
 AND COUNT(ir.id) >= 0 --all ages

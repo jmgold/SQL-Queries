@@ -44,16 +44,16 @@ SELECT
 --loc.name --pickup location
 --m.name --bibliographic material type
 AS "grouping",
-COUNT(DISTINCT h.id) AS total_holds,
-ROUND(AVG(CURRENT_DATE - h.placed_gmt::DATE))||' Days' AS avg_hold_age,
-MODE() WITHIN GROUP (ORDER BY (CURRENT_DATE - h.placed_gmt::DATE))||' Days' AS mode_hold_age,
-ROUND(percentile_cont(0.5) WITHIN GROUP (ORDER BY (CURRENT_DATE - h.placed_gmt::DATE)))||' Days' AS median_hold_age,
-MAX(CURRENT_DATE - h.placed_gmt::DATE)||' Days' AS max_hold_age,
-COUNT(DISTINCT h.id) FILTER (WHERE h.placed_gmt::DATE >= CURRENT_DATE - INTERVAL '1 day') "in_last_day",
-COUNT(DISTINCT h.id) FILTER (WHERE h.placed_gmt::DATE >= CURRENT_DATE - INTERVAL '1 week') "in_last_week",
-COUNT(DISTINCT h.id) FILTER (WHERE h.placed_gmt::DATE >= CURRENT_DATE - INTERVAL '1 month') "in_last_month",
-COUNT(DISTINCT h.id) FILTER (WHERE h.placed_gmt::DATE >= CURRENT_DATE - INTERVAL '3 months') "in_last_quarter",
-COUNT(DISTINCT h.id) FILTER (WHERE h.placed_gmt::DATE >= CURRENT_DATE - INTERVAL '1 year') "in_last_year"
+COUNT(DISTINCT h.id) AS total_holds_count,
+ROUND(AVG(CURRENT_DATE - h.placed_gmt::DATE)) AS avg_days_on_hold,
+MODE() WITHIN GROUP (ORDER BY (CURRENT_DATE - h.placed_gmt::DATE)) AS mode_days_on_hold,
+ROUND(percentile_cont(0.5) WITHIN GROUP (ORDER BY (CURRENT_DATE - h.placed_gmt::DATE))) AS median_days_on_hold,
+MAX(CURRENT_DATE - h.placed_gmt::DATE) AS max_days_on_hold,
+COUNT(DISTINCT h.id) FILTER (WHERE h.placed_gmt::DATE >= CURRENT_DATE - INTERVAL '1 day') "count_placed_in_last_day",
+COUNT(DISTINCT h.id) FILTER (WHERE h.placed_gmt::DATE >= CURRENT_DATE - INTERVAL '1 week') "count_placed_in_last_week",
+COUNT(DISTINCT h.id) FILTER (WHERE h.placed_gmt::DATE >= CURRENT_DATE - INTERVAL '1 month') "count_placed_in_last_month",
+COUNT(DISTINCT h.id) FILTER (WHERE h.placed_gmt::DATE >= CURRENT_DATE - INTERVAL '3 months') "count_placed_in_last_quarter",
+COUNT(DISTINCT h.id) FILTER (WHERE h.placed_gmt::DATE >= CURRENT_DATE - INTERVAL '1 year') "count_placed_in_last_year"
 
 FROM
 sierra_view.hold h
