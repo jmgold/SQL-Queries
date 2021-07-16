@@ -9,10 +9,8 @@ DISTINCT rm.record_type_code||rm.record_num||'a' AS item_number,
 loc.name AS location,
 TRIM(REPLACE(ip.call_number,'|a','')) AS call_number,
 COALESCE(vol.field_content,'') AS volume,
-b.best_author,
-b.best_title,
-b.best_title,
-b.best_author,
+b.best_title AS title,
+b.best_author AS author,
 b.publish_year,
 rm.creation_date_gmt::DATE AS creation_date,
 rm.record_last_updated_gmt::DATE AS last_updated,
@@ -20,8 +18,10 @@ ip.barcode,
 i.icode1 AS scat,
 i.itype_code_num,
 it.name AS itype_name,
-loc.name AS location,
-st.name AS item_status,
+CASE
+	WHEN co.id IS NOT NULL THEN 'CHECKED OUT'
+	ELSE st.name
+END AS item_status,
 i.price::MONEY AS price,
 i.last_checkin_gmt::DATE AS last_checkin,
 i.last_checkout_gmt::DATE AS last_checkout,
@@ -79,6 +79,10 @@ LEFT JOIN
 sierra_view.varfield vol
 ON
 i.id = vol.record_id AND vol.varfield_type_code = 'v'
+LEFT JOIN
+sierra_view.checkout co
+ON
+i.id = co.item_record_id
 
 WHERE
 i.location_code ~ '{{location}}'
