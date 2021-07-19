@@ -9,19 +9,25 @@ SELECT
 a.title,
 id2reckey(a.bib_record_id)||'a' AS bib_number,
 id2reckey(i.id)||'a' AS item_number,
+TRIM(REPLACE(ip.call_number,'|a','')) AS call_number,
 ROUND(a.avg_checkout_total,6) AS avg_checkout_total,
 ROUND(a.avg_age,6) AS avg_age_in_days,
 --avg age in days for utilization calculation
 a.avg_utilization,
 i.checkout_total,
-m.creation_date_gmt::DATE,
+m.creation_date_gmt::DATE AS creation_date,
 --generalizes checkouts to 2 week loan period.
 --utilization is ratio of days when an item was used to days when it could have been used
 ROUND((CAST((i.checkout_total * 14) AS NUMERIC (12,2)) / (CURRENT_DATE - m.creation_date_gmt::DATE)),6) AS utilization,
-i.last_checkout_gmt::DATE
+i.last_checkout_gmt::DATE AS last_checkout_date,
+a.avg_utilization - (ROUND((CAST((i.checkout_total * 14) AS NUMERIC (12,2)) / (CURRENT_DATE - m.creation_date_gmt::DATE)),6)) AS utilization_difference
 
 FROM
 sierra_view.item_record i
+JOIN
+sierra_view.item_record_property ip
+ON
+i.id = ip.item_record_id
 JOIN
 sierra_view.bib_record_item_record_link l
 ON
@@ -46,7 +52,7 @@ sierra_view.bib_record_item_record_link l
 JOIN
 sierra_view.bib_record_property b
 ON
-l.bib_record_id = b.bib_record_id AND b.material_code IN ('a','2')
+l.bib_record_id = b.bib_record_id AND b.material_code IN ({{mat_type}})
 JOIN
 sierra_view.item_record i
 ON
@@ -56,13 +62,21 @@ sierra_view.record_metadata m
 ON
 i.id = m.id
 WHERE
-m.creation_date_gmt::DATE != CURRENT_DATE
+m.creation_date_gmt::DATE < {{created_date}}
+AND i.item_status_code NOT IN ({{item_status_codes}})
 GROUP BY 1,2) a
 ON l.bib_record_id = a.bib_record_id
 
 WHERE
-i.location_code ~ '^brk'
-AND m.creation_date_gmt::DATE < CURRENT_DATE - INTERVAL '3 months'
+i.location_code ~ '{{location}}'
+AND m.creation_date_gmt::DATE < {{created_date}}
 AND (CAST((i.checkout_total * 14) AS NUMERIC (12,2)) / (CURRENT_DATE - m.creation_date_gmt::DATE)) < (((a.avg_checkout_total * 14) / a.avg_age) /2)
-AND i.item_status_code NOT IN ('d','n','$','w','o')
-ORDER BY 1,2
+AND i.item_status_code NOT IN ({{item_status_codes}})
+AND {{age_level}}
+	/*
+	SUBSTRING(i.location_code,4,1) NOT IN ('y','j') --adult
+	SUBSTRING(i.location_code,4,1) = 'j' --juv
+	SUBSTRING(i.location_code,4,1) = 'y' --ya
+	i.location_code ~ '\w' --all
+	*/
+ORDER BY 12 DESC, 4

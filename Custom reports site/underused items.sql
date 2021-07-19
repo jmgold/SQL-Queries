@@ -2,12 +2,9 @@
 Jeremy Goldstein
 Minuteman Library Network
 
-Calculates and estimated percentage of each items time since added to the collection that it has been checked out
-Use to identify weeding candidates
+Identifies underused items by compairing the est time spent checked out to that of all copies attached to a given record
 */
 
---estimates the avg loan period for each itype across the network based on due date and checkout dates in the fines table
---fines table has the largest pool of data to pull from for makng such a calculation
 WITH temp_loan_rules AS
 (
 SELECT
@@ -82,83 +79,87 @@ c.item_record_id = i.id
 
 GROUP BY 1)
 
-SELECT *
-FROM(
-SELECT
-DISTINCT rm.record_type_code||rm.record_num||'a' AS item_number,
-i.location_code||' '||loc.name AS location,
---loc.name AS location,
-TRIM(REPLACE(ip.call_number,'|a','')) AS call_number,
-COALESCE(vol.field_content,'') AS volume,
-b.best_author AS author,
-b.best_title AS title,
-ip.barcode,
-i.icode1 AS scat,
-CASE
-	WHEN co.id IS NOT NULL THEN 'CHECKED OUT'
-	ELSE st.name
-END AS item_status,
-i.last_checkout_gmt::DATE AS last_checkout,
-i.checkout_total + i.renewal_total AS circulation_total,
-rm.creation_date_gmt::DATE AS created_date,
-ROUND((CAST(((i.checkout_total + i.renewal_total) * loan.est_loan_period) AS NUMERIC (12,2))/(CURRENT_DATE - rm.creation_date_gmt::DATE)) * 100,2)||'%' AS est_time_checked_out_pct
+/*
+Jeremy Goldstein
+Minuteman Library Network
 
+Identifies under utilized items by compairing the utlization factor of an item to that of all copies attached to a given record
+*/
+
+SELECT
+id2reckey(i.id)||'a' AS item_number,
+a.title,
+a.author,
+TRIM(REPLACE(ip.call_number,'|a','')) AS call_number,
+i.checkout_total + i.renewal_total AS circulation_total,
+rm.creation_date_gmt::DATE AS creation_date,
+--avg age in days for time_checked_out_pct calculation
+i.last_checkout_gmt::DATE AS last_checkout_date,
+a.avg_time_checked_out_pct||'%' AS avg_time_checked_out_pct,
+ROUND((CAST(((i.checkout_total + i.renewal_total) * loan.est_loan_period) AS NUMERIC (12,2))/(CURRENT_DATE - rm.creation_date_gmt::DATE)) * 100,2)||'%' AS time_checked_out_pct,
+a.avg_time_checked_out_pct - (ROUND((CAST(((i.checkout_total + i.renewal_total) * loan.est_loan_period) AS NUMERIC (12,2))/(CURRENT_DATE - rm.creation_date_gmt::DATE)) * 100,2)) AS time_checked_out_pct_difference
 
 FROM
 sierra_view.item_record i
-JOIN
-sierra_view.record_metadata rm
-ON
-i.id = rm.id AND rm.creation_date_gmt::DATE  < {{created_date}}
 JOIN
 sierra_view.item_record_property ip
 ON
 i.id = ip.item_record_id
 JOIN
-sierra_view.itype_property_myuser it
-ON
-i.itype_code_num = it.code
-JOIN
-sierra_view.location_myuser loc
-ON
-i.location_code = loc.code
-JOIN
-sierra_view.item_status_property_myuser st
-ON
-i.item_status_code = st.code
-JOIN
 sierra_view.bib_record_item_record_link l
 ON
 i.id = l.item_record_id
 JOIN
+sierra_view.record_metadata rm
+ON
+i.id = rm.id
+JOIN
+temp_loan_rules loan
+ON
+i.itype_code_num = loan.itype_code_num
+
+JOIN
+(
+SELECT
+b.best_title AS title,
+b.best_author AS author,
+b.bib_record_id,
+ROUND(AVG(ROUND((CAST(((i.checkout_total + i.renewal_total) * loan.est_loan_period) AS NUMERIC (12,2))/(CURRENT_DATE - rm.creation_date_gmt::DATE)) * 100,2)),2) AS avg_time_checked_out_pct
+
+FROM
+sierra_view.bib_record_item_record_link l
+JOIN
 sierra_view.bib_record_property b
 ON
-l.bib_record_id = b.bib_record_id
-LEFT JOIN
-sierra_view.varfield vol
+l.bib_record_id = b.bib_record_id AND b.material_code IN ({{mat_type}})
+JOIN
+sierra_view.item_record i
 ON
-i.id = vol.record_id AND vol.varfield_type_code = 'v'
-LEFT JOIN
-sierra_view.checkout co
+l.item_record_id = i.id
+JOIN
+sierra_view.record_metadata rm
 ON
-i.id = co.item_record_id
+i.id = rm.id
 JOIN
 temp_loan_rules loan
 ON
 i.itype_code_num = loan.itype_code_num
 
 WHERE
-i.location_code ~ '{{location}}'
---location will take the form ^oln, which in this example looks for all locations starting with the string oln.
+rm.creation_date_gmt::DATE < {{created_date}}
 AND i.item_status_code NOT IN ({{item_status_codes}})
-AND b.material_code IN ({{mat_type}})
-AND ROUND((CAST(((i.checkout_total + i.renewal_total) * loan.est_loan_period) AS NUMERIC (12,2))/(CURRENT_DATE - rm.creation_date_gmt::DATE)) * 100,2) < {{pct_limit}}
-AND {{age_level}}
---age_level options are
---(i.itype_code_num NOT BETWEEN '100' AND '183' AND SUBSTRING(i.location_code,4,1) NOT IN ('j','y')) --adult
---(i.itype_code_num BETWEEN '150' AND '183' OR SUBSTRING(i.location_code,4,1) = 'j') --juv
---(i.itype_code_num BETWEEN '100' AND '133' OR SUBSTRING(i.location_code,4,1) = 'y') --ya
---i.location_code ~ '\w' --all
-)a
+GROUP BY 1,2,3) a
+ON l.bib_record_id = a.bib_record_id
 
-ORDER BY REPLACE(est_time_checked_out_pct,'%','')::FLOAT,3,4
+WHERE
+i.location_code ~ '{{location}}'
+AND rm.creation_date_gmt::DATE < {{created_date}}
+AND i.item_status_code NOT IN ({{item_status_codes}})
+AND ROUND((CAST(((i.checkout_total + i.renewal_total) * loan.est_loan_period) AS NUMERIC (12,2))/(CURRENT_DATE - rm.creation_date_gmt::DATE)) * 100,2) < a.avg_time_checked_out_pct
+AND {{age_level}}
+--SUBSTRING(i.location_code,4,1) NOT IN ('y','j') --adult
+--SUBSTRING(i.location_code,4,1) = 'j' --juv
+--SUBSTRING(i.location_code,4,1) = 'y' --ya
+--i.location_code ~ '\w' --all
+	
+ORDER BY 10 DESC, 4

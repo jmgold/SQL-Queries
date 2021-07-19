@@ -2,12 +2,10 @@
 Jeremy Goldstein
 Minuteman Library Network
 
-Calculates and estimated percentage of each items time since added to the collection that it has been checked out
-Use to identify weeding candidates
+Identifies the most heavily uesed titles based on the estimated percentage of time spent checked out.
+looking only at copies owned by a location
 */
 
---estimates the avg loan period for each itype across the network based on due date and checkout dates in the fines table
---fines table has the largest pool of data to pull from for makng such a calculation
 WITH temp_loan_rules AS
 (
 SELECT
@@ -82,83 +80,52 @@ c.item_record_id = i.id
 
 GROUP BY 1)
 
-SELECT *
-FROM(
 SELECT
-DISTINCT rm.record_type_code||rm.record_num||'a' AS item_number,
-i.location_code||' '||loc.name AS location,
---loc.name AS location,
-TRIM(REPLACE(ip.call_number,'|a','')) AS call_number,
-COALESCE(vol.field_content,'') AS volume,
-b.best_author AS author,
 b.best_title AS title,
-ip.barcode,
-i.icode1 AS scat,
-CASE
-	WHEN co.id IS NOT NULL THEN 'CHECKED OUT'
-	ELSE st.name
-END AS item_status,
-i.last_checkout_gmt::DATE AS last_checkout,
-i.checkout_total + i.renewal_total AS circulation_total,
-rm.creation_date_gmt::DATE AS created_date,
-ROUND((CAST(((i.checkout_total + i.renewal_total) * loan.est_loan_period) AS NUMERIC (12,2))/(CURRENT_DATE - rm.creation_date_gmt::DATE)) * 100,2)||'%' AS est_time_checked_out_pct
-
+b.best_author AS author,
+'b'||mb.record_num||'a' AS bib_number,
+SUM(i.checkout_total + i.renewal_total) AS circulation_total,
+MIN(m.creation_date_gmt::DATE) AS oldest_created_date,
+ROUND(AVG(
+	CASE WHEN ((CAST(((i.checkout_total + i.renewal_total) * loan.est_loan_period) AS NUMERIC (12,2))/(CURRENT_DATE - m.creation_date_gmt::DATE)) * 100) > 100 THEN 100
+	ELSE ((CAST(((i.checkout_total + i.renewal_total) * loan.est_loan_period) AS NUMERIC (12,2))/(CURRENT_DATE - m.creation_date_gmt::DATE)) * 100)
+	END
+),2) AS avg_time_checked_out_pct,
+COUNT(l.id) AS item_total,
+MAX(i.last_checkout_gmt::DATE) AS last_checkout_date
 
 FROM
-sierra_view.item_record i
-JOIN
-sierra_view.record_metadata rm
-ON
-i.id = rm.id AND rm.creation_date_gmt::DATE  < {{created_date}}
-JOIN
-sierra_view.item_record_property ip
-ON
-i.id = ip.item_record_id
-JOIN
-sierra_view.itype_property_myuser it
-ON
-i.itype_code_num = it.code
-JOIN
-sierra_view.location_myuser loc
-ON
-i.location_code = loc.code
-JOIN
-sierra_view.item_status_property_myuser st
-ON
-i.item_status_code = st.code
+sierra_view.bib_record_property b
 JOIN
 sierra_view.bib_record_item_record_link l
 ON
-i.id = l.item_record_id
+b.bib_record_id = l.bib_record_id 
 JOIN
-sierra_view.bib_record_property b
+sierra_view.item_record i
 ON
-l.bib_record_id = b.bib_record_id
-LEFT JOIN
-sierra_view.varfield vol
+l.item_record_id = i.id
+AND i.item_status_code NOT IN ({{item_status_codes}})
+AND i.location_code ~ {{location}}
+--location will take the form ^oln, which in this example looks for all locations starting with the string oln.
+JOIN
+sierra_view.record_metadata m
 ON
-i.id = vol.record_id AND vol.varfield_type_code = 'v'
-LEFT JOIN
-sierra_view.checkout co
+i.id = m.id AND m.creation_date_gmt::DATE < {{created_date}}
+JOIN
+sierra_view.record_metadata mb
 ON
-i.id = co.item_record_id
+b.bib_record_id = mb.id
+JOIN
+sierra_view.bib_record br
+ON
+b.bib_record_id = br.id AND br.bcode3 != 'e'
 JOIN
 temp_loan_rules loan
 ON
 i.itype_code_num = loan.itype_code_num
 
 WHERE
-i.location_code ~ '{{location}}'
---location will take the form ^oln, which in this example looks for all locations starting with the string oln.
-AND i.item_status_code NOT IN ({{item_status_codes}})
-AND b.material_code IN ({{mat_type}})
-AND ROUND((CAST(((i.checkout_total + i.renewal_total) * loan.est_loan_period) AS NUMERIC (12,2))/(CURRENT_DATE - rm.creation_date_gmt::DATE)) * 100,2) < {{pct_limit}}
-AND {{age_level}}
---age_level options are
---(i.itype_code_num NOT BETWEEN '100' AND '183' AND SUBSTRING(i.location_code,4,1) NOT IN ('j','y')) --adult
---(i.itype_code_num BETWEEN '150' AND '183' OR SUBSTRING(i.location_code,4,1) = 'j') --juv
---(i.itype_code_num BETWEEN '100' AND '133' OR SUBSTRING(i.location_code,4,1) = 'y') --ya
---i.location_code ~ '\w' --all
-)a
-
-ORDER BY REPLACE(est_time_checked_out_pct,'%','')::FLOAT,3,4
+b.material_code IN ({{mat_type}})
+GROUP BY 1,2,3
+ORDER BY 6 DESC,1
+LIMIT {{qty}}
