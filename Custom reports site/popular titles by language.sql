@@ -35,7 +35,7 @@ CASE
    ELSE REGEXP_REPLACE(REPLACE(REPLACE(REGEXP_REPLACE(va.field_content,'^.*\|a',''),'|d',' '),'|q',' '),'\s?(\.|\,|\:|\/|\;|\=)\s?$','')
 END AS author_nonroman,
 b.publish_year,
-{{grouping}}
+{{grouping}},
 /*
 Grouping options
 ROUND(AVG((CAST(((i.checkout_total + i.renewal_total) * loan.est_loan_period) AS NUMERIC (12,2))/(CURRENT_DATE - m.creation_date_gmt::DATE)) * 100),2) AS time_checked_out_pct
@@ -48,6 +48,7 @@ SUM(i.last_year_to_date_checkout_total) AS total_last_year_to_date_checkouts
 COALESCE(h.count_holds_on_title,0) AS total_holds
 SUM(i.year_to_date_checkout_total + i.last_year_to_date_checkout_total) AS checkout_total
 */
+COUNT (i.id) AS item_total
 
 FROM
 sierra_view.bib_record_property b
