@@ -120,7 +120,17 @@ v.record_num IN (
 --handmaid's tale
 '1889809',
 --Harry Potter
-'1843295'
+'1843295',
+--Stamped Racism antiracism and you
+'3995833',
+--All American Boys
+'3278520',
+--Speak
+'2908783',
+--something happened in our town
+'3749382',
+--of mice and men
+'1500886'
 )
 WHERE b.material_code ='a'
 GROUP BY 1,2,3 
