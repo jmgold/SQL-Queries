@@ -60,7 +60,7 @@ sierra_view.hold h
 JOIN
 bib_hold_link AS l
 ON
-h.record_id = l.bib_record_id
+h.record_id = l.bib_record_id OR h.record_id = l.record_id
 JOIN
 sierra_view.bib_record_property b
 ON
