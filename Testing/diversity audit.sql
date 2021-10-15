@@ -1,18 +1,31 @@
+/*
+Jeremy Goldstein
+Minuteman Library Network
+
+In development query to serve as rough starting point for a collection diversity audit
+Identifies diverse subject areas based on keywords in LC subjects
+*/
+
+--subquery to create a binary is_fiction field
 WITH is_fiction AS(
 SELECT
 subjects.record_id,
 CASE 
-	WHEN subjects.subject ~ '(fiction)|(stories)' THEN true
+	WHEN subjects.subject_count > 0 THEN true
 	ELSE false
 END AS is_fiction
 
 FROM
 (SELECT
 d.record_id,
-STRING_AGG(d.index_entry,',') AS subject
+COUNT(d.index_entry) FILTER(WHERE d.index_entry ~ '(fiction)|(stories)$') AS subject_count
 
 FROM
 sierra_view.phrase_entry d
+JOIN
+sierra_view.record_metadata rm
+ON
+d.record_id = rm.id AND rm.record_type_code = 'b'
 WHERE 
 d.index_tag = 'd'
 
@@ -35,11 +48,16 @@ CASE
 	WHEN REPLACE(d.index_entry,'.','') ~ '(hispanic)|(mexican)|(latin american)|(cuban[^ missile])|(puerto rican)|(dominican)|(salvadoran)' THEN 'Hispanic & Latino'
 	WHEN REPLACE(d.index_entry,'.','') ~ '(multicultural)|(diasporas)|(minorities)|(ethnic identity)|((race|ethnic) relations)|(racially mixed)|(bilingual)' THEN 'Multicultural'
 	WHEN REPLACE(d.index_entry,'.','') ~ '(arab)|(middle east)|(palestin)|(bedouin)' THEN 'Arab & Middle Eastern'
-	WHEN REPLACE(d.index_entry,'.','') ~ '(equality)|(immigra)|(feminis)|(womens rights)|(sexism)|(racism)|(suffrag)|(sex role)|(social (change)|(justice)|(movements)|(problems)|(reformers)|(responsibilit))|(sustainable development)|(environmental)|(poverty)|(abortion)|((human|civil) rights)|(poor)|(prejudice)|(protest movements)|(homeless)|(public (health|welfare))|(discrimination)' THEN 'Equity & Social Issues'
+	WHEN REPLACE(d.index_entry,'.','') ~ '(equality)|(immigra)|(feminis)|(womens rights)|(sexism)|(racism)|(suffrag)|(sex role)|(social (change)|(justice)|(movements)|(problems)|(reformers)|(responsibilit))|(sustainable development)|(environmental)|(poverty)|(abortion)|((human|civil) rights)|(prejudice)|(protest movements)|(homeless)|(public (health|welfare))|(discrimination)|(refugee)' THEN 'Equity & Social Issues'
 	WHEN REPLACE(d.index_entry,'.','') ~ '(with disabilities)|(blind)|(deaf)|(terminally ill)|(amputees)|(patients)' THEN 'Disabilities & Special Needs'
    WHEN REPLACE(d.index_entry,'.','') ~ '(autis(m|tic))|(eating disorders)|(learning disabilit)|(mental (health)|(disabilit)|(illness))|(resilience personality)|(suicid)|(self (esteem|confidence|acceptance))|(emotional problems)|(depressi)|(stress (psychology|disorder|psychology))' THEN 'Mental & Emotional Health'
 	WHEN REPLACE(d.index_entry,'.','') ~ '(african american)|(africans)|(harlem renaissance)|(abolition)|(segregation)|(slavery)|(underground railroad)' THEN 'Black'
-	--jewish?  religion?
+	WHEN REPLACE(d.index_entry,'.','') ~ '(working class)|(social mobility)|(standard of living)|(social classes)|(poor)' THEN 'Class'
+	--still unsure how to handle religion as a category and exploring options...Christianity is not particularly a diverse category but its also a nice basis for comparison
+	--investigat buddhism, hinduism, agnosticism?
+	WHEN REPLACE(d.index_entry,'.','') ~ '(protestant)|(bible)|(nativity)|(adventis)|(mormon)|(baptist)|(catholic)|(methodis)|(pentecost)|(episcopal)|(lutheran)|(clergy)|(church)|(evangelicalism)|(christianity)|(easter)|(christmas)' THEN 'Christianity'
+	WHEN REPLACE(d.index_entry,'.','') ~ '(jews)|(judaism)|(hanukkah)|(purim)|(passover)|(zionism)|(hasidism)|(antisemitism)|(rosh hashanah)|(yom kippur)|(sabbath)|(sukkot)|(pentateuch)|(synagogue)' THEN 'Judaism'
+	WHEN REPLACE(d.index_entry,'.','') ~ '(islam[^ic fundamentalism])|(ramadan)|(id al fitr)|(quran)|(sufism)|(sunnites)|(shiah)|(muslim)|(mosques)' THEN 'Islam'
 	ELSE 'None of the Above'
 END AS topic,
 COUNT(DISTINCT i.id) FILTER(WHERE SUBSTRING(i.location_code,4,1) = 'j' AND fic.is_fiction IS TRUE) AS juv_fic,
@@ -63,10 +81,10 @@ l.bib_record_id = d.record_id AND d.index_tag = 'd'
 JOIN
 is_fiction fic
 ON
-d.record_id = fic.record_id
+l.bib_record_id = fic.record_id
 
-WHERE
-i.location_code ~ '^wsn'
+WHERE i.location_code ~ '^ntn'
+
 GROUP BY 1)a
 
 ORDER BY CASE
