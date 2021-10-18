@@ -58,7 +58,9 @@ CASE
 	WHEN REPLACE(d.index_entry,'.','') ~ '(protestant)|(bible)|(nativity)|(adventis)|(mormon)|(baptist)|(catholic)|(methodis)|(pentecost)|(episcopal)|(lutheran)|(clergy)|(church)|(evangelicalism)|(christianity)|(easter)|(christmas)' THEN 'Christianity'
 	WHEN REPLACE(d.index_entry,'.','') ~ '(jews)|(judaism)|(hanukkah)|(purim)|(passover)|(zionism)|(hasidism)|(antisemitism)|(rosh hashanah)|(yom kippur)|(sabbath)|(sukkot)|(pentateuch)|(synagogue)' THEN 'Judaism'
 	WHEN REPLACE(d.index_entry,'.','') ~ '(islam[^ic fundamentalism])|(ramadan)|(id al fitr)|(quran)|(sufism)|(sunnites)|(shiah)|(muslim)|(mosques)' THEN 'Islam'
-	ELSE 'None of the Above'
+	WHEN REPLACE(d.index_entry,'.','') ~ '(\bzen\b)|(dalai lama)|(buddhis)' THEN 'Buddhism'
+	WHEN REPLACE(d.index_entry,'.','') ~ '(hinduism)|(divali)|(\bholi\b)|(bhagavadgita)|(upanishads)' THEN 'Hinduism'
+ELSE 'None of the Above'
 END AS topic,
 COUNT(DISTINCT i.id) FILTER(WHERE SUBSTRING(i.location_code,4,1) = 'j' AND fic.is_fiction IS TRUE) AS juv_fic,
 COUNT(DISTINCT i.id) FILTER(WHERE SUBSTRING(i.location_code,4,1) = 'j' AND fic.is_fiction IS FALSE) AS juv_nonfic,
@@ -83,7 +85,7 @@ is_fiction fic
 ON
 l.bib_record_id = fic.record_id
 
-WHERE i.location_code ~ '^ntn'
+WHERE i.location_code ~ '^lin'
 
 GROUP BY 1)a
 
