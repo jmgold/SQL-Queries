@@ -116,6 +116,7 @@ AND t.transaction_gmt::DATE BETWEEN (CURRENT_DATE - INTERVAL '1 month') AND (CUR
 AND CASE
 	WHEN  {{location}} = '^act' THEN t.stat_group_code_num BETWEEN '100' AND '109'
 	--location using the form ^act in order to reuse an existing filter
+	WHEN  {{location}} = '^ac2' THEN t.stat_group_code_num BETWEEN '870' AND '879'
 	WHEN  {{location}} = '^arl' THEN (t.stat_group_code_num BETWEEN '110' AND '119' OR t.stat_group_code_num = '996')
 	WHEN  {{location}} = '^ar2' THEN t.stat_group_code_num BETWEEN '120' AND '129'
 	WHEN  {{location}} = '^ar' THEN (t.stat_group_code_num BETWEEN '110' AND '129' OR t.stat_group_code_num = '996')
@@ -238,6 +239,7 @@ AND t.transaction_gmt::DATE BETWEEN (CURRENT_DATE - INTERVAL '1 month') AND (CUR
 AND CASE
 	WHEN  {{location}} = '^act' THEN t.stat_group_code_num BETWEEN '100' AND '109'
 	--location using the form ^act in order to reuse an existing filter
+	WHEN  {{location}} = '^ac2' THEN t.stat_group_code_num BETWEEN '870' AND '879'
 	WHEN  {{location}} = '^arl' THEN (t.stat_group_code_num BETWEEN '110' AND '119' OR t.stat_group_code_num = '996')
 	WHEN  {{location}} = '^ar2' THEN t.stat_group_code_num BETWEEN '120' AND '129'
 	WHEN  {{location}} = '^ar' THEN (t.stat_group_code_num BETWEEN '110' AND '129' OR t.stat_group_code_num = '996')

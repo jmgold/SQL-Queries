@@ -70,7 +70,7 @@ SELECT
 DISTINCT l.name AS checkout_location,
 COUNT(C.id) AS checkin_total,
 COUNT(C.id) FILTER (WHERE SUBSTRING(s.location_code,1,2) != cl.checkout_location) AS checked_out_elsewhere,
-COUNT(C.id) FILTER (WHERE C.stat_group_code_num BETWEEN '100' AND '109') AS "ACTON",
+COUNT(C.id) FILTER (WHERE (C.stat_group_code_num BETWEEN '100' AND '109') OR (C.stat_group_code_num BETWEEN '870' AND '879')) AS "ACTON",
 COUNT(C.id) FILTER (WHERE C.stat_group_code_num BETWEEN '110' AND '129') AS "ARLINGTON",
 COUNT(C.id) FILTER (WHERE C.stat_group_code_num BETWEEN '130' AND '139') AS "ASHLAND",
 COUNT(C.id) FILTER (WHERE C.stat_group_code_num BETWEEN '140' AND '149') AS "BEDFORD",
