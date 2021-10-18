@@ -48,13 +48,14 @@ Else 'Other'
 END AS checkout_location,
 CASE
 	WHEN fp.charge_type_code = '1' THEN 'Manual Charge'
-	WHEN fp.charge_type_code = '2' THEN 'Overdue'
+	WHEN fp.charge_type_code IN ('2','4','6') THEN 'Overdue'
 	WHEN fp.charge_type_code = '3' THEN 'Replacement'
-	WHEN fp.charge_type_code = '4' THEN 'Adjustment (OverdueX)'
 	WHEN fp.charge_type_code = '5' THEN 'Lost Book'
-	WHEN fp.charge_type_code = '6' THEN 'Overdue Renewed'
 END AS charge_type,
-fp.payment_type_code,
+CASE
+	WHEN fp.payment_type_code = 'e' THEN true
+	ELSE false
+END AS paid_online,
 COUNT(fp.id) FILTER (WHERE fp.payment_status_code NOT IN ('3','0')) AS fines_paid_count,
 COUNT(fp.id) FILTER (WHERE fp.payment_status_code = '3') AS fines_waived_count,
 COUNT(fp.id) FILTER (WHERE fp.payment_status_code = '0') AS fines_removed_count,
@@ -75,7 +76,7 @@ FROM generate_series(0,35,1) AS offs) d
 ON
 fp.paid_date_gmt::DATE = d.all_dates
 WHERE
-d.all_dates >= NOW()::DATE - INTERVAL '1 month'--'1 day'
+d.all_dates >= NOW()::DATE - INTERVAL '1 day'
 AND fp.charge_type_code IN ('1','2','3','4','5','6')
 
 GROUP BY 1,2,3,4

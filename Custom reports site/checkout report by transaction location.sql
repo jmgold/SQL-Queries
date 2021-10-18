@@ -26,6 +26,7 @@ ROUND(100 * (CAST(COUNT(C.id) FILTER(WHERE C.op_code = 'o') AS NUMERIC (12,2)) /
 	(SELECT CAST(COUNT (C.id) as numeric (12,2)) FROM sierra_view.circ_trans C WHERE CASE 
    WHEN  {{location}} = '^act' THEN C.stat_group_code_num BETWEEN '100' AND '109'
 	--location using the form ^act in order to reuse an existing filter
+	WHEN  {{location}} = '^ac2' THEN C.stat_group_code_num BETWEEN '870' AND '879'
 	WHEN  {{location}} = '^arl' THEN (C.stat_group_code_num BETWEEN '110' AND '119' OR C.stat_group_code_num = '996')
 	WHEN  {{location}} = '^ar2' THEN C.stat_group_code_num BETWEEN '120' AND '129'
 	WHEN  {{location}} = '^ar' THEN (C.stat_group_code_num BETWEEN '110' AND '129' OR C.stat_group_code_num = '996')
@@ -135,6 +136,7 @@ C.stat_group_code_num = sg.code
 WHERE 
 CASE 
 WHEN  {{location}} = '^act' THEN C.stat_group_code_num BETWEEN '100' AND '109'
+	WHEN  {{location}} = '^ac2' THEN C.stat_group_code_num BETWEEN '870' AND '879'
 	WHEN  {{location}} = '^arl' THEN (C.stat_group_code_num BETWEEN '110' AND '119' OR C.stat_group_code_num = '996')
 	WHEN  {{location}} = '^ar2' THEN C.stat_group_code_num BETWEEN '120' AND '129'
 	WHEN  {{location}} = '^ar' THEN (C.stat_group_code_num BETWEEN '110' AND '129' OR C.stat_group_code_num = '996')
@@ -228,6 +230,7 @@ ROUND(100.0 * (CAST(COUNT(C.id) FILTER(WHERE C.item_location_code !~ {{location}
 ROUND(100 * (CAST(COUNT(C.id) FILTER(WHERE C.op_code = 'o') AS NUMERIC (12,2)) / 
 	(SELECT CAST(COUNT (C.id) as numeric (12,2)) FROM sierra_view.circ_trans C WHERE CASE 
 WHEN  {{location}} = '^act' THEN C.stat_group_code_num BETWEEN '100' AND '109'
+	WHEN  {{location}} = '^ac2' THEN C.stat_group_code_num BETWEEN '870' AND '879'
 	WHEN  {{location}} = '^arl' THEN (C.stat_group_code_num BETWEEN '110' AND '119' OR C.stat_group_code_num = '996')
 	WHEN  {{location}} = '^ar2' THEN C.stat_group_code_num BETWEEN '120' AND '129'
 	WHEN  {{location}} = '^ar' THEN (C.stat_group_code_num BETWEEN '110' AND '129' OR C.stat_group_code_num = '996')
@@ -319,6 +322,7 @@ C.itype_code_num = it.code
 WHERE 
 CASE 
 WHEN  {{location}} = '^act' THEN C.stat_group_code_num BETWEEN '100' AND '109'
+	WHEN  {{location}} = '^ac2' THEN C.stat_group_code_num BETWEEN '870' AND '879'
 	WHEN  {{location}} = '^arl' THEN (C.stat_group_code_num BETWEEN '110' AND '119' OR C.stat_group_code_num = '996')
 	WHEN  {{location}} = '^ar2' THEN C.stat_group_code_num BETWEEN '120' AND '129'
 	WHEN  {{location}} = '^ar' THEN (C.stat_group_code_num BETWEEN '110' AND '129' OR C.stat_group_code_num = '996')
