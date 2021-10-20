@@ -56,14 +56,6 @@ sierra_view.agency_property_myuser a
 ON
 i.agency_code_num = a.code
 JOIN
-sierra_view.statistic_group_myuser AS so
-ON
-i.checkout_statistic_group_code_num = so.code
-JOIN
-sierra_view.statistic_group_myuser AS si
-ON
-i.checkin_statistics_group_code_num = si.code
-JOIN
 sierra_view.item_status_property_myuser st
 ON
 i.item_status_code = st.code
