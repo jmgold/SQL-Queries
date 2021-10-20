@@ -1,6 +1,8 @@
 SELECT
 d.index_entry,
 COUNT(b.id)
+--,string_agg(id2reckey(b.id)||'a',',')
+
 FROM
 sierra_view.phrase_entry d
 JOIN
@@ -13,11 +15,8 @@ ON
 b.id = s.record_id AND s.field_type_code = 'd'
 
 WHERE
-REPLACE(LOWER(s.content),'-',' ') ~ --'(protestant)|(bible)|(nativity)|(adventis)|(mormon)|(baptist)|(catholic)|(methodis)|(pentecost)|(episcopal)|(lutheran)|(clergy)|(church)|(evangelicalism)|(christianity)|(easter)|(christmas)'
---'(\bzen\b)|(dalai lama)|(buddhis)'
---'(jews)|(judaism)|(hanukkah)|(purim)|(passover)|(zionism)|(hasidism)|(antisemitism)|(rosh hashanah)|(yom kippur)|(sabbath)|(sukkot)|(pentateuch)|(synagogue)'
---'(islam[^ic fundamentalism])|(ramadan)|(id al fitr)|(quran)|(sufism)|(sunnites)|(shiah)|(muslim)|(mosques)'
-'(hinduism)|(divali)|(\bholi\b)|(bhagavadgita)|(upanishads)'
-
+REPLACE(LOWER(s.content),'-',' ') ~ '(acceptance)|(personality disorder)|(autis(m|tic))|(anxiety)|(aspergers)|(compulsive disorder)|(schizophrenia)|(eating disorders)|(learning disabilit)|(mental (health)|(disabilit)|(illness))|(resilience personality)|(suicid)|(intellectual disability)|(self (esteem|confidence|acceptance))|(emotional problems)|(depressi)|(stress (psychology|disorder|psychology))'
+--negative lookahead (?!\sbaseball)
 GROUP BY 1
+--HAVING d.index_entry LIKE 'cleveland%'
 ORDER BY 2 DESC

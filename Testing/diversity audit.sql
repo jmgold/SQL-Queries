@@ -39,28 +39,28 @@ SELECT *
 FROM
 (SELECT
 CASE
-	WHEN REPLACE(d.index_entry,'.','') ~ '(sexual minorities)|(gender)|(aesexual)|(bisexual)|(gay)|(intersex)|(homosexual)|(lesbian)|(stonewall riots)' THEN 'LGBTQIA+ & Gender Studies'
-	WHEN REPLACE(d.index_entry,'.','') ~ '(south asia)|(indic)|(pakistan)|(\bindia\b)|(bengali)|(afghan[^ war])' THEN 'South Asian'
-	WHEN REPLACE(d.index_entry,'.','') ~ '(east asia)|(asian americans)|(chinese)|(japanese)|(korean)|(taiwanese)|(vietnamese)|(cambodian)|(pacific island)|(tibet autonomous)' THEN 'East Asian & Pacific Islander'
+	WHEN REPLACE(d.index_entry,'.','') ~ '(sexual minorities)|(gender)|(aesexual)|(bisexual)|(gay)|(intersex)|(homosexual)|(lesbian)|(stonewall riots)|(masculinity)|(femininity)' THEN 'LGBTQIA+ & Gender Studies'
+	WHEN REPLACE(d.index_entry,'.','') ~ '(south asia)|(indic)|(pakistan)|(\yindia\y)|(bengali)|(afghan(?!\swar))|(bangladesh)|(nepal)|(sri lanka)|(bhutan)' THEN 'South Asian'
+	WHEN REPLACE(d.index_entry,'.','') ~ '(east asia)|(asian americans)|(chin(a|ese))|(japan)|(korea)|(taiwan)|(vietnam)|(cambodia)|(mongolia)|(lao(s|tian))|(myanmar)|(malay)|(thai)|(philippin)|(indonesia)|(polynesia)|(brunei)|(east timor)|(pacific island)|(tibet autonomous)' THEN 'East Asian & Pacific Islander'
 	WHEN REPLACE(d.index_entry,'.','') ~ '(gamblers)|(drug use)|(drug abuse)|(substance abuse)|(alcoholi)|(addiction)' THEN 'Substance Abuse & Addiction'
 	WHEN REPLACE(d.index_entry,'.','') ~ '(bullying)|(aggressiveness)|(abuse)|(violent crimes)|(violence)|(violence against)' THEN 'Abuse & Violence'
-	WHEN REPLACE(d.index_entry,'.','') ~ '(indigenous)|(aboriginal)|(indians of)|(apache)|(cherokee)|(navajo)|(trail of tears)|(aztecs)|(indian art)|(maya(s|n))|(ojibwa)|(iroquois)|(nez perce)|(shoshoni)|(pueblo indian)|(seminole)|(eskimos)|(inuit)|(inca(s|n))' THEN 'Indigenous'
-	WHEN REPLACE(d.index_entry,'.','') ~ '(hispanic)|(mexican)|(latin american)|(cuban[^ missile])|(puerto rican)|(dominican)|(salvadoran)' THEN 'Hispanic & Latino'
-	WHEN REPLACE(d.index_entry,'.','') ~ '(multicultural)|(diasporas)|(minorities)|(ethnic identity)|((race|ethnic) relations)|(racially mixed)|(bilingual)' THEN 'Multicultural'
-	WHEN REPLACE(d.index_entry,'.','') ~ '(arab)|(middle east)|(palestin)|(bedouin)' THEN 'Arab & Middle Eastern'
+	WHEN REPLACE(d.index_entry,'.','') ~ '(indigenous)|(aboriginal)|((?<!east\s)\yindians(?!\sbaseball))|(apache)|(cherokee)|(navajo)|(trail of tears)|(aztecs)|(indian art)|(maya(s|n))|(ojibwa)|(iroquois)|(nez perce)|(shoshoni)|(pueblo indian)|(seminole)|(eskimos)|(inuit)|(inca(s|n))|(algonquia?n)' THEN 'Indigenous'
+	WHEN REPLACE(d.index_entry,'.','') ~ '(hispanic)|(mexican)|(latin american)|(cuban(?!\smissile))|(puerto rican)|(dominican)|(salvadoran)' THEN 'Hispanic & Latino'
+	WHEN REPLACE(d.index_entry,'.','') ~ '(multicultural)|(cross cultural)|(diasporas)|(minorities)|(ethnic identity)|((race|ethnic) relations)|(racially mixed)|(bilingual)' THEN 'Multicultural'
+	WHEN REPLACE(d.index_entry,'.','') ~ '(arab)|(middle east)|(palestin)|(bedouin)|(israel)|(saudi)|(yemen)|(iraq)|(iran)|(egypt)|(leban(an|ese))|(qatar)|(syria)|(turkey\y)' THEN 'Arab & Middle Eastern'
 	WHEN REPLACE(d.index_entry,'.','') ~ '(equality)|(immigra)|(feminis)|(womens rights)|(sexism)|(racism)|(suffrag)|(sex role)|(social (change)|(justice)|(movements)|(problems)|(reformers)|(responsibilit))|(sustainable development)|(environmental)|(poverty)|(abortion)|((human|civil) rights)|(prejudice)|(protest movements)|(homeless)|(public (health|welfare))|(discrimination)|(refugee)' THEN 'Equity & Social Issues'
-	WHEN REPLACE(d.index_entry,'.','') ~ '(with disabilities)|(blind)|(deaf)|(terminally ill)|(amputees)|(patients)' THEN 'Disabilities & Special Needs'
-   WHEN REPLACE(d.index_entry,'.','') ~ '(autis(m|tic))|(eating disorders)|(learning disabilit)|(mental (health)|(disabilit)|(illness))|(resilience personality)|(suicid)|(self (esteem|confidence|acceptance))|(emotional problems)|(depressi)|(stress (psychology|disorder|psychology))' THEN 'Mental & Emotional Health'
-	WHEN REPLACE(d.index_entry,'.','') ~ '(african american)|(africans)|(harlem renaissance)|(abolition)|(segregation)|(slavery)|(underground railroad)' THEN 'Black'
-	WHEN REPLACE(d.index_entry,'.','') ~ '(working class)|(social mobility)|(standard of living)|(social classes)|(poor)' THEN 'Class'
+	WHEN REPLACE(d.index_entry,'.','') ~ '(disabilit)|(blind)|(deaf)|(terminally ill)|(amputees)|(patients)' THEN 'Disabilities & Special Needs'
+   WHEN REPLACE(d.index_entry,'.','') ~ '(acceptance)|(personality disorder)|(autis(m|tic))|(anxiety)|(aspergers)|(compulsive disorder)|(schizophrenia)|(eating disorders)|(learning disabilit)|(mental (health)|(disabilit)|(illness))|(resilience personality)|(suicid)|(intellectual disability)|(self (esteem|confidence|acceptance))|(emotional problems)|(depressi)|(stress (psychology|disorder|psychology))' THEN 'Mental & Emotional Health'
+	WHEN REPLACE(d.index_entry,'.','') ~ '(african american)|(africans)|(harlem renaissance)|(abolition)|(segregation)|(slavery)|(underground railroad)|(apartheid)' THEN 'Black'
+	WHEN REPLACE(d.index_entry,'.','') ~ '(working class)|(social mobility)|(standard of living)|(social classes)|(poor)|(\ycaste\y)|(social stratification)|(classism)' THEN 'Class'
 	--still unsure how to handle religion as a category and exploring options...Christianity is not particularly a diverse category but its also a nice basis for comparison
-	--investigat buddhism, hinduism, agnosticism?
+	--investigate buddhism, hinduism, agnosticism?
 	WHEN REPLACE(d.index_entry,'.','') ~ '(protestant)|(bible)|(nativity)|(adventis)|(mormon)|(baptist)|(catholic)|(methodis)|(pentecost)|(episcopal)|(lutheran)|(clergy)|(church)|(evangelicalism)|(christianity)|(easter)|(christmas)' THEN 'Christianity'
 	WHEN REPLACE(d.index_entry,'.','') ~ '(jews)|(judaism)|(hanukkah)|(purim)|(passover)|(zionism)|(hasidism)|(antisemitism)|(rosh hashanah)|(yom kippur)|(sabbath)|(sukkot)|(pentateuch)|(synagogue)' THEN 'Judaism'
-	WHEN REPLACE(d.index_entry,'.','') ~ '(islam[^ic fundamentalism])|(ramadan)|(id al fitr)|(quran)|(sufism)|(sunnites)|(shiah)|(muslim)|(mosques)' THEN 'Islam'
-	WHEN REPLACE(d.index_entry,'.','') ~ '(\bzen\b)|(dalai lama)|(buddhis)' THEN 'Buddhism'
-	WHEN REPLACE(d.index_entry,'.','') ~ '(hinduism)|(divali)|(\bholi\b)|(bhagavadgita)|(upanishads)' THEN 'Hinduism'
-ELSE 'None of the Above'
+	WHEN REPLACE(d.index_entry,'.','') ~ '((?<!terrorism.*)islam(?!(ic fundamentalism|\sterrorism)))|(\ysufi(sm)?)|(ramadan)|(id al fitr)|(quran)|(sunnites)|(shiah)|(muslim)|(mosques)|(qawwali)' THEN 'Islam'
+	WHEN REPLACE(d.index_entry,'.','') ~ '(\yzen\y)|(dalai lama)|(buddhis)' THEN 'Buddhism'
+	WHEN REPLACE(d.index_entry,'.','') ~ '(\yhindu(?!(stan|\skush)))|(divali)|(\yholi\y)|(bhagavadgita)|(upanishads)' THEN 'Hinduism'
+	WHEN REPLACE(d.index_entry,'.','') ~ '(agnosticism)|(atheism)|(secularism)' THEN 'Angosticism & Atheism'
 END AS topic,
 COUNT(DISTINCT i.id) FILTER(WHERE SUBSTRING(i.location_code,4,1) = 'j' AND fic.is_fiction IS TRUE) AS juv_fic,
 COUNT(DISTINCT i.id) FILTER(WHERE SUBSTRING(i.location_code,4,1) = 'j' AND fic.is_fiction IS FALSE) AS juv_nonfic,
@@ -85,7 +85,7 @@ is_fiction fic
 ON
 l.bib_record_id = fic.record_id
 
-WHERE i.location_code ~ '^lin'
+WHERE i.location_code ~ '^ntn'
 
 GROUP BY 1)a
 

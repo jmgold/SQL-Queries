@@ -40,8 +40,36 @@ sierra_view.phrase_entry d
 ON
 l.bib_record_id = d.record_id AND d.index_tag = 'd'
 
-WHERE i.location_code ~ '^wlm'
-GROUP BY 1,2,3,4,5,6)
+WHERE i.location_code ~ '^ntn'
+GROUP BY 1,2,3,4,5,6),
+
+is_fiction AS(
+SELECT
+subjects.record_id,
+CASE 
+	WHEN subjects.subject_count > 0 THEN true
+	ELSE false
+END AS is_fiction
+
+FROM
+(SELECT
+d.record_id,
+COUNT(d.index_entry) FILTER(WHERE d.index_entry ~ '(fiction)|(stories)$') AS subject_count
+
+FROM
+sierra_view.phrase_entry d
+JOIN
+sierra_view.record_metadata rm
+ON
+d.record_id = rm.id AND rm.record_type_code = 'b'
+WHERE 
+d.index_tag = 'd'
+
+GROUP BY 1
+
+)subjects
+)
+
 
 SELECT *
 
@@ -51,43 +79,28 @@ CASE
 	WHEN t.topic IS NOT NULL THEN t.topic
 	ELSE 'None of the Above'
 END AS topic,
-COUNT (DISTINCT i.id) AS "Item total",
-SUM(i.checkout_total) AS "Total_Checkouts",
-SUM(i.renewal_total) AS "Total_Renewals",
-SUM(i.checkout_total) + SUM(i.renewal_total) AS "Total_Circulation",
-ROUND(AVG(i.price) FILTER(WHERE i.price>'0' AND i.price <'10000'),2)::MONEY AS "AVG_price",
-COUNT(DISTINCT i.id) FILTER(WHERE c.id IS NOT NULL) AS "total_checked_out",
-ROUND(100.0 * (CAST(COUNT(DISTINCT i.id) FILTER(WHERE c.id IS NOT NULL) AS NUMERIC (12,2)) / CAST(COUNT (DISTINCT i.id) AS NUMERIC (12,2))), 4)||'%' AS "Percentage_checked_out",
-COUNT (DISTINCT i.id) FILTER(WHERE i.last_checkout_gmt >= (localtimestamp - interval '1 year')) AS "have_circed_within_1_year",
-ROUND(100.0 * (CAST(COUNT(DISTINCT i.id) FILTER(WHERE i.last_checkout_gmt >= (localtimestamp - interval '1 year')) AS NUMERIC (12,2)) / CAST(COUNT (DISTINCT i.id) AS NUMERIC (12,2))), 4)||'%' AS "Percentage_1_year",
-COUNT (DISTINCT i.id) FILTER(WHERE i.last_checkout_gmt >= (localtimestamp - interval '3 years')) AS "have_circed_within_3_years",
-ROUND(100.0 * (CAST(COUNT(DISTINCT i.id) FILTER(WHERE i.last_checkout_gmt >= (localtimestamp - interval '3 years')) AS NUMERIC (12,2)) / CAST(COUNT (DISTINCT i.id) AS NUMERIC (12,2))), 4)||'%' AS "Percentage_3_years",
-COUNT (DISTINCT i.id) FILTER(WHERE i.last_checkout_gmt >= (localtimestamp - interval '5 years')) AS "have_circed_within_5_years",
-ROUND(100.0 * (CAST(COUNT(DISTINCT i.id) FILTER(WHERE i.last_checkout_gmt >= (localtimestamp - interval '5 years')) AS NUMERIC (12,2)) / CAST(COUNT (DISTINCT i.id) AS NUMERIC (12,2))), 4)||'%' AS "Percentage_5_years",
-COUNT (DISTINCT i.id) FILTER(WHERE i.last_checkout_gmt is not null) AS "have_circed_within_5+_years",
-ROUND(100.0 * (CAST(COUNT(DISTINCT i.id) FILTER(WHERE i.last_checkout_gmt is not null) AS NUMERIC (12,2)) / CAST(COUNT (DISTINCT i.id) AS NUMERIC (12,2))), 4)||'%' AS "Percentage_5+_years",
-COUNT (DISTINCT i.id) FILTER(WHERE i.last_checkout_gmt is null) AS "0_circs",
-ROUND(100.0 * (CAST(COUNT(DISTINCT i.id) FILTER(WHERE i.last_checkout_gmt is null) AS NUMERIC (12,2)) / CAST(COUNT (DISTINCT i.id) AS NUMERIC (12,2))), 4)||'%' AS "Percentage_0_circs",
-ROUND((COUNT(DISTINCT i.id) *(AVG(i.price) FILTER(WHERE i.price>'0' AND i.price <'10000'))/(NULLIF((SUM(i.checkout_total) + SUM(i.renewal_total)),0))),2)::MONEY AS "Cost_Per_Circ_By_AVG_price",
-round(cast(SUM(i.checkout_total) + SUM(i.renewal_total) as numeric (12,2))/cast(COUNT (i.id) as numeric (12,2)), 2) as turnover,
-round(100.0 * (cast(COUNT(DISTINCT i.id) as numeric (12,2)) / (select cast(COUNT (DISTINCT i.id) as numeric (12,2))from sierra_view.item_record i WHERE i.location_code ~ '^wlm')), 6)||'%' as relative_item_total,
-round(100.0 * (cast(SUM(i.checkout_total) + SUM(i.renewal_total) as numeric (12,2)) / (SELECT cast(SUM(i.checkout_total) + SUM(i.renewal_total) as numeric (12,2)) from sierra_view.item_record i WHERE i.location_code ~ '^wlm')), 6)||'%' as relative_circ
-
+COUNT(DISTINCT i.id) FILTER(WHERE SUBSTRING(i.location_code,4,1) = 'j' AND fic.is_fiction IS TRUE) AS juv_fic,
+COUNT(DISTINCT i.id) FILTER(WHERE SUBSTRING(i.location_code,4,1) = 'j' AND fic.is_fiction IS FALSE) AS juv_nonfic,
+COUNT(DISTINCT i.id) FILTER(WHERE SUBSTRING(i.location_code,4,1) = 'y' AND fic.is_fiction IS TRUE) AS ya_fic,
+COUNT(DISTINCT i.id) FILTER(WHERE SUBSTRING(i.location_code,4,1) = 'y' AND fic.is_fiction IS FALSE) AS ya_nonfic,
+COUNT(DISTINCT i.id) FILTER(WHERE SUBSTRING(i.location_code,4,1) NOT IN('y','j') AND fic.is_fiction IS TRUE) AS adult_fic,
+COUNT(DISTINCT i.id) FILTER(WHERE SUBSTRING(i.location_code,4,1) NOT IN('y','j') AND fic.is_fiction IS FALSE) AS adult_nonfic,
+COUNT(DISTINCT i.id) AS total_items
 
 FROM
-sierra_view.item_record i
-LEFT JOIN
 topic_list t
+LEFT JOIN
+sierra_view.item_record i
 ON
-i.id = t.id AND i.location_code ~ '^wlm'
+t.id = i.id AND i.location_code ~ '^ntn'
 JOIN
 sierra_view.bib_record_item_record_link l
 ON
 i.id = l.item_record_id
-LEFT JOIN
-sierra_view.checkout c
+JOIN
+is_fiction fic
 ON
-i.id = c.item_record_id
+l.bib_record_id = fic.record_id
 
 GROUP BY 1)a
 
@@ -95,3 +108,4 @@ ORDER BY CASE
 	WHEN topic = 'None of the Above' THEN 2
 	ELSE 1
 END,topic
+
