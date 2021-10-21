@@ -15,7 +15,7 @@ ON
 b.id = s.record_id AND s.field_type_code = 'd'
 
 WHERE
-REPLACE(LOWER(s.content),'-',' ') ~ '(acceptance)|(personality disorder)|(autis(m|tic))|(anxiety)|(aspergers)|(compulsive disorder)|(schizophrenia)|(eating disorders)|(learning disabilit)|(mental (health)|(disabilit)|(illness))|(resilience personality)|(suicid)|(intellectual disability)|(self (esteem|confidence|acceptance))|(emotional problems)|(depressi)|(stress (psychology|disorder|psychology))'
+REPLACE(LOWER(s.content),'-',' ') ~ '(\yafro)|(blacks(?!mith))|(africa)|(black (nationalism|panther party|power|muslim|lives))||(harlem renaissance)|(abolition)|(segregation)|(slavery)|(underground railroad)|(apartheid)'
 --negative lookahead (?!\sbaseball)
 GROUP BY 1
 --HAVING d.index_entry LIKE 'cleveland%'
