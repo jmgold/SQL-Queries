@@ -119,7 +119,7 @@ JOIN
 sierra_view.itype_property_myuser it
 ON
 i.itype_code_num = it.code
-JOIN
+LEFT JOIN
 sierra_view.language_property_myuser LN
 ON
 b.language_code = ln.code
