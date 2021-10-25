@@ -1,3 +1,11 @@
+/*
+Jeremy Goldstein
+Minuteman Library Network
+
+In development query to serve as rough starting point for a collection diversity analysis
+Identifies diverse subject areas based on keywords in LC subjects
+*/
+
 WITH topic_list AS (SELECT *
 FROM
 (SELECT
@@ -38,7 +46,9 @@ sierra_view.phrase_entry d
 ON
 l.bib_record_id = d.record_id AND d.index_tag = 'd'
 
-WHERE i.location_code ~ '^wsn'
+WHERE
+i.location_code ~ {{location}}
+AND i.item_status_code NOT IN ({{item_status_codes}})
 )a
 WHERE
 a.topic IS NOT NULL),
@@ -92,7 +102,7 @@ sierra_view.item_record i
 JOIN
 sierra_view.bib_record_item_record_link l
 ON
-i.id = l.item_record_id AND i.location_code ~ '^wsn'
+i.id = l.item_record_id AND i.location_code ~ {{location}} AND i.item_status_code NOT IN ({{item_status_codes}})
 LEFT JOIN
 topic_list t
 ON
@@ -101,6 +111,15 @@ JOIN
 is_fiction fic
 ON
 l.bib_record_id = fic.record_id
+JOIN
+sierra_view.record_metadata rmi
+ON
+i.id = rmi.id AND rmi.creation_date_gmt::DATE > {{created_date}}
+JOIN
+sierra_view.bib_record_property b
+ON
+l.bib_record_id = b.bib_record_id AND b.material_code IN ({{mat_type}}) 
+
 
 GROUP BY 1
 
@@ -121,7 +140,7 @@ sierra_view.item_record i
 JOIN
 sierra_view.bib_record_item_record_link l
 ON
-i.id = l.item_record_id AND i.location_code ~ '^wsn'
+i.id = l.item_record_id AND i.location_code ~ {{location}} AND i.item_status_code NOT IN ({{item_status_codes}})
 JOIN
 topic_list t
 ON
@@ -130,6 +149,14 @@ JOIN
 is_fiction fic
 ON
 l.bib_record_id = fic.record_id
+JOIN
+sierra_view.record_metadata rmi
+ON
+i.id = rmi.id AND rmi.creation_date_gmt::DATE > {{created_date}}
+JOIN
+sierra_view.bib_record_property b
+ON
+l.bib_record_id = b.bib_record_id AND b.material_code IN ({{mat_type}}) 
 
 GROUP BY 1
 
@@ -140,4 +167,3 @@ ORDER BY CASE
 	WHEN topic = 'None of the Above' THEN 3
 	ELSE 1
 END,topic
-
