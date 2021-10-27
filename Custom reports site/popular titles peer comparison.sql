@@ -52,7 +52,6 @@ Total Checkouts: Last Year + Year to Date
 Total Circulation
 Total Holds
 Turnover
-Utilization
 */
 
 FROM
