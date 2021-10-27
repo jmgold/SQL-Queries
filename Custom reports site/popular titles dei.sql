@@ -1,7 +1,8 @@
 /*
 Jeremy Goldstein
 Minuteman Library Network
-Gathers the top titles owned by a selected peer library that are not owned locally, limited by one or more languages, grouped by a choice of performance metrics
+Gathers the top titles, grouped by a choice of performance metrics
+and limited to titles falling within a DEI topic as developmed for the diversity analysis report found in this directory
 */
 WITH hold_count AS
 	(SELECT
@@ -24,44 +25,21 @@ WITH hold_count AS
 SELECT
 'b'||mb.record_num||'a' AS bib_number,
 b.best_title AS title,
-CASE
-	WHEN vt.field_content IS NULL THEN b.best_title
-   ELSE REGEXP_REPLACE(SPLIT_PART(REGEXP_REPLACE(vt.field_content,'^.*\|a',''),'|',1),'\s?(\.|\,|\:|\/|\;|\=)\s?$','')
-END AS title_nonroman,
 b.best_author AS author,
-CASE
-	WHEN va.field_content IS NULL THEN b.best_author
-   ELSE REGEXP_REPLACE(REPLACE(REPLACE(REGEXP_REPLACE(va.field_content,'^.*\|a',''),'|d',' '),'|q',' '),'\s?(\.|\,|\:|\/|\;|\=)\s?$','')
-END AS author_nonroman,
 b.publish_year,
-CASE 
-	WHEN '{{grouping}}' = 'Total Checkouts' THEN SUM(i.checkout_total) FILTER (WHERE i.location_code ~ '{{comp_location}}' AND m.creation_date_gmt::DATE < {{created_date}})
-	WHEN '{{grouping}}' = 'Total Checkouts: Last Year' THEN SUM(i.last_year_to_date_checkout_total) FILTER (WHERE i.location_code ~ '{{comp_location}}' AND m.creation_date_gmt::DATE < {{created_date}})
-	WHEN '{{grouping}}' = 'Total Checkouts: Year to Date' THEN SUM(i.year_to_date_checkout_total) FILTER (WHERE i.location_code ~ '{{comp_location}}' AND m.creation_date_gmt::DATE < {{created_date}})
-	WHEN '{{grouping}}' = 'Total Checkouts: Last Year + Year to Date' THEN SUM(i.year_to_date_checkout_total + i.last_year_to_date_checkout_total) FILTER (WHERE i.location_code ~ '{{comp_location}}' AND m.creation_date_gmt::DATE < {{created_date}})
-	WHEN '{{grouping}}' = 'Total Circulation' THEN SUM(i.checkout_total + i.renewal_total) FILTER (WHERE i.location_code ~ '{{comp_location}}' AND m.creation_date_gmt::DATE < {{created_date}})
-	WHEN '{{grouping}}' = 'Total Holds' THEN COALESCE(h.count_holds_on_title,0)
-	WHEN '{{grouping}}' = 'Turnover' THEN ROUND((CAST(SUM(i.checkout_total + i.renewal_total) FILTER (WHERE i.location_code ~ '{{comp_location}}' AND m.creation_date_gmt::DATE < {{created_date}}) AS NUMERIC (12,2))/CAST(COUNT (i.id) FILTER (WHERE i.location_code ~ '{{comp_location}}' AND m.creation_date_gmt::DATE < {{created_date}}) AS NUMERIC (12,2))), 2)
-	WHEN '{{grouping}}' = 'Utilization' THEN AVG(ROUND((CAST((i.checkout_total * 14) AS NUMERIC (12,2)) / (CURRENT_DATE - m.creation_date_gmt::DATE)),6)) FILTER (WHERE m.creation_date_gmt::DATE != CURRENT_DATE AND i.location_code ~ '{{comp_location}}' AND m.creation_date_gmt::DATE < {{created_date}})
-	WHEN '{{grouping}}' = 'Usage' THEN ROUND(AVG(
-		CASE WHEN ((CAST(((i.checkout_total + i.renewal_total) * loan.est_loan_period) AS NUMERIC (12,2))/(NULLIF((CURRENT_DATE - m.creation_date_gmt::DATE),0))) * 100) > 100 THEN 100
-				ELSE (CAST(((i.checkout_total + i.renewal_total) * loan.est_loan_period) AS NUMERIC (12,2))/(NULLIF((CURRENT_DATE - m.creation_date_gmt::DATE),0)) * 100)
-		END
-	) FILTER (WHERE m.creation_date_gmt::DATE != CURRENT_DATE AND i.location_code ~ '{{comp_location}}' AND m.creation_date_gmt::DATE < {{created_date}}),2)
-END AS popularity_metric
-
+{{grouping}},
 /*
 Grouping options
-Total Checkouts
-Total Checkouts: Last Year
-Total Checkouts: Year to Date
-Total Checkouts: Last Year + Year to Date
-Total Circulation
-Total Holds
-Turnover
-Usage
-Utilization
+ROUND(AVG((CAST(((i.checkout_total + i.renewal_total) * loan.est_loan_period) AS NUMERIC (12,2))/(CURRENT_DATE - m.creation_date_gmt::DATE)) * 100),2) AS time_checked_out_pct
+ROUND(CAST(SUM(i.checkout_total) + SUM(i.renewal_total) AS NUMERIC (12,2))/CAST(COUNT (i.id) AS NUMERIC (12,2)), 2) AS turnover
+SUM(i.checkout_total + i.renewal_total) AS total_circulation
+SUM(i.checkout_total) AS total_checkouts
+SUM(i.year_to_date_checkout_total) AS total_year_to_date_checkouts
+SUM(i.last_year_to_date_checkout_total) AS total_last_year_to_date_checkouts
+COALESCE(h.count_holds_on_title,0) AS total_holds
+SUM(i.year_to_date_checkout_total + i.last_year_to_date_checkout_total) AS checkout_total
 */
+COUNT (i.id) AS item_total
 
 FROM
 sierra_view.bib_record_property b
@@ -72,7 +50,9 @@ b.bib_record_id = l.bib_record_id
 JOIN
 sierra_view.item_record i
 ON
-i.id = l.item_record_id AND i.item_status_code NOT IN ({{item_status_codes}})
+i.id = l.item_record_id AND i.location_code ~ '{{location}}' 
+--location will take the form ^oln, which in this example looks for all locations starting with the string oln.
+AND i.item_status_code NOT IN ({{item_status_codes}})
 AND {{age_level}}
 	/*
 	SUBSTRING(i.location_code,4,1) NOT IN ('y','j') --adult
@@ -90,6 +70,15 @@ ON
 l.bib_record_id = br.id
 AND br.bcode3 NOT IN ('g','o','r','z','l','q','n')
 JOIN
+sierra_view.phrase_entry d
+ON
+l.bib_record_id = d.record_id AND d.index_tag = 'd'
+AND REPLACE(d.index_entry,'.','') ~ {{topic}}
+/*
+See https://github.com/Minuteman-Library-Network/SQL-Queries/blob/master/Custom%20reports%20site/diversity%20analysis.sql
+for current topic listing
+*/
+JOIN
 sierra_view.record_metadata mb
 ON
 b.bib_record_id = mb.id
@@ -97,14 +86,6 @@ LEFT JOIN
 hold_count AS h
 ON
 b.bib_record_id = h.bib_record_id
-LEFT JOIN
-sierra_view.varfield vt
-ON
-b.bib_record_id = vt.record_id AND vt.marc_tag = '880' AND vt.field_content ~ '^/|6245'
-LEFT JOIN
-sierra_view.varfield va
-ON
-b.bib_record_id = va.record_id AND va.marc_tag = '880' AND va.field_content ~ '^/|6100'
 JOIN
 (
 SELECT
@@ -183,12 +164,9 @@ i.itype_code_num = loan.itype_code_num
 
 WHERE
 b.material_code IN ({{mat_type}})
-AND br.language_code IN ({{language}})
+AND m.creation_date_gmt::DATE < {{created_date}}
+
 GROUP BY
-1,2,3,4,5,6,h.count_holds_on_title
-HAVING
-COUNT(i.id) FILTER (WHERE i.location_code ~ '{{location}}') = 0
---location will take the form ^oln, which in this example looks for all locations starting with the string oln.
-AND COUNT(i.id) FILTER (WHERE i.location_code ~ '{{comp_location}}' AND m.creation_date_gmt::DATE < {{created_date}}) > 0
-ORDER BY 7 DESC
+2,3,1,4,h.count_holds_on_title
+ORDER BY 5 DESC
 LIMIT {{qty}}
