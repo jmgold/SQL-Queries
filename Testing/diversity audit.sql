@@ -18,7 +18,7 @@ END AS is_fiction
 FROM
 (SELECT
 d.record_id,
-COUNT(d.index_entry) FILTER(WHERE d.index_entry ~ '(fiction)|(stories)$') AS subject_count
+COUNT(d.index_entry) FILTER(WHERE d.index_entry ~ '(fiction)|(stories)|(tales)|(graphic novels)|(drama)$') AS subject_count
 
 FROM
 sierra_view.phrase_entry d
