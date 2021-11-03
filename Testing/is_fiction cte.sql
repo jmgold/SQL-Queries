@@ -1,4 +1,7 @@
 SELECT
+*
+FROM(
+SELECT
 id2reckey(subjects.record_id)||'a',
 subjects.bib_level_code,
 subjects.record_type_code,
@@ -15,17 +18,18 @@ d.record_id,
 l.bib_level_code,
 l.record_type_code,
 f.p33 AS lit_form,
-COUNT(d.index_entry) FILTER(WHERE d.index_entry ~ '(fiction)|(stories)|(tales)|(graphic novels)|(drama)$') AS subject_count,
-STRING_AGG(d.index_entry,',') AS subjects
+COUNT(d.content) FILTER(WHERE LOWER(d.content) ~ '(\yfiction)|(pictorial)|(tales)|(comic books)|(\ydrama)') AS subject_count,
+STRING_AGG(d.content,',') AS subjects
 
 FROM
-sierra_view.phrase_entry d
+--sierra_view.phrase_entry d
+sierra_view.subfield d
 JOIN
 sierra_view.bib_record_property b
 ON
 d.record_id = b.bib_record_id 
 AND b.material_code NOT IN ('7','8','b','e','j','k','m','n')
-AND d.index_tag = 'd'
+AND d.field_type_code = 'd' AND d.tag = 'v'
 LEFT JOIN
 sierra_view.control_field f
 ON
@@ -38,3 +42,6 @@ b.bib_record_id = l.record_id
 GROUP BY 1,2,3,4
 
 )subjects
+)a
+
+WHERE a.bib_level_code = 'm' AND a.record_type_code = 'a' AND a.lit_form NOT IN ('0','e','i','p','s') AND a.is_fiction = true
