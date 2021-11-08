@@ -1,6 +1,10 @@
-WITH topic_list AS (SELECT *
-FROM
-(SELECT
+WITH topic_list AS (
+SELECT
+record_id,
+topic,
+is_fiction
+FROM(
+SELECT
 d.record_id,
 CASE
 	WHEN REPLACE(d.index_entry,'.','') ~ '(\yzen\y)|(dalai lama)|(buddhis)' THEN 'Buddhism'
@@ -25,66 +29,49 @@ CASE
 	WHEN REPLACE(d.index_entry,'.','') ~ '(jews)|(judaism)|(hanukkah)|(purim)|(passover)|(zionis)|(hasidism)|(antisemitism)|(rosh hashanah)|(yom kippur)|(sabbath)|(sukkot)|(pentateuch)|(synagogue)' THEN 'Judaism'
 	WHEN REPLACE(d.index_entry,'.','') ~ '(multicultural)|(cross cultural)|(diasporas)|(minorities)|(ethnic identity)|((race|ethnic) relations)|(racially mixed)|(bilingual)|(passing identity)' THEN 'Multicultural'
 	WHEN REPLACE(d.index_entry,'.','') ~ '(protestant)|(bible)|(nativity)|(adventis)|(mormon)|(baptist)|(catholic)|(methodis)|(pentecost)|(episcopal)|(lutheran)|(clergy)|(church)|(evangelicalism)|(christianity)|(easter)|(christmas)' THEN 'Christianity'
-END AS topic
+ELSE 'None of the Above'
+END AS topic,
+CASE
+	WHEN d.index_entry ~ '(\yfiction$)|(pictorial$)|(tales$)|(comic books$)|(\ydrama$)' AND b.material_code NOT IN ('7','8','b','e','j','k','m','n')
+	AND NOT (ml.bib_level_code = 'm' AND ml.record_type_code = 'a' AND f.p33 IN ('0','e','i','p','s')) THEN TRUE
+	ELSE FALSE
+END AS is_fiction	
 
 FROM
-sierra_view.item_record i
-JOIN
-sierra_view.bib_record_item_record_link l
-ON
-i.id = l.item_record_id
-JOIN
+sierra_view.bib_record_location bl
+LEFT JOIN
 sierra_view.phrase_entry d
 ON
-l.bib_record_id = d.record_id AND d.index_tag = 'd'
-
-WHERE i.location_code ~ '^lin'
-)a
-WHERE
-a.topic IS NOT NULL),
-
-is_fiction AS(
-SELECT
-subjects.record_id,
-CASE 
-	WHEN subjects.subject_count > 0 THEN true
-	ELSE false
-END AS is_fiction
-
-FROM
-(SELECT
-d.record_id,
-COUNT(d.index_entry) FILTER(WHERE d.index_entry ~ '(fiction)|(stories)') AS subject_count
-
-FROM
-sierra_view.phrase_entry d
+bl.bib_record_id = d.record_id AND d.index_tag = 'd' AND d.is_permuted = FALSE
 JOIN
-sierra_view.record_metadata rm
+sierra_view.bib_record_property b
 ON
-d.record_id = rm.id AND rm.record_type_code = 'b'
-WHERE 
-d.index_tag = 'd'
+bl.bib_record_id = b.bib_record_id
+LEFT JOIN
+sierra_view.control_field f
+ON
+b.bib_record_id = f.record_id
+LEFT JOIN
+sierra_view.leader_field ml
+ON
+b.bib_record_id = ml.record_id
 
-GROUP BY 1
-
-)subjects
+WHERE bl.location_code ~ '^ntn'
+)inner_query
+GROUP BY 1,2,3
 )
-
 
 SELECT *
 
 FROM
 (SELECT
-CASE
-	WHEN t.topic IS NOT NULL THEN t.topic
-	ELSE 'None of the Above'
-END AS topic,
-COUNT(DISTINCT i.id) FILTER(WHERE SUBSTRING(i.location_code,4,1) = 'j' AND fic.is_fiction IS TRUE) AS juv_fic,
-COUNT(DISTINCT i.id) FILTER(WHERE SUBSTRING(i.location_code,4,1) = 'j' AND fic.is_fiction IS FALSE) AS juv_nonfic,
-COUNT(DISTINCT i.id) FILTER(WHERE SUBSTRING(i.location_code,4,1) = 'y' AND fic.is_fiction IS TRUE) AS ya_fic,
-COUNT(DISTINCT i.id) FILTER(WHERE SUBSTRING(i.location_code,4,1) = 'y' AND fic.is_fiction IS FALSE) AS ya_nonfic,
-COUNT(DISTINCT i.id) FILTER(WHERE SUBSTRING(i.location_code,4,1) NOT IN('y','j') AND fic.is_fiction IS TRUE) AS adult_fic,
-COUNT(DISTINCT i.id) FILTER(WHERE SUBSTRING(i.location_code,4,1) NOT IN('y','j') AND fic.is_fiction IS FALSE) AS adult_nonfic,
+t.topic,
+COUNT(DISTINCT i.id) FILTER(WHERE SUBSTRING(i.location_code,4,1) = 'j' AND t.is_fiction IS TRUE) AS juv_fic,
+COUNT(DISTINCT i.id) FILTER(WHERE SUBSTRING(i.location_code,4,1) = 'j' AND t.is_fiction IS FALSE) AS juv_nonfic,
+COUNT(DISTINCT i.id) FILTER(WHERE SUBSTRING(i.location_code,4,1) = 'y' AND t.is_fiction IS TRUE) AS ya_fic,
+COUNT(DISTINCT i.id) FILTER(WHERE SUBSTRING(i.location_code,4,1) = 'y' AND t.is_fiction IS FALSE) AS ya_nonfic,
+COUNT(DISTINCT i.id) FILTER(WHERE SUBSTRING(i.location_code,4,1) NOT IN('y','j') AND t.is_fiction IS TRUE) AS adult_fic,
+COUNT(DISTINCT i.id) FILTER(WHERE SUBSTRING(i.location_code,4,1) NOT IN('y','j') AND t.is_fiction IS FALSE) AS adult_nonfic,
 COUNT(DISTINCT i.id) AS total_items
 
 FROM
@@ -92,15 +79,11 @@ sierra_view.item_record i
 JOIN
 sierra_view.bib_record_item_record_link l
 ON
-i.id = l.item_record_id AND i.location_code ~ '^lin'
-LEFT JOIN
+i.id = l.item_record_id AND i.location_code ~ '^ntn'
+JOIN
 topic_list t
 ON
-l.bib_record_id= t.record_id
-JOIN
-is_fiction fic
-ON
-l.bib_record_id = fic.record_id
+l.bib_record_id= t.record_id AND t.topic != 'None of the Above'
 
 GROUP BY 1
 
@@ -108,12 +91,12 @@ UNION
 
 SELECT
 'Unique Diverse Items' AS topic,
-COUNT(DISTINCT i.id) FILTER(WHERE SUBSTRING(i.location_code,4,1) = 'j' AND fic.is_fiction IS TRUE) AS juv_fic,
-COUNT(DISTINCT i.id) FILTER(WHERE SUBSTRING(i.location_code,4,1) = 'j' AND fic.is_fiction IS FALSE) AS juv_nonfic,
-COUNT(DISTINCT i.id) FILTER(WHERE SUBSTRING(i.location_code,4,1) = 'y' AND fic.is_fiction IS TRUE) AS ya_fic,
-COUNT(DISTINCT i.id) FILTER(WHERE SUBSTRING(i.location_code,4,1) = 'y' AND fic.is_fiction IS FALSE) AS ya_nonfic,
-COUNT(DISTINCT i.id) FILTER(WHERE SUBSTRING(i.location_code,4,1) NOT IN('y','j') AND fic.is_fiction IS TRUE) AS adult_fic,
-COUNT(DISTINCT i.id) FILTER(WHERE SUBSTRING(i.location_code,4,1) NOT IN('y','j') AND fic.is_fiction IS FALSE) AS adult_nonfic,
+COUNT(DISTINCT i.id) FILTER(WHERE SUBSTRING(i.location_code,4,1) = 'j' AND t.is_fiction IS TRUE) AS juv_fic,
+COUNT(DISTINCT i.id) FILTER(WHERE SUBSTRING(i.location_code,4,1) = 'j' AND t.is_fiction IS FALSE) AS juv_nonfic,
+COUNT(DISTINCT i.id) FILTER(WHERE SUBSTRING(i.location_code,4,1) = 'y' AND t.is_fiction IS TRUE) AS ya_fic,
+COUNT(DISTINCT i.id) FILTER(WHERE SUBSTRING(i.location_code,4,1) = 'y' AND t.is_fiction IS FALSE) AS ya_nonfic,
+COUNT(DISTINCT i.id) FILTER(WHERE SUBSTRING(i.location_code,4,1) NOT IN('y','j') AND t.is_fiction IS TRUE) AS adult_fic,
+COUNT(DISTINCT i.id) FILTER(WHERE SUBSTRING(i.location_code,4,1) NOT IN('y','j') AND t.is_fiction IS FALSE) AS adult_nonfic,
 COUNT(DISTINCT i.id) AS total_items
 
 FROM
@@ -121,18 +104,44 @@ sierra_view.item_record i
 JOIN
 sierra_view.bib_record_item_record_link l
 ON
-i.id = l.item_record_id AND i.location_code ~ '^lin'
+i.id = l.item_record_id AND i.location_code ~ '^ntn'
 JOIN
 topic_list t
 ON
-l.bib_record_id= t.record_id
-JOIN
-is_fiction fic
-ON
-l.bib_record_id = fic.record_id
+l.bib_record_id= t.record_id AND t.topic != 'None of the Above'
 
 GROUP BY 1
 
+UNION
+
+SELECT
+'None of the Above' AS topic,
+COUNT(DISTINCT i.id) FILTER(WHERE SUBSTRING(i.location_code,4,1) = 'j' AND t.is_fiction IS TRUE) AS juv_fic,
+COUNT(DISTINCT i.id) FILTER(WHERE SUBSTRING(i.location_code,4,1) = 'j' AND t.is_fiction IS FALSE) AS juv_nonfic,
+COUNT(DISTINCT i.id) FILTER(WHERE SUBSTRING(i.location_code,4,1) = 'y' AND t.is_fiction IS TRUE) AS ya_fic,
+COUNT(DISTINCT i.id) FILTER(WHERE SUBSTRING(i.location_code,4,1) = 'y' AND t.is_fiction IS FALSE) AS ya_nonfic,
+COUNT(DISTINCT i.id) FILTER(WHERE SUBSTRING(i.location_code,4,1) NOT IN('y','j') AND t.is_fiction IS TRUE) AS adult_fic,
+COUNT(DISTINCT i.id) FILTER(WHERE SUBSTRING(i.location_code,4,1) NOT IN('y','j') AND t.is_fiction IS FALSE) AS adult_nonfic,
+COUNT(DISTINCT i.id) AS total_items
+
+FROM
+sierra_view.item_record i
+JOIN
+sierra_view.bib_record_item_record_link l
+ON
+i.id = l.item_record_id AND i.location_code ~ '^ntn'
+JOIN
+(SELECT
+t.record_id,
+t.is_fiction
+FROM topic_list t
+GROUP BY 1,2
+HAVING COUNT(DISTINCT t.topic) FILTER (WHERE t.topic != 'None of the Above') = 0
+) t
+ON
+l.bib_record_id= t.record_id
+
+GROUP BY 1
 )a
 
 ORDER BY CASE
@@ -140,4 +149,3 @@ ORDER BY CASE
 	WHEN topic = 'None of the Above' THEN 3
 	ELSE 1
 END,topic
-
