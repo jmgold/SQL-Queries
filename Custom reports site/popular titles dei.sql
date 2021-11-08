@@ -72,7 +72,7 @@ AND br.bcode3 NOT IN ('g','o','r','z','l','q','n')
 JOIN
 sierra_view.phrase_entry d
 ON
-l.bib_record_id = d.record_id AND d.index_tag = 'd'
+l.bib_record_id = d.record_id AND d.index_tag = 'd' AND d.is_permuted = false
 AND REPLACE(d.index_entry,'.','') ~ {{topic}}
 /*
 See https://github.com/Minuteman-Library-Network/SQL-Queries/blob/master/Custom%20reports%20site/diversity%20analysis.sql
