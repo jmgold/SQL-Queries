@@ -16,12 +16,13 @@ b.id = s.record_id AND s.field_type_code = 'd'*/
 
 WHERE
 /*REPLACE(LOWER(s.content),'-',' ')*/
-REPLACE(d.index_entry,'.','') ~ '(substance|medication|opioid|oxycodone|cocaine|marijuana|opium|phetamine|drug|morphine|heroin)\sabuse'
+REPLACE(d.index_entry,'.','') ~ '(^\y(?!\w*((rome)|(italy)|(egypt)))\w*(slave(s|(ry)?)(?!((rome)|(egypt)|(italy)))))'--'(gamblers)|(drug use)|(drug abuse)|(substance abuse)|(alcoholi(?<!c beverages))|(addiction)''(gamblers)|(drug use)|(substance|medication|opioid|oxycodone|cocaine|marijuana|opium|phetamine|drug|morphine|heroin)\sabuse|(alcoholi(?!c beverages))|(binge drinking)|((?<!relationship )addict)'
 --'(fiction)|(stories)|(tales)|(graphic novels)|(drama)|(pictorial works)|(stories in rhyme)|(picture books)$'
 /*
 african nations
 */
 --negative lookahead (?!\sbaseball) lookbehind (?<!recordings)
+--(^\y(?!\w*k2)\w*(pakistan(?!.*k2)))
 GROUP BY 1
 --HAVING d.index_entry LIKE 'cleveland%'
 ORDER BY 2 DESC
