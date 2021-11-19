@@ -23,7 +23,7 @@ b.bib_record_id = rm.id
 WHERE
 b.material_code = 'a'
 AND b.publish_year >= 2018
-AND i.location_code ~ '^lin'
+AND i.location_code ~ '^ntn'
 
 GROUP BY 1,2,3,4
 ORDER BY 2,3
