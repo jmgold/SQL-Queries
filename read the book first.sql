@@ -18,27 +18,18 @@ sierra_view.bib_view v
 ON
 b.bib_record_id = v.id AND
 v.record_num IN (
---Films
 --Nancy Drew and the Hidden Staircase
 '1991518',
 --Infinite
 '3995130',
 --those who wish me dead
 '3137743',
---Death on the Nile
-'2917379',
---Dune
-'1495014',
---Deep Water
-'2178263',
 --Black Widow
 '3410594',
 --Eternals
 '3858608',
 --Blonde
 '1908073',
---The Nightingale
-'3187187',
 --Nightmare Alley
 '2891526',
 --Without Remorse
@@ -53,17 +44,10 @@ v.record_num IN (
 '3563957',
 --Passing
 '2693833',
---TV
 --Umbrella Academy
 '2588224',
---Lovecraft Country
-'3451427',
---underground railroad
-'3491331',
 --mysterious benedict society
 '2467715',
---lisey's story
-'2406908',
 --all creatures great and small
 '3168726',
 --Batwoman
@@ -90,8 +74,76 @@ v.record_num IN (
 '3891151',
 --shadow and bone
 '2998490',
---Nine Perfect Strangers
-'3766686'
+--The power : a novel / Naomi Alderman
+'36568387',
+--Beartown : a novel / Fredrik Backman   translated by Neil Smith
+'36138745',
+--The vanishing half / Brit Bennett
+'3904814',
+--Good omens : the nice and accurate prophecies of Agnes Nutter, witch / Neil Gaiman, Terry Pratchett
+'2384864',
+--The silence of the lambs / Thomas Harris
+'1178755',
+--Lisey's story / Stephen King
+'4013251',
+--The One : a novel / John Marrs
+'4007305',
+--Nine perfect strangers / Liane Moriarty
+'3766686',
+--Little fires everywhere / Celeste Ng
+'3639155',
+--Pieces of her : a novel / Karin Slaughter
+'3845332',
+--Fear Street, the beginning / R.L. Stine
+'4032527',
+--Anatomy of a scandal / Sarah Vaughan
+'3650449',
+--Gossip girl : a novel / by Cecily von Ziegesar
+'2077281',
+--The underground railroad : a novel / Colson Whitehead
+'3491331',
+--The white tiger : a novel / Aravind Adiga
+'2619778',
+--Sir Gawain and the Green Knight : a new verse translation / [translated by] Simon Armitage
+'3226495',
+--Dune / Frank Herbert
+'4027565',
+--Deep water / Patricia Highsmith
+'2178263',
+--The Power of the Dog
+'40500561',
+--Shadow of Night / Deborah Harkness
+'2975507',
+--Death on the Nile
+'2917379',
+--The Nightingale / Kristin Hannah
+'3187187',
+--Killers of the Flower Moon
+'3725058',
+--She Hulk
+'3229579',
+--Moon Knight
+'3282787',
+--Doctor Strange
+'3483444',
+--Thor
+'3839588',
+--Morbius
+'3998876',
+--Flashpoint
+'2982857',
+--Redeeming Love
+'4050054',
+--Sandman
+'3828855',
+--Ms Marvel
+'3710862',
+--White noise
+'1917835',
+--School for Good and Evil
+'3159244',
+--House of Gucci
+'2478322'
 )
 WHERE b.material_code ='a'
 GROUP BY 1,2,3 
