@@ -67,6 +67,10 @@ JOIN
 sierra_view.item_record i
 ON
 ip.item_record_id = i.id AND i.location_code ~ '^lex'
+JOIN
+sierra_view.record_metadata rm
+ON
+i.id = rm.id AND rm.creation_date_gmt::DATE < '2020-01-01'
 LEFT JOIN
 sierra_view.checkout C
 ON

@@ -21,7 +21,7 @@ FROM
 sierra_view.bib_record_property b
 JOIN
 sierra_view.bib_record br
-ON b.bib_record_id = br.id AND br.bcode3 != 'g'
+ON b.bib_record_id = br.id AND br.bcode3 NOT IN ('g','n')
 JOIN sierra_view.bib_record_item_record_link bi
 ON
 b.bib_record_id = bi.bib_record_id
