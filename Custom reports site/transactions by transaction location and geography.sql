@@ -115,6 +115,7 @@ CASE
 	WHEN  {{location}} = '^na2' THEN t.stat_group_code_num BETWEEN '540' AND '549'
 	WHEN  {{location}} = '^na3' THEN t.stat_group_code_num BETWEEN '550' AND '559'
 	WHEN  {{location}} = '^na' THEN t.stat_group_code_num BETWEEN '530' AND '559'
+	WHEN  {{location}} = '^na(t|3)' THEN t.stat_group_code_num BETWEEN '530' AND '539' OR t.stat_group_code_num BETWEEN '550' AND '559'
 	WHEN  {{location}} = '^nee' THEN t.stat_group_code_num BETWEEN '570' AND '579'
 	WHEN  {{location}} = '^nor' THEN t.stat_group_code_num BETWEEN '580' AND '589'
 	WHEN  {{location}} = '^ntn' THEN t.stat_group_code_num BETWEEN '590' AND '599'

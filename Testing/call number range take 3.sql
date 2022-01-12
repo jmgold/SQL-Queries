@@ -1,9 +1,11 @@
 WITH call_number_mod AS(
 SELECT
-DISTINCT i.item_record_id,
+i.item_record_id,
 CASE
-	WHEN translate(b.best_author_norm,'âáãäåāăąÁÂÃÄÅĀĂĄèéééêëēĕėęěĒĔĖĘĚìíîïìĩīĭÌÍÎÏÌĨĪĬóôõöōŏőÒÓÔÕÖŌŎŐùúûüũūŭůÙÚÛÜŨŪŬŮ','aaaaaaaaaaaaaaaaeeeeeeeeeeeeeeeeiiiiiiiiiiiiiiiiooooooooooooooouuuuuuuuuuuuuuuu') != '' AND translate(i.call_number_norm,'âáãäåāăąÁÂÃÄÅĀĂĄèéééêëēĕėęěĒĔĖĘĚìíîïìĩīĭÌÍÎÏÌĨĪĬóôõöōŏőÒÓÔÕÖŌŎŐùúûüũūŭůÙÚÛÜŨŪŬŮ','aaaaaaaaaaaaaaaaeeeeeeeeeeeeeeeeiiiiiiiiiiiiiiiiooooooooooooooouuuuuuuuuuuuuuuu') ~ ('^.+'||SPLIT_PART(translate(b.best_author_norm,'âãáäåāăąÁÂÃÄÅĀĂĄèéééêëēĕėęěĒĔĖĘĚìíîïìĩīĭÌÍÎÏÌĨĪĬóôõöōŏőÒÓÔÕÖŌŎŐùúûüũūŭůÙÚÛÜŨŪŬŮ','aaaaaaaaaaaaaaaaeeeeeeeeeeeeeeeeiiiiiiiiiiiiiiiiooooooooooooooouuuuuuuuuuuuuuuu'), ' ',1)) THEN SPLIT_PART(TRIM(BOTH FROM translate(i.call_number_norm,'âáãäåāăąÁÂÃÄÅĀĂĄèéééêëēĕėęěĒĔĖĘĚìíîïìĩīĭÌÍÎÏÌĨĪĬóôõöōŏőÒÓÔÕÖŌŎŐùúûüũūŭůÙÚÛÜŨŪŬŮ','aaaaaaaaaaaaaaaaeeeeeeeeeeeeeeeeiiiiiiiiiiiiiiiiooooooooooooooouuuuuuuuuuuuuuuu')),SPLIT_PART(translate(b.best_author_norm,'âãäåāăąÁÂÃÄÅĀĂĄèééêëēĕėęěĒĔĖĘĚìíîïìĩīĭÌÍÎÏÌĨĪĬóôõöōŏőÒÓÔÕÖŌŎŐùúûüũūŭůÙÚÛÜŨŪŬŮ','aaaaaaaaaaaaaaaeeeeeeeeeeeeeeeiiiiiiiiiiiiiiiiooooooooooooooouuuuuuuuuuuuuuuu'), ' ',1),1)
-	WHEN i.call_number_norm ~ ('^.+'||SPLIT_PART(REGEXP_REPLACE(b.best_title_norm,'\*|\+|\?|\{',''), ' ',1)) THEN SPLIT_PART(TRIM(BOTH FROM i.call_number_norm),SPLIT_PART(b.best_title_norm, ' ',1),1)
+	WHEN a.index_entry != '' AND translate(i.call_number_norm,'âáãäåāăąÁÂÃÄÅĀĂĄèéééêëēĕėęěĒĔĖĘĚìíîïìĩīĭÌÍÎÏÌĨĪĬóôõöōŏőÒÓÔÕÖŌŎŐùúûüũūŭůÙÚÛÜŨŪŬŮ','aaaaaaaaaaaaaaaaeeeeeeeeeeeeeeeeiiiiiiiiiiiiiiiiooooooooooooooouuuuuuuuuuuuuuuu') LIKE '% '||SPLIT_PART(a.index_entry, ' ',1)||'%' THEN SPLIT_PART(TRIM(BOTH FROM translate(i.call_number_norm,'âáãäåāăąÁÂÃÄÅĀĂĄèéééêëēĕėęěĒĔĖĘĚìíîïìĩīĭÌÍÎÏÌĨĪĬóôõöōŏőÒÓÔÕÖŌŎŐùúûüũūŭůÙÚÛÜŨŪŬŮ','aaaaaaaaaaaaaaaaeeeeeeeeeeeeeeeeiiiiiiiiiiiiiiiiooooooooooooooouuuuuuuuuuuuuuuu')),SPLIT_PART(a.index_entry, ' ',1),1)
+	--author truncated to 3 characters
+	WHEN a.index_entry != '' AND translate(i.call_number_norm,'âáãäåāăąÁÂÃÄÅĀĂĄèéééêëēĕėęěĒĔĖĘĚìíîïìĩīĭÌÍÎÏÌĨĪĬóôõöōŏőÒÓÔÕÖŌŎŐùúûüũūŭůÙÚÛÜŨŪŬŮ','aaaaaaaaaaaaaaaaeeeeeeeeeeeeeeeeiiiiiiiiiiiiiiiiooooooooooooooouuuuuuuuuuuuuuuu') LIKE '% '||SUBSTRING(SPLIT_PART(a.index_entry, ' ',1)FROM 1 FOR 3)||'%' THEN SPLIT_PART(TRIM(BOTH FROM translate(i.call_number_norm,'âáãäåāăąÁÂÃÄÅĀĂĄèéééêëēĕėęěĒĔĖĘĚìíîïìĩīĭÌÍÎÏÌĨĪĬóôõöōŏőÒÓÔÕÖŌŎŐùúûüũūŭůÙÚÛÜŨŪŬŮ','aaaaaaaaaaaaaaaaeeeeeeeeeeeeeeeeiiiiiiiiiiiiiiiiooooooooooooooouuuuuuuuuuuuuuuu')),SUBSTRING(SPLIT_PART(a.index_entry, ' ',1)FROM 1 FOR 3),1)
+	WHEN i.call_number_norm LIKE '%'||SPLIT_PART(t.index_entry, ' ',1)||'%' THEN SPLIT_PART(TRIM(BOTH FROM i.call_number_norm),SPLIT_PART(t.index_entry, ' ',1),1)
    --only digits are a year at the end
 	WHEN REGEXP_REPLACE(REVERSE(TRIM(BOTH FROM i.call_number_norm)), '^[0-9]{3}[12]', '') !~ '\d' THEN TRIM(BOTH FROM REGEXP_REPLACE(i.call_number_norm,'\s?\d{4}$',''))
    --only digits are a volume,copy,series, etc number at the end
@@ -18,10 +20,15 @@ JOIN
 sierra_view.bib_record_item_record_link l
 ON
 i.item_record_id = l.item_record_id
-JOIN
-sierra_view.bib_record_property b
+LEFT JOIN
+sierra_view.phrase_entry a
 ON
-l.bib_record_id = b.bib_record_id
+l.bib_record_id = a.record_id AND a.index_tag = 'a' AND a.varfield_type_code = 'a' AND a.occurrence = 0
+LEFT JOIN
+sierra_view.phrase_entry t
+ON
+l.bib_record_id = t.record_id AND t.index_tag = 't' AND t.varfield_type_code = 't' AND t.occurrence = 0
+
 )
 
 SELECT
@@ -31,7 +38,7 @@ COALESCE(CASE
    --call number does not exist
 	WHEN i.call_number_norm = '' OR i.call_number_norm IS NULL THEN 'no call number'
 	--biographies
-   WHEN i.call_number_norm ~ '^(.*biography|.*biog|.*bio)' THEN SUBSTRING(REGEXP_REPLACE(i.call_number_norm,'\(|\)|\[|\]','','gi')FROM '^(.*biography|.*biog|.*bio)')
+   WHEN i.call_number_norm ~ '^(.*biography|.*biog|.*bio)' THEN SUBSTRING(REGEXP_REPLACE(i.call_number_norm,'\(|\)|\[|\]','','gi')FROM '^.*((biography)|(biog)|(bio))')
 	--graphic novels & manga
    WHEN i.call_number_norm ~ '^(.*graphic|.*manga)' AND i.call_number_norm !~ '\d' THEN SUBSTRING(REGEXP_REPLACE(i.call_number_norm,'\(|\)|\[|\]','','gi')FROM '^(.*graphic|.*manga)')
 	--call number contains no numbers and a 1 or 2 words
@@ -75,6 +82,6 @@ i.item_record_id = ip.item_record_id
 AND
 ir.itype_code_num != '241'
 AND
-ir.location_code ~ '^cam'
+ir.location_code ~ '^fst'
 GROUP BY 1,2,5
 ORDER BY 3, 2
