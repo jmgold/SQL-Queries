@@ -4,11 +4,9 @@ Minuteman Library Network
 
 Identifies items where the location and agency do not match and the owning library may not be able to correct the record themselves
 */
-
+SELECT * FROM(
 SELECT
 rm.record_type_code||rm.record_num||'a' AS item_number,
-i.location_code,
-a.name AS agency,
 CASE
 WHEN ip.barcode LIKE '32211%' THEN 'Acton'
 WHEN ip.barcode LIKE '34860%' THEN 'Arlington'
@@ -56,6 +54,8 @@ WHEN ip.barcode LIKE '34872%' THEN 'Winchester'
 WHEN ip.barcode LIKE '31906%' THEN 'Woburn'
 ELSE 'Unknown'
 END AS barcode,
+i.location_code,
+a.name AS agency,
 rm.creation_date_gmt::DATE AS creation_date,
 rm.record_last_updated_gmt::DATE AS last_update
 
@@ -77,6 +77,15 @@ JOIN
 sierra_view.item_record_property ip
 ON
 i.id = ip.item_record_id
+JOIN
+sierra_view.bib_record_item_record_link bi
+ON
+i.id = bi.item_record_id
+JOIN 
+sierra_view.bib_record_property bib
+ON
+bi.bib_record_id = bib.bib_record_id
+AND bib.best_title_norm !~ '^xample'
 WHERE
 LOWER(a.name) != 
 CASE
@@ -87,4 +96,5 @@ CASE
 	ELSE LOWER(SPLIT_PART(l.name,'/',1))
 END
 AND SUBSTRING(i.location_code FROM 1 FOR 3) NOT IN ('int','knp','hpl','trn')
-ORDER BY 3,5
+) innerquery
+ORDER BY barcode, creation_date
