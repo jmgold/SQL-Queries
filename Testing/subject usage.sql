@@ -16,7 +16,8 @@ b.id = s.record_id AND s.field_type_code = 'd'*/
 
 WHERE
 /*REPLACE(LOWER(s.content),'-',' ')*/
-REPLACE(d.index_entry,'.','') ~ '((?<!(siriano|amanpour|dior) )christian(?!(sen|son| dior))(?!.*\d{4}))'
+REPLACE(d.index_entry,'.','') ~ '(?<!(substance|medication|opioid|oxycodone|cocaine|marijuana|opium|phetamine|drug|morphine|heroin))\sabuse(?!\sof administrative)'
+
 -- pondering for mysteries 'crimes against(?!.*fiction)'
 
 --negative lookahead (?!\sbaseball) lookbehind (?<!recordings)
