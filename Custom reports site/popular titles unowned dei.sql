@@ -77,6 +77,10 @@ JOIN
 sierra_view.bib_record b
 ON
 b.id = d.record_id AND d.index_tag = 'd' AND d.is_permuted = false
+--exclude guidebooks
+AND REPLACE(d.index_entry,'.','') !~ '^\y(?!\w((ecology)|(ecotourism)|(ecosystems)|(environmentalism)|(african american)|(african diaspora)|(blues music)|(freedom trail)|(underground railroad)|(women)|(ethnic restaurants)|
+(social life and customs)|(older people)|(people with disabilities)|(gay(s|\y(?!(head|john))))|(lesbian)|(bisexual)|(gender)|(sexual minorities)|(indian (art|trails))|(indians of)|(inca(s|n))|
+(christian (art|antiquities|saints|shrine|travel))|(pilgrims and pilgrimages)|(jews)|(judaism)|((jewish|islamic) architecture)|(convents)|(sacred space)|(sepulchral monuments)|(spanish mission)|(spiritual retreat)|(temples)|(houses of prayer)|(religious institutions)|(monasteries)|(holocaust)|(church (architecture|buildings|decoration))))\w.*((guidebooks)|(description and travel))'
 AND REPLACE(d.index_entry,'.','') ~ {{topic}}
 /*
 See https://github.com/Minuteman-Library-Network/SQL-Queries/blob/master/Custom%20reports%20site/diversity%20analysis.sql

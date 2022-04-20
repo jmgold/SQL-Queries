@@ -1,3 +1,4 @@
+
 WITH topic_list AS (SELECT *
 FROM
 (SELECT
@@ -7,6 +8,9 @@ i.renewal_total,
 i.price,
 i.last_checkin_gmt,
 CASE
+	WHEN REPLACE(d.index_entry,'.','') ~ '^\y(?!\w((ecology)|(ecotourism)|(ecosystems)|(environmentalism)|(african american)|(african diaspora)|(blues music)|(freedom trail)|(underground railroad)|(women)|(ethnic restaurants)|
+	(social life and customs)|(older people)|(people with disabilities)|(gay(s|\y(?!(head|john))))|(lesbian)|(bisexual)|(gender)|(sexual minorities)|(indian (art|trails))|(indians of)|(inca(s|n))|
+	(christian (art|antiquities|saints|shrine|travel))|(pilgrims and pilgrimages)|(jews)|(judaism)|((jewish|islamic) architecture)|(convents)|(sacred space)|(sepulchral monuments)|(spanish mission)|(spiritual retreat)|(temples)|(houses of prayer)|(religious institutions)|(monasteries)|(holocaust)|(church (architecture|buildings|decoration))))\w.*(guidebooks)' THEN 'None of the Above'
 	WHEN REPLACE(d.index_entry,'.','') ~ '(\yzen\y)|(dalai lama)|(buddhis)' THEN 'Buddhism'
 	WHEN REPLACE(d.index_entry,'.','') ~ '(\yhindu(?!(stan|\skush)))|(divali)|(\yholi\y)|(bhagavadgita)|(upanishads)' THEN 'Hinduism'
 	WHEN REPLACE(d.index_entry,'.','') ~ '(agnosticism)|(atheism)|(secularism)' THEN 'Agnosticism & Atheism'
@@ -42,7 +46,7 @@ sierra_view.phrase_entry d
 ON
 l.bib_record_id = d.record_id AND d.index_tag = 'd' AND d.is_permuted = false
 
-WHERE i.location_code ~ '^ntn'
+WHERE i.location_code ~ '^nee'
 GROUP BY 1,2,3,4,5,6
 )a
 WHERE
@@ -75,15 +79,15 @@ COUNT (DISTINCT i.id) FILTER(WHERE i.last_checkout_gmt IS NULL) AS "0_circs",
 ROUND(100.0 * (CAST(COUNT(DISTINCT i.id) FILTER(WHERE i.last_checkout_gmt IS NULL) AS NUMERIC (12,2)) / CAST(COUNT (DISTINCT i.id) AS NUMERIC (12,2))), 4)||'%' AS "Percentage_0_circs",
 ROUND((COUNT(DISTINCT i.id) *(AVG(i.price) FILTER(WHERE i.price>'0' AND i.price <'10000'))/(NULLIF((SUM(i.checkout_total) + SUM(i.renewal_total)),0))),2)::MONEY AS "Cost_Per_Circ_By_AVG_price",
 ROUND(CAST(SUM(i.checkout_total) + SUM(i.renewal_total) AS NUMERIC (12,2))/CAST(COUNT (i.id) AS NUMERIC (12,2)), 2) AS turnover,
-ROUND(100.0 * (CAST(COUNT(DISTINCT i.id) AS NUMERIC (12,2)) / (SELECT CAST(COUNT (DISTINCT i.id) AS NUMERIC (12,2))FROM sierra_view.item_record i WHERE i.location_code ~ '^ntn')), 6)||'%' AS relative_item_total,
-ROUND(100.0 * (CAST(SUM(i.checkout_total) + SUM(i.renewal_total) AS NUMERIC (12,2)) / (SELECT CAST(SUM(i.checkout_total) + SUM(i.renewal_total) AS NUMERIC (12,2)) FROM sierra_view.item_record i WHERE i.location_code ~ '^ntn')), 6)||'%' AS relative_circ
+ROUND(100.0 * (CAST(COUNT(DISTINCT i.id) AS NUMERIC (12,2)) / (SELECT CAST(COUNT (DISTINCT i.id) AS NUMERIC (12,2))FROM sierra_view.item_record i WHERE i.location_code ~ '^nee')), 6)||'%' AS relative_item_total,
+ROUND(100.0 * (CAST(SUM(i.checkout_total) + SUM(i.renewal_total) AS NUMERIC (12,2)) / (SELECT CAST(SUM(i.checkout_total) + SUM(i.renewal_total) AS NUMERIC (12,2)) FROM sierra_view.item_record i WHERE i.location_code ~ '^nee')), 6)||'%' AS relative_circ
 
 FROM
 sierra_view.item_record i
 JOIN
 sierra_view.bib_record_item_record_link l
 ON
-i.id = l.item_record_id AND i.location_code ~ '^ntn'
+i.id = l.item_record_id AND i.location_code ~ '^nee'
 LEFT JOIN
 topic_list t
 ON
@@ -118,15 +122,15 @@ COUNT (DISTINCT i.id) FILTER(WHERE i.last_checkout_gmt IS NULL) AS "0_circs",
 ROUND(100.0 * (CAST(COUNT(DISTINCT i.id) FILTER(WHERE i.last_checkout_gmt IS NULL) AS NUMERIC (12,2)) / CAST(COUNT (DISTINCT i.id) AS NUMERIC (12,2))), 4)||'%' AS "Percentage_0_circs",
 ROUND((COUNT(DISTINCT i.id) *(AVG(i.price) FILTER(WHERE i.price>'0' AND i.price <'10000'))/(NULLIF((SUM(i.checkout_total) + SUM(i.renewal_total)),0))),2)::MONEY AS "Cost_Per_Circ_By_AVG_price",
 ROUND(CAST(SUM(i.checkout_total) + SUM(i.renewal_total) AS NUMERIC (12,2))/CAST(COUNT (i.id) AS NUMERIC (12,2)), 2) AS turnover,
-ROUND(100.0 * (CAST(COUNT(DISTINCT i.id) AS NUMERIC (12,2)) / (SELECT CAST(COUNT (DISTINCT i.id) AS NUMERIC (12,2))FROM sierra_view.item_record i WHERE i.location_code ~ '^ntn')), 6)||'%' AS relative_item_total,
-ROUND(100.0 * (CAST(SUM(i.checkout_total) + SUM(i.renewal_total) AS NUMERIC (12,2)) / (SELECT CAST(SUM(i.checkout_total) + SUM(i.renewal_total) AS NUMERIC (12,2)) FROM sierra_view.item_record i WHERE i.location_code ~ '^ntn')), 6)||'%' AS relative_circ
+ROUND(100.0 * (CAST(COUNT(DISTINCT i.id) AS NUMERIC (12,2)) / (SELECT CAST(COUNT (DISTINCT i.id) AS NUMERIC (12,2))FROM sierra_view.item_record i WHERE i.location_code ~ '^nee')), 6)||'%' AS relative_item_total,
+ROUND(100.0 * (CAST(SUM(i.checkout_total) + SUM(i.renewal_total) AS NUMERIC (12,2)) / (SELECT CAST(SUM(i.checkout_total) + SUM(i.renewal_total) AS NUMERIC (12,2)) FROM sierra_view.item_record i WHERE i.location_code ~ '^nee')), 6)||'%' AS relative_circ
 
 FROM
 sierra_view.item_record i
 JOIN
 sierra_view.bib_record_item_record_link l
 ON
-i.id = l.item_record_id AND i.location_code ~ '^ntn'
+i.id = l.item_record_id AND i.location_code ~ '^nee'
 JOIN
 (SELECT
 DISTINCT record_id

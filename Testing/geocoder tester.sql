@@ -1,4 +1,5 @@
---3/23/21
+--2/5/22
+--2/18 and 2/25 are particularly bad days to fix
 SELECT 
 TO_DATE(SUBSTRING(s.content,1,10),'YYYY-MM-DD'),
 COUNT(distinct p.patron_record_id)
