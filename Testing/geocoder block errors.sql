@@ -2,6 +2,7 @@ SELECT
 --id2reckey(p.id)||'a',
 --SUBSTRING(REGEXP_REPLACE(v.field_content,'\|(s|c|t|b)','','g'),1,12)
 pt.name,
+pt.value,
 COUNT(p.id)
 
 FROM
@@ -53,5 +54,5 @@ WHERE SUBSTRING(REGEXP_REPLACE(v.field_content,'\|(s|c|t|b)','','g'),6,6) IN ('3
 '333100','333200','333300','333400','333501','333502','333600','333601','333602')
 AND
 SUBSTRING(REGEXP_REPLACE(v.field_content,'\|(s|c|t|b)','','g'),1,12) ~ '\|$'
-
-GROUP BY 1
+--AND p.ptype_code = '6'
+GROUP BY 1,2

@@ -12,7 +12,12 @@ ROUND(CAST(f.appropriation AS NUMERIC (12,2))/100,2)::MONEY AS appropriation,
 ROUND(CAST(f.expenditure AS NUMERIC (12,2))/100,2)::MONEY AS expenditure,
 ROUND(CAST(f.encumbrance AS NUMERIC (12,2))/100,2)::MONEY AS encumbrance,
 ROUND(CAST((f.appropriation - f.expenditure- f.encumbrance) AS NUMERIC (12,2))/100,2)::MONEY AS "free balance",
-ROUND(CAST((f.appropriation - f.expenditure) AS NUMERIC (12,2))/100,2)::MONEY AS "cash balance"
+ROUND(CAST((f.appropriation - f.expenditure) AS NUMERIC (12,2))/100,2)::MONEY AS "cash balance",
+--percentage calculations from Eric McCarthy
+COALESCE(CASE
+  WHEN f.appropriation > 0 THEN CONCAT((f.expenditure*100)/f.appropriation, '%') 
+END,'N/A') AS "Percent Spent",
+CONCAT(((CURRENT_DATE - '2021-07-01')*100)/365, '%') AS "Percent of FY"
 
 FROM
 sierra_view.fund f
