@@ -15,8 +15,11 @@ ROUND(CAST((f.appropriation - f.expenditure- f.encumbrance) AS NUMERIC (12,2))/1
 ROUND(CAST((f.appropriation - f.expenditure) AS NUMERIC (12,2))/100,2)::MONEY AS "Cash Balance",
 --percentage calculations from Eric McCarthy
 COALESCE(CASE
+  WHEN f.appropriation > 0 THEN CONCAT(((f.expenditure + f.encumbrance)*100)/f.appropriation, '%') 
+END,'N/A') AS "Percent Spent (Free Balance)",
+COALESCE(CASE
   WHEN f.appropriation > 0 THEN CONCAT((f.expenditure*100)/f.appropriation, '%') 
-END,'N/A') AS "Percent Spent",
+END,'N/A') AS "Percent Spent (Cash Balance)",
 --FY assumed to start on July 1st
 CONCAT(((CURRENT_DATE - (CASE
 	WHEN EXTRACT('month' FROM CURRENT_DATE) < 7 THEN ((EXTRACT('year' FROM CURRENT_DATE)-1)||'-07-01')::DATE
