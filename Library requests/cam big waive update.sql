@@ -11,8 +11,7 @@ f.item_record_metadata_id = i.id AND  i.location_code ~ '^ca\w{1}(j|y)'
 AND f.charge_code IN ('3','5')
 GROUP BY 1
 HAVING
-COUNT(*) FILTER(WHERE f.assessed_gmt::DATE < '2021-11-29') > 1
-AND COUNT(*) FILTER(WHERE f.assessed_gmt::DATE >= '2021-11-29') = 0
+COUNT(*) FILTER(WHERE f.assessed_gmt::DATE BETWEEN '2022-01-01' AND '2022-02-28') >0
 )
 
 SELECT
@@ -92,5 +91,5 @@ ON
 f.patron_record_id = email.record_id AND email.varfield_type_code = 'z'
 
 WHERE f.charge_code IN ('3','5')
---AND f.assessed_gmt::DATE >= CURRENT_DATE - INTERVAL '1 week'
+AND f.assessed_gmt::DATE BETWEEN '2022-01-01' AND '2022-02-28'-- CURRENT_DATE - INTERVAL '1 week'
 ORDER BY 2,1
