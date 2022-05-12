@@ -1,3 +1,10 @@
+/*
+Jeremy Goldstein
+Minuteman Library Network
+
+Counts the number of paid or cancelled orders in each location created in prior fiscal years
+Used for annual order record deletion
+*/
 SELECT
 SUBSTRING(o.location_code,1,2),
 COUNT(DISTINCT o.order_record_id)
