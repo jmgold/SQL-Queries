@@ -3,6 +3,7 @@ Jeremy Goldstein
 Minuteman Library Network
 
 Identifies items where the location and agency do not match and the owning library may not be able to correct the record themselves
+This report is specific to Minuteman
 */
 SELECT * FROM(
 SELECT
@@ -85,7 +86,7 @@ JOIN
 sierra_view.bib_record_property bib
 ON
 bi.bib_record_id = bib.bib_record_id
-AND bib.best_title_norm !~ '^xample'
+--AND bib.best_title_norm !~ '^xample'
 WHERE
 LOWER(a.name) != 
 CASE
