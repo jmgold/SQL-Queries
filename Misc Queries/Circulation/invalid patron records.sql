@@ -1,12 +1,12 @@
---Jeremy Goldstein
---Minuteman Library network
-
---identifies patron records exhibiting various common data entry errors
---Run monthly via python automation script
+/*
+Jeremy Goldstein
+Minuteman Library network
+Identifies patron records exhibiting various common data entry errors
+*/
 
 SELECT
-id2reckey(p.id)||'a' AS record_num,
-p.barcode,
+rm.record_type_code||rm.record_num||'a' AS record_num,
+b.index_entry AS barcode,
 p.ptype_code AS ptype,
 p.pcode3 AS mass_town,
 p.home_library_code,
@@ -19,15 +19,24 @@ u.phone_number AS alt_phont_num
 --opted out of including bad e-mail address in this report
 --v.field_content AS email
 FROM
-sierra_view.patron_view AS p
+sierra_view.patron_record p
+JOIN
+sierra_view.record_metadata rm
+ON
+p.id = rm.id
+--join for barcode
+LEFT JOIN
+sierra_view.phrase_entry b
+ON
+p.id = b.record_id AND b.index_tag = 'b'
 --telephone field
 LEFT JOIN
-sierra_view.patron_record_phone AS t
+sierra_view.patron_record_phone t
 ON
 p.id = t.patron_record_id AND t.patron_record_phone_type_id = '1'
 --alt telephone field
 LEFT JOIN
-sierra_view.patron_record_phone AS u
+sierra_view.patron_record_phone u
 ON
 p.id = u.patron_record_id AND u.patron_record_phone_type_id = '2'
 --JOIN		
@@ -35,7 +44,7 @@ p.id = u.patron_record_id AND u.patron_record_phone_type_id = '2'
 --ON		
 --p.id = v.record_id AND v.varfield_type_code = 'z'
 JOIN
-sierra_view.patron_record_address as a
+sierra_view.patron_record_address  a
 ON p.id = a.patron_record_id
 WHERE
 --limited by ptype
@@ -48,8 +57,8 @@ OR a.addr1 IS NULL
 OR a.addr1 !~'^[\dPp]'--address doesn't start with a # or PO
 OR a.city IS NULL
 OR (a.postal_code !~ '^\d{5}' AND a.postal_code !~'^\d{5}([\-]\d{4})') --zipcode not ##### or #####-####
-OR p.barcode is null
-OR p.barcode !~ '^\d{14}' --barcode not 14 digits
+OR b.index_entry is null
+OR b.index_entry !~ '^\d{14}' --barcode not 14 digits
 OR (t.phone_number IS NOT NULL AND (t.phone_number !~'^\d{3}[\-]\d{3}[\-]\d{4}' AND t.phone_number !~'^\d{3}[ ]\d{3}[ ]\d{4}')) -- phone not ###-###-#### or ### ### ####
 OR (u.phone_number IS NOT NULL AND (u.phone_number !~'^\d{3}[\-]\d{3}[\-]\d{4}' AND u.phone_number !~'^\d{3}[ ]\d{3}[ ]\d{4}')) -- alt phone not ###-###-#### or ### ### ####
 --or duplicate barcode

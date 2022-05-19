@@ -1,11 +1,22 @@
+/*
+Jeremy Goldstein
+Minuteman Library Network
+Counts number of items attached to periodical records for a given location
+*/
+
 SELECT
-id2reckey(bp.bib_record_id)||'a' AS bib_num,
+rm.record_type_code||rm.record_num||'a' AS bib_num,
 bp.best_title AS title,
-string_agg(distinct(i.location_code), ',') AS item_locations,
-COALESCE(vi.field_content,'') AS item_rec_holdings
+string_agg(DISTINCT(i.location_code), ',') AS item_locations,
+COALESCE(vi.field_content,'') AS item_rec_holdings,
+COUNT(DISTINCT i.id) AS item_count
 
 FROM
 sierra_view.bib_record_property bp
+JOIN
+sierra_view.record_metadata rm
+ON
+bp.bib_record_id = rm.id
 JOIN
 sierra_view.bib_record_item_record_link bi
 ON
