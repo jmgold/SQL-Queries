@@ -3,7 +3,8 @@ Jeremy Goldstein
 Minuteman Library Network
 
 Use to identify order records to be deleted annually
-Change up date limit in lines 79 and 80
+Each August we clear out orders that were completed more than two full fiscal years ago
+Change up date limit in lines 88 and 89
 */
 
 SELECT
