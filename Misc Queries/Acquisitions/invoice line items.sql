@@ -1,7 +1,7 @@
 /*
 Jeremy Goldstein
 Minuteman Library Network
-Retrieves line items for each invoice paid during a set date range for an accountig unit
+Retrieves line items for each invoice paid during a set date range for an accounting unit
 */
 
 SELECT
@@ -49,4 +49,4 @@ WHERE
 i.posted_data_gmt::DATE BETWEEN '2022-01-01' AND '2022-04-30'
 AND a.code_num = '2'
  
-ORDER BYfn.name
+ORDER BY fn.name

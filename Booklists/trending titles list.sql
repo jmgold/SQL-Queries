@@ -1,51 +1,48 @@
-﻿--Jeremy Goldstein
---Minuteman Library Network
-
---top 50 trending titles in the network
-DROP TABLE IF EXISTS temp_location_holds_counts;
-
-CREATE TEMP TABLE temp_location_holds_counts AS
-
+/*Jeremy Goldstein
+Minuteman Library Network
+top 50 trending titles in the network based on recently placed holds
+*/
+WITH holds_counts AS
+(
 SELECT
 t.bib_record_id,
-count(t.bib_record_id) as count_holds_on_title
+COUNT(t.bib_record_id) AS count_holds_on_title
 
 FROM
 (SELECT
 CASE
-    WHEN r.record_type_code = 'i' THEN (
-        SELECT
-        l.bib_record_id
-        FROM
-        sierra_view.bib_record_item_record_link as l
-        WHERE
-        l.item_record_id = h.record_id
-        LIMIT 1)
+	WHEN r.record_type_code = 'i' THEN (
+		SELECT
+		l.bib_record_id
+		FROM
+		sierra_view.bib_record_item_record_link as l
+		WHERE
+		l.item_record_id = h.record_id
+		LIMIT 1)
     
     WHEN r.record_type_code = 'b' THEN h.record_id
     ELSE NULL
 END AS bib_record_id
 
 FROM
-sierra_view.hold as h
-
+sierra_view.hold h
 JOIN
 sierra_view.record_metadata as r
 ON
-  r.id = h.record_id
+r.id = h.record_id
+
 WHERE
-h.placed_gmt > (localtimestamp - interval '2 days') 
-)AS t
+h.placed_gmt::DATE > (CURRENT_DATE - INTERVAL '2 days') 
+) t
 
 GROUP BY
 t.bib_record_id
-
 HAVING
-count(t.bib_record_id) > 1
+COUNT(t.bib_record_id) > 1
 
 ORDER BY
 count_holds_on_title
-;
+)
 
 SELECT
 ROW_NUMBER() OVER (ORDER BY t.count_holds_on_title DESC) AS field_booklist_entry_rank,
@@ -62,7 +59,7 @@ ORDER BY s.occ_num
 LIMIT 1) AS field_booklist_entry_cover
 
 FROM
-temp_location_holds_counts AS t
+holds_counts AS t
 JOIN
 sierra_view.bib_record_property b
 ON
