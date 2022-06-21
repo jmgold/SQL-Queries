@@ -13,7 +13,6 @@ b.best_title AS title
 
 FROM
 sierra_view.record_metadata as r
-
 JOIN
 sierra_view.bib_record_item_record_link as l
 ON
@@ -41,12 +40,8 @@ l.item_record_id IN (
 
 	GROUP BY
 	l.item_record_id
-
 	HAVING
 	count(item_record_id) > 1
 )
-AND i.location_code ~ {{location}}
---location will take the form ^oln, which in this example looks for all locations starting with the string oln.
 
-ORDER BY 1,4;
-
+ORDER BY 1,4

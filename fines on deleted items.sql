@@ -1,3 +1,10 @@
+/*
+Jeremy Goldstein
+Minuteman Library Network
+
+Identifies rows of the fines table that represent fines on items that have been deleted
+*/
+
 SELECT
 *
 
