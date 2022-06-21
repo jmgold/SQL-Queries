@@ -2,7 +2,7 @@
 Jeremy Goldstein
 Minuteman Library Network
 
-Counts renewals each day for the past month by their source
+Counts renewals each day for the past month, broken out by the application used for the renewal
 */
 
 SELECT

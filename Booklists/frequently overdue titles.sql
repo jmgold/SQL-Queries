@@ -1,7 +1,8 @@
-﻿--Jeremy Goldstein
---Minuteman Library Network
---
---Produces list of the 50 titles that most frequently incur overdue fines
+/*Jeremy Goldstein
+Minuteman Library Network
+
+Produces list of the 50 titles that most frequently incur overdue fines
+*/
 
 SELECT
 --Link to Encore
@@ -10,6 +11,7 @@ b.best_title as title,
 SPLIT_PART(b.best_author,', ',1)||', '||REPLACE(TRANSLATE(SPLIT_PART(b.best_author,', ',2),'.',','),',','') AS field_booklist_entry_author,
 --Link to cover from Syndetics
 'https://syndetics.com/index.aspx?isbn='||SUBSTRING(MAX(s.content) FROM '[0-9]+')||'/SC.gif&client=minuteman' AS field_booklist_entry_cover
+
 FROM
 sierra_view.bib_record_property b
 --Pull ISBN for cover image
@@ -30,10 +32,11 @@ JOIN
 sierra_view.fine f
 ON
 --Limit to overdue charge_code
-i.id = f.item_record_metadata_id AND f.charge_code IN  ('2','4','6') AND f.assessed_gmt::DATE >= NOW() - INTERVAL '2 years'
+i.id = f.item_record_metadata_id AND f.charge_code IN ('2','4','6') AND f.assessed_gmt::DATE >= NOW() - INTERVAL '2 years'
+
 WHERE
 --limit to book
 b.material_code = 'a'
 GROUP BY 1,2,3
-ORDER BY COUNT(i.id) desc
+ORDER BY COUNT(i.id) DESC
 LIMIT 50
