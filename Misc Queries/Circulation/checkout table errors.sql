@@ -12,7 +12,7 @@ rmi.record_last_updated_gmt,
 rmp.record_type_code||rmp.record_num||'a' AS patron_number,
 o.*
 FROM
-sierra_view.circ_trans o--checkout o
+sierra_view./*circ_trans o --*/checkout o
 JOIN
 sierra_view.record_metadata rmi
 ON
@@ -22,6 +22,7 @@ sierra_view.record_metadata rmp
 ON
 o.patron_record_id = rmp.id
 WHERE
---o.due_gmt <= '1970-01-01'
-o.item_record_id = '450986412643'
+o.due_gmt <= '1970-01-01' --for checkout
+--o.due_date_gmt <= '1970-01-01' AND o.op_code = 'o'--for circ_trans
+--o.item_record_id = '450983890025'
 --o.patron_record_id = '481037837692'
