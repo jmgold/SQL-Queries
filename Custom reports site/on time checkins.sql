@@ -114,6 +114,7 @@ WHERE
 t.op_code = 'i'
 AND t.transaction_gmt::DATE BETWEEN (CURRENT_DATE - INTERVAL '1 month') AND (CURRENT_DATE - INTERVAL '1 day')
 AND CASE
+	WHEN  {{location}} = '^ac' THEN (t.stat_group_code_num BETWEEN '100' AND '109' OR t.stat_group_code_num BETWEEN '870' AND '879')
 	WHEN  {{location}} = '^act' THEN t.stat_group_code_num BETWEEN '100' AND '109'
 	--location using the form ^act in order to reuse an existing filter
 	WHEN  {{location}} = '^ac2' THEN t.stat_group_code_num BETWEEN '870' AND '879'
@@ -159,10 +160,11 @@ AND CASE
 	WHEN  {{location}} = '^mil' THEN t.stat_group_code_num BETWEEN '490' AND '499'
 	WHEN  {{location}} = '^mld' THEN t.stat_group_code_num BETWEEN '500' AND '509'
 	WHEN  {{location}} = '^mwy' THEN t.stat_group_code_num BETWEEN '520' AND '529'
-	WHEN  {{location}} = '^nat' THEN t.stat_group_code_num BETWEEN '530' AND '539'
+	WHEN  {{location}} = '^na(t|4)' THEN t.stat_group_code_num BETWEEN '530' AND '539' OR t.stat_group_code_num BETWEEN '560' AND '569'
 	WHEN  {{location}} = '^na2' THEN t.stat_group_code_num BETWEEN '540' AND '549'
 	WHEN  {{location}} = '^na3' THEN t.stat_group_code_num BETWEEN '550' AND '559'
-	WHEN  {{location}} = '^na' THEN t.stat_group_code_num BETWEEN '530' AND '559'
+	WHEN  {{location}} = '^na' THEN t.stat_group_code_num BETWEEN '530' AND '569'
+	WHEN  {{location}} = '^na[^2]' THEN t.stat_group_code_num BETWEEN '530' AND '539' OR t.stat_group_code_num BETWEEN '550' AND '569'
 	WHEN  {{location}} = '^nee' THEN t.stat_group_code_num BETWEEN '570' AND '579'
 	WHEN  {{location}} = '^nor' THEN t.stat_group_code_num BETWEEN '580' AND '589'
 	WHEN  {{location}} = '^ntn' THEN t.stat_group_code_num BETWEEN '590' AND '599'
@@ -173,8 +175,10 @@ AND CASE
 	WHEN  {{location}} = '^so' THEN t.stat_group_code_num BETWEEN '640' AND '679'
 	WHEN  {{location}} = '^sto' THEN t.stat_group_code_num BETWEEN '680' AND '689'
 	WHEN  {{location}} = '^sud' THEN t.stat_group_code_num BETWEEN '690' AND '699'
-	WHEN  {{location}} = '^wlm' THEN t.stat_group_code_num BETWEEN '700' AND '709'
-	WHEN  {{location}} = '^wat' THEN t.stat_group_code_num BETWEEN '710' AND '739'
+	WHEN  {{location}} = '^wlm' THEN t.stat_group_code_num BETWEEN '700' AND '709' OR t.stat_group_code_num = '993'
+	WHEN  {{location}} = '^wa' THEN t.stat_group_code_num BETWEEN '710' AND '739'
+	WHEN  {{location}} = '^wa[^4]' THEN t.stat_group_code_num BETWEEN '710' AND '729'
+	WHEN  {{location}} = '^wa4' THEN t.stat_group_code_num BETWEEN '730' AND '739'
 	WHEN  {{location}} = '^wyl' THEN t.stat_group_code_num BETWEEN '740' AND '749'
 	WHEN  {{location}} = '^wel' THEN t.stat_group_code_num BETWEEN '750' AND '759'
 	WHEN  {{location}} = '^we2' THEN t.stat_group_code_num BETWEEN '760' AND '769'

@@ -16,7 +16,7 @@ b.id = s.record_id AND s.field_type_code = 'd'*/
 
 WHERE
 /*REPLACE(LOWER(s.content),'-',' ')*/
-REPLACE(d.index_entry,'.','') ~ 'zimbabw'
+REPLACE(d.index_entry,'.','') ~ 'genocide'
 --'(christian (art|antiquities|pilgrims|saints|shrine|travel))|(church (architecture|buildings|decoration)).*guidebooks'
 -- pondering for mysteries 'crimes against(?!.*fiction)'
 
