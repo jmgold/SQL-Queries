@@ -74,6 +74,7 @@ COUNT({{bib_or_item}}) FILTER(WHERE SUBSTRING(i.location_code FROM 1 FOR 3) = 's
 COUNT({{bib_or_item}}) FILTER(WHERE SUBSTRING(i.location_code FROM 1 FOR 3) = 'sud') AS "SUDBURY",
 COUNT({{bib_or_item}}) FILTER(WHERE SUBSTRING(i.location_code FROM 1 FOR 3) = 'wal') AS "WALTHAM",
 COUNT({{bib_or_item}}) FILTER(WHERE SUBSTRING(i.location_code FROM 1 FOR 3) = 'wat') AS "WATERTOWN",
+COUNT({{bib_or_item}}) FILTER(WHERE SUBSTRING(i.location_code FROM 1 FOR 3) = 'wa4') AS "WATERTOWN/BOOKMOBILE",
 COUNT({{bib_or_item}}) FILTER(WHERE SUBSTRING(i.location_code FROM 1 FOR 3) = 'wyl') AS "WAYLAND",
 COUNT({{bib_or_item}}) FILTER(WHERE SUBSTRING(i.location_code FROM 1 FOR 3) = 'wel') AS "WELLESLEY",
 COUNT({{bib_or_item}}) FILTER(WHERE SUBSTRING(i.location_code FROM 1 FOR 3) = 'we2') AS "WELLESLEY/HILLS",
