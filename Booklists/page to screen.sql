@@ -107,7 +107,9 @@ v.record_num IN (
 --Heartstopper
 '3912429',
 --Slow Horses
-'39959296'
+'39959296',
+--the summer I turned pretty
+'2662740'
 )
 WHERE b.material_code ='a'
 GROUP BY 1,2,3 
