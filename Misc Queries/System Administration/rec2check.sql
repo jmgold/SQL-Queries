@@ -1,6 +1,6 @@
-/*check digit generator function
+/*
+check digit generator function
 Created by Ray Voelker and shared on Sierra-ILS Slack Workspace 5/29/19
-
 */
 
 DELIMITER // CREATE OR REPLACE FUNCTION pg_temp.rec2check(rec_num INTEGER) RETURNS CHAR AS $$
@@ -38,9 +38,9 @@ $$ LANGUAGE plpgsql;
 
 -- CHECK EXAMPLE #2
 SELECT
-r.record_type_code || r.record_num || pg_temp.rec2check(r.record_num) as record_num
+r.record_type_code || r.record_num || pg_temp.rec2check(r.record_num) AS record_num
 FROM
-sierra_view.record_metadata as r
+sierra_view.record_metadata AS r
 WHERE
 r.record_type_code || r.campus_code = 'b'
 LIMIT 100;
