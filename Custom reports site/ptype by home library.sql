@@ -2,7 +2,7 @@
 Jeremy Goldstein
 Minuteman Library Network
 
-Counts up patrons whose home library does not match their ptype
+Crosstab report comparing ptypes (assigned in Minuteman by the patron's residence) and the selected home library of each patron
 */
 SELECT
 pt.name AS ptype,
