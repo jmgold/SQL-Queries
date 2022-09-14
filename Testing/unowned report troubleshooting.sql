@@ -1,7 +1,9 @@
+--Need to wrap main query to do get the true unowned counts
+
 /*
 Jeremy Goldstein
 Minuteman Library Network
-Gathers the top titles owned by a selected peer library that are not owned locally, limited by one or more languages, grouped by a choice of performance metrics
+Gathers the top titles in the network ,that are not owned locally, in a dei topical area, grouped by a choice of performance metrics
 */
 WITH hold_count AS
 	(SELECT
@@ -15,6 +17,10 @@ WITH hold_count AS
 	sierra_view.bib_record_item_record_link l
 	ON
 	h.record_id = l.item_record_id OR h.record_id = l.bib_record_id
+	JOIN
+	sierra_view.item_record i
+	ON
+	l.item_record_id = i.id
 
 	GROUP BY 1
 	HAVING
@@ -22,45 +28,30 @@ WITH hold_count AS
 )
 
 SELECT
-'b'||mb.record_num||'a' AS bib_number,
+inner_query.bib_number,
+inner_query.title,
+inner_query.author,
+inner_query.publish_year,
+inner_query.total_holds
+
+FROM(
+SELECT
+mb.record_type_code||mb.record_num||'a' AS bib_number,
 b.best_title AS title,
-CASE
-	WHEN vt.field_content IS NULL THEN b.best_title
-   ELSE REGEXP_REPLACE(SPLIT_PART(REGEXP_REPLACE(vt.field_content,'^.*\|a',''),'|',1),'\s?(\.|\,|\:|\/|\;|\=)\s?$','')
-END AS title_nonroman,
 b.best_author AS author,
-CASE
-	WHEN va.field_content IS NULL THEN b.best_author
-   ELSE REGEXP_REPLACE(REPLACE(REPLACE(REGEXP_REPLACE(va.field_content,'^.*\|a',''),'|d',' '),'|q',' '),'\s?(\.|\,|\:|\/|\;|\=)\s?$','')
-END AS author_nonroman,
 b.publish_year,
-CASE 
-	WHEN '{{grouping}}' = 'Total Checkouts' THEN SUM(i.checkout_total) FILTER (WHERE i.location_code ~ '{{comp_location}}' AND m.creation_date_gmt::DATE < {{created_date}})
-	WHEN '{{grouping}}' = 'Total Checkouts: Last Year' THEN SUM(i.last_year_to_date_checkout_total) FILTER (WHERE i.location_code ~ '{{comp_location}}' AND m.creation_date_gmt::DATE < {{created_date}})
-	WHEN '{{grouping}}' = 'Total Checkouts: Year to Date' THEN SUM(i.year_to_date_checkout_total) FILTER (WHERE i.location_code ~ '{{comp_location}}' AND m.creation_date_gmt::DATE < {{created_date}})
-	WHEN '{{grouping}}' = 'Total Checkouts: Last Year + Year to Date' THEN SUM(i.year_to_date_checkout_total + i.last_year_to_date_checkout_total) FILTER (WHERE i.location_code ~ '{{comp_location}}' AND m.creation_date_gmt::DATE < {{created_date}})
-	WHEN '{{grouping}}' = 'Total Circulation' THEN SUM(i.checkout_total + i.renewal_total) FILTER (WHERE i.location_code ~ '{{comp_location}}' AND m.creation_date_gmt::DATE < {{created_date}})
-	WHEN '{{grouping}}' = 'Total Holds' THEN COALESCE(h.count_holds_on_title,0)
-	WHEN '{{grouping}}' = 'Turnover' THEN ROUND((CAST(SUM(i.checkout_total + i.renewal_total) FILTER (WHERE i.location_code ~ '{{comp_location}}' AND m.creation_date_gmt::DATE < {{created_date}}) AS NUMERIC (12,2))/CAST(COUNT (i.id) FILTER (WHERE i.location_code ~ '{{comp_location}}' AND m.creation_date_gmt::DATE < {{created_date}}) AS NUMERIC (12,2))), 2)
-	WHEN '{{grouping}}' = 'Utilization' THEN AVG(ROUND((CAST((i.checkout_total * 14) AS NUMERIC (12,2)) / (CURRENT_DATE - m.creation_date_gmt::DATE)),6)) FILTER (WHERE m.creation_date_gmt::DATE != CURRENT_DATE AND i.location_code ~ '{{comp_location}}' AND m.creation_date_gmt::DATE < {{created_date}})
-	WHEN '{{grouping}}' = 'Usage' THEN ROUND(AVG(
-		CASE WHEN ((CAST(((i.checkout_total + i.renewal_total) * loan.est_loan_period) AS NUMERIC (12,2))/(NULLIF((CURRENT_DATE - m.creation_date_gmt::DATE),0))) * 100) > 100 THEN 100
-				ELSE (CAST(((i.checkout_total + i.renewal_total) * loan.est_loan_period) AS NUMERIC (12,2))/(NULLIF((CURRENT_DATE - m.creation_date_gmt::DATE),0)) * 100)
-		END
-	) FILTER (WHERE m.creation_date_gmt::DATE != CURRENT_DATE AND i.location_code ~ '{{comp_location}}' AND m.creation_date_gmt::DATE < {{created_date}}),2)
-END AS popularity_metric
+COALESCE(h.count_holds_on_title,0) AS total_holds--{{grouping}}
 
 /*
 Grouping options
-Total Checkouts
-Total Checkouts: Last Year
-Total Checkouts: Year to Date
-Total Checkouts: Last Year + Year to Date
-Total Circulation
-Total Holds
-Turnover
-Usage
-Utilization
+ROUND(AVG((CAST(((i.checkout_total + i.renewal_total) * loan.est_loan_period) AS NUMERIC (12,2))/(CURRENT_DATE - m.creation_date_gmt::DATE)) * 100),2) AS time_checked_out_pct
+ROUND(CAST(SUM(i.checkout_total) + SUM(i.renewal_total) AS NUMERIC (12,2))/CAST(COUNT (i.id) AS NUMERIC (12,2)), 2) AS turnover
+SUM(i.year_to_date_checkout_total + i.last_year_to_date_checkout_total) AS total_checkouts
+SUM(i.checkout_total + i.renewal_total) AS total_circulation
+SUM(i.checkout_total) AS total_checkouts
+SUM(i.year_to_date_checkout_total) AS total_year_to_date_checkouts
+SUM(i.last_year_to_date_checkout_total) AS total_last_year_to_date_checkouts
+COALESCE(h.count_holds_on_title,0) AS total_holds
 */
 
 FROM
@@ -72,27 +63,14 @@ b.bib_record_id = l.bib_record_id
 JOIN
 sierra_view.item_record i
 ON
-i.id = l.item_record_id
-JOIN
-(
-SELECT
-l.bib_record_id
-FROM
-sierra_view.bib_record_item_record_link l
-JOIN
-sierra_view.item_record i
-ON
-l.item_record_id = i.id AND i.item_status_code NOT IN ({{item_status_codes}})
-AND {{age_level}}
-/*
+l.item_record_id = i.id AND i.item_status_code NOT IN ('')
+AND SUBSTRING(i.location_code,4,1) = 'y'--{{age_level}}
+	/*
 	SUBSTRING(i.location_code,4,1) NOT IN ('y','j') --adult
 	SUBSTRING(i.location_code,4,1) = 'j' --juv
 	SUBSTRING(i.location_code,4,1) = 'y' --ya
 	i.location_code ~ '\w' --all
 	*/
-)item_filter
-ON
-b.bib_record_id = item_filter.bib_record_id
 JOIN
 sierra_view.record_metadata m
 ON
@@ -102,6 +80,28 @@ sierra_view.bib_record br
 ON
 l.bib_record_id = br.id
 AND br.bcode3 NOT IN ('g','o','r','z','l','q','n')
+
+JOIN
+(
+SELECT
+DISTINCT d.record_id
+FROM
+sierra_view.phrase_entry d
+JOIN
+sierra_view.bib_record b
+ON
+b.id = d.record_id AND d.index_tag = 'd' AND d.is_permuted = false
+--exclude guidebooks
+AND REPLACE(d.index_entry,'.','') !~ '^\y(?!\w((ecology)|(ecotourism)|(ecosystems)|(environmentalism)|(african american)|(african diaspora)|(blues music)|(freedom trail)|(underground railroad)|(women)|(ethnic restaurants)|
+(social life and customs)|(older people)|(people with disabilities)|(gay(s|\y(?!(head|john))))|(lesbian)|(bisexual)|(gender)|(sexual minorities)|(indian (art|trails))|(indians of)|(inca(s|n))|
+(christian (art|antiquities|saints|shrine|travel))|(pilgrims and pilgrimages)|(jews)|(judaism)|((jewish|islamic) architecture)|(convents)|(sacred space)|(sepulchral monuments)|(spanish mission)|(spiritual retreat)|(temples)|(houses of prayer)|(religious institutions)|(monasteries)|(holocaust)|(church (architecture|buildings|decoration))))\w.*((guidebooks)|(description and travel))'
+AND REPLACE(d.index_entry,'.','') ~ '(sexual minorities)|(gender)|(asexual)|(bisexual)|(gay(s|\y(?!(head|john))))|(intersex)|(homosexual)|(lesbian)|(stonewall riots)|(masculinity)|(femininity)|(trans(sex|phobia))|(drag show)|(male impersonator)|(queer)|(lgbtq)'--{{topic}}
+/*
+See https://github.com/Minuteman-Library-Network/SQL-Queries/blob/master/Custom%20reports%20site/diversity%20analysis.sql
+for current topic listing
+*/
+) subjects
+ON l.bib_record_id = subjects.record_id
 JOIN
 sierra_view.record_metadata mb
 ON
@@ -110,14 +110,6 @@ LEFT JOIN
 hold_count AS h
 ON
 b.bib_record_id = h.bib_record_id
-LEFT JOIN
-sierra_view.varfield vt
-ON
-b.bib_record_id = vt.record_id AND vt.marc_tag = '880' AND vt.field_content ~ '^/|6245'
-LEFT JOIN
-sierra_view.varfield va
-ON
-b.bib_record_id = va.record_id AND va.marc_tag = '880' AND va.field_content ~ '^/|6100'
 JOIN
 (
 SELECT
@@ -195,13 +187,31 @@ ON
 i.itype_code_num = loan.itype_code_num
 
 WHERE
-b.material_code IN ({{mat_type}})
-AND br.language_code IN ({{language}})
+b.material_code IN ('a')
+
 GROUP BY
-1,2,3,4,5,6,h.count_holds_on_title
+1,2,3,4,COALESCE(h.count_holds_on_title,0)
+)inner_query
+JOIN
+sierra_view.record_metadata rm
+ON
+inner_query.bib_number = rm.record_type_code||rm.record_num||'a'
+JOIN
+sierra_view.bib_record_item_record_link l
+ON
+rm.id = l.bib_record_id
+JOIN
+sierra_view.item_record i
+ON
+l.item_record_id = i.id
+JOIN
+sierra_view.record_metadata m
+ON
+i.id = m.id
+GROUP BY 1,2,3,4,5
 HAVING
-COUNT(i.id) FILTER (WHERE i.location_code ~ '{{location}}') = 0
+COUNT(DISTINCT i.id) FILTER (WHERE i.location_code ~ '^nor') = 0
 --location will take the form ^oln, which in this example looks for all locations starting with the string oln.
-AND COUNT(i.id) FILTER (WHERE i.location_code ~ '{{comp_location}}' AND m.creation_date_gmt::DATE < {{created_date}}) > 0
-ORDER BY 7 DESC
-LIMIT {{qty}}
+AND COUNT(i.id) FILTER (WHERE i.location_code !~ '^nor' AND m.creation_date_gmt::DATE < '2022-09-12') > 0
+ORDER BY 5 DESC
+LIMIT 600
