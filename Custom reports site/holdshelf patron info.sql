@@ -19,11 +19,11 @@ h.patron_record_id = p.patron_record_id AND p.display_order = '0'
 LEFT JOIN
 sierra_view.patron_record_phone ph1
 ON
-h.patron_record_id = ph1.patron_record_id AND ph1.display_order = 0 AND ph1.patron_record_phone_type_id = '1'
+h.patron_record_id = ph1.patron_record_id AND ph1.patron_record_phone_type_id = '1'
 LEFT JOIN
 sierra_view.patron_record_phone ph2
 ON
-h.patron_record_id = ph2.patron_record_id AND ph2.display_order = 0 AND ph2.patron_record_phone_type_id = '2'
+h.patron_record_id = ph2.patron_record_id AND ph2.patron_record_phone_type_id = '2'
 JOIN
 sierra_view.bib_record_item_record_link l
 ON

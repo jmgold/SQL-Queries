@@ -66,14 +66,27 @@ b.bib_record_id = l.bib_record_id
 JOIN
 sierra_view.item_record i
 ON
-i.id = l.item_record_id AND i.item_status_code NOT IN ({{item_status_codes}})
+i.id = l.item_record_id
+JOIN
+(
+SELECT
+l.bib_record_id
+FROM
+sierra_view.bib_record_item_record_link l
+JOIN
+sierra_view.item_record i
+ON
+l.item_record_id = i.id AND i.item_status_code NOT IN ({{item_status_codes}})
 AND {{age_level}}
-	/*
+/*
 	SUBSTRING(i.location_code,4,1) NOT IN ('y','j') --adult
 	SUBSTRING(i.location_code,4,1) = 'j' --juv
 	SUBSTRING(i.location_code,4,1) = 'y' --ya
 	i.location_code ~ '\w' --all
 	*/
+)item_filter
+ON
+b.bib_record_id = item_filter.bib_record_id
 JOIN
 sierra_view.record_metadata m
 ON
