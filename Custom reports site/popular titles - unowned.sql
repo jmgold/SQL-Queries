@@ -29,7 +29,7 @@ b.publish_year,
 
 /*
 Grouping options
-ROUND(AVG((CAST(((i.checkout_total + i.renewal_total) * loan.est_loan_period) AS NUMERIC (12,2))/(CURRENT_DATE - m.creation_date_gmt::DATE)) * 100),2) AS time_checked_out_pct
+ROUND(AVG((CAST(((i.checkout_total + i.renewal_total) * loan.est_loan_period) AS NUMERIC (12,2))/(NULLIF((CURRENT_DATE - m.creation_date_gmt::DATE),0)) * 100),2) AS time_checked_out_pct
 ROUND(CAST(SUM(i.checkout_total) + SUM(i.renewal_total) AS NUMERIC (12,2))/CAST(COUNT (i.id) AS NUMERIC (12,2)), 2) AS turnover
 SUM(i.year_to_date_checkout_total + i.last_year_to_date_checkout_total) AS total_checkouts
 SUM(i.checkout_total + i.renewal_total) AS total_circulation
@@ -48,14 +48,27 @@ b.bib_record_id = l.bib_record_id
 JOIN
 sierra_view.item_record i
 ON
-i.id = l.item_record_id AND i.item_status_code NOT IN ({{item_status_codes}})
+i.id = l.item_record_id
+JOIN
+(
+SELECT
+l.bib_record_id
+FROM
+sierra_view.bib_record_item_record_link l
+JOIN
+sierra_view.item_record i
+ON
+l.item_record_id = i.id AND i.item_status_code NOT IN ({{item_status_codes}})
 AND {{age_level}}
-	/*
+/*
 	SUBSTRING(i.location_code,4,1) NOT IN ('y','j') --adult
 	SUBSTRING(i.location_code,4,1) = 'j' --juv
 	SUBSTRING(i.location_code,4,1) = 'y' --ya
 	i.location_code ~ '\w' --all
 	*/
+)item_filter
+ON
+b.bib_record_id = item_filter.bib_record_id
 JOIN
 sierra_view.record_metadata m
 ON
