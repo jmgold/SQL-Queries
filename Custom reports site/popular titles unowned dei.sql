@@ -19,6 +19,44 @@ WITH hold_count AS
 	GROUP BY 1
 	HAVING
 	COUNT(DISTINCT h.id) > 1
+),
+
+unowned AS (
+	SELECT
+	l.bib_record_id
+	FROM
+	sierra_view.bib_record_item_record_link l
+	JOIN
+	sierra_view.item_record i
+	ON
+	l.item_record_id = i.id AND i.item_status_code NOT IN ({{item_status_codes}})
+		JOIN
+	sierra_view.record_metadata rm
+	ON i.id = rm.id AND rm.creation_date_gmt::DATE < {{created_date}}	
+	JOIN
+	sierra_view.bib_record br
+	ON
+	l.bib_record_id = br.id	AND br.bcode3 NOT IN ('g','o','r','z','l','q','n') 
+	JOIN
+	sierra_view.phrase_entry d
+	ON
+	br.id = d.record_id AND d.index_tag = 'd' AND d.is_permuted = false
+	--exclude guidebooks
+	AND REPLACE(d.index_entry,'.','') !~ '^\y(?!\w((ecology)|(ecotourism)|(ecosystems)|(environmentalism)|(african american)|(african diaspora)|(blues music)|(freedom trail)|(underground railroad)|(women)|(ethnic restaurants)|
+	(social life and customs)|(older people)|(people with disabilities)|(gay(s|\y(?!(head|john))))|(lesbian)|(bisexual)|(gender)|(sexual minorities)|(indian (art|trails))|(indians of)|(inca(s|n))|
+	(christian (art|antiquities|saints|shrine|travel))|(pilgrims and pilgrimages)|(jews)|(judaism)|((jewish|islamic) architecture)|(convents)|(sacred space)|(sepulchral monuments)|(spanish mission)|(spiritual retreat)|(temples)|(houses of prayer)|(religious institutions)|(monasteries)|(holocaust)|(church (architecture|buildings|decoration))))\w.*((guidebooks)|(description and travel))'
+	AND REPLACE(d.index_entry,'.','') ~ {{topic}}
+	
+	GROUP BY 1
+	HAVING
+	COUNT(i.id) FILTER(WHERE i.location_code ~ '{{location}}') = 0
+	AND COUNT(i.id) FILTER(WHERE {{age_level}}) > 0
+	/*
+	SUBSTRING(i.location_code,4,1) NOT IN ('y','j','s') --adult
+	SUBSTRING(i.location_code,4,1) = 'j' --juv
+	SUBSTRING(i.location_code,4,1) = 'y' --ya
+	i.location_code ~ '\w' --all
+	*/
 )
 
 SELECT
@@ -41,7 +79,11 @@ COALESCE(h.count_holds_on_title,0) AS total_holds
 */
 
 FROM
+unowned o
+JOIN
 sierra_view.bib_record_property b
+ON
+o.bib_record_id = b.bib_record_id
 JOIN
 sierra_view.bib_record_item_record_link l
 ON
@@ -49,68 +91,11 @@ b.bib_record_id = l.bib_record_id
 JOIN
 sierra_view.item_record i
 ON
-i.id = l.item_record_id
-JOIN
-(
-SELECT
-l.bib_record_id
-FROM
-sierra_view.bib_record_item_record_link l
-JOIN
-sierra_view.item_record i
-ON
-i.id = l.item_record_id
-JOIN
-(
-SELECT
-l.bib_record_id
-FROM
-sierra_view.bib_record_item_record_link l
-JOIN
-sierra_view.item_record i
-ON
-l.item_record_id = i.id AND i.item_status_code NOT IN ({{item_status_codes}})
-AND {{age_level}}
-/*
-	SUBSTRING(i.location_code,4,1) NOT IN ('y','j') --adult
-	SUBSTRING(i.location_code,4,1) = 'j' --juv
-	SUBSTRING(i.location_code,4,1) = 'y' --ya
-	i.location_code ~ '\w' --all
-	*/
-)item_filter
-ON
-b.bib_record_id = item_filter.bib_record_id
+l.item_record_id = i.id
 JOIN
 sierra_view.record_metadata m
 ON
 i.id = m.id
-JOIN
-sierra_view.bib_record br
-ON
-l.bib_record_id = br.id
-AND br.bcode3 NOT IN ('g','o','r','z','l','q','n')
-
-JOIN
-(
-SELECT
-DISTINCT d.record_id
-FROM
-sierra_view.phrase_entry d
-JOIN
-sierra_view.bib_record b
-ON
-b.id = d.record_id AND d.index_tag = 'd' AND d.is_permuted = false
---exclude guidebooks
-AND REPLACE(d.index_entry,'.','') !~ '^\y(?!\w((ecology)|(ecotourism)|(ecosystems)|(environmentalism)|(african american)|(african diaspora)|(blues music)|(freedom trail)|(underground railroad)|(women)|(ethnic restaurants)|
-(social life and customs)|(older people)|(people with disabilities)|(gay(s|\y(?!(head|john))))|(lesbian)|(bisexual)|(gender)|(sexual minorities)|(indian (art|trails))|(indians of)|(inca(s|n))|
-(christian (art|antiquities|saints|shrine|travel))|(pilgrims and pilgrimages)|(jews)|(judaism)|((jewish|islamic) architecture)|(convents)|(sacred space)|(sepulchral monuments)|(spanish mission)|(spiritual retreat)|(temples)|(houses of prayer)|(religious institutions)|(monasteries)|(holocaust)|(church (architecture|buildings|decoration))))\w.*((guidebooks)|(description and travel))'
-AND REPLACE(d.index_entry,'.','') ~ {{topic}}
-/*
-See https://github.com/Minuteman-Library-Network/SQL-Queries/blob/master/Custom%20reports%20site/diversity%20analysis.sql
-for current topic listing
-*/
-) subjects
-ON l.bib_record_id = subjects.record_id
 JOIN
 sierra_view.record_metadata mb
 ON
@@ -195,14 +180,11 @@ GROUP BY 1) loan
 ON
 i.itype_code_num = loan.itype_code_num
 
+
 WHERE
 b.material_code IN ({{mat_type}})
 
 GROUP BY
 1,2,3,4,h.count_holds_on_title
-HAVING
-COUNT(i.id) FILTER (WHERE i.location_code ~ '{{location}}') = 0
---location will take the form ^oln, which in this example looks for all locations starting with the string oln.
-AND COUNT(i.id) FILTER (WHERE i.location_code !~ '{{location}}' AND m.creation_date_gmt::DATE < {{created_date}}) > 0
 ORDER BY 5 DESC
 LIMIT {{qty}}

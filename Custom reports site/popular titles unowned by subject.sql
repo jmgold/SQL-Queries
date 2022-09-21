@@ -19,6 +19,35 @@ WITH hold_count AS
 	GROUP BY 1
 	HAVING
 	COUNT(DISTINCT h.id) > 1
+),
+
+unowned AS (
+	SELECT
+	l.bib_record_id
+	FROM
+	sierra_view.bib_record_item_record_link l
+	JOIN
+	sierra_view.item_record i
+	ON
+	l.item_record_id = i.id AND i.item_status_code NOT IN ({{item_status_codes}})
+		JOIN
+	sierra_view.record_metadata rm
+	ON i.id = rm.id AND rm.creation_date_gmt::DATE < {{created_date}}	
+	JOIN
+	sierra_view.bib_record br
+	ON
+	l.bib_record_id = br.id	AND br.bcode3 NOT IN ('g','o','r','z','l','q','n') 
+	
+	GROUP BY 1
+	HAVING
+	COUNT(i.id) FILTER(WHERE i.location_code ~ '{{location}}') = 0
+	AND COUNT(i.id) FILTER(WHERE {{age_level}}) > 0
+	/*
+	SUBSTRING(i.location_code,4,1) NOT IN ('y','j','s') --adult
+	SUBSTRING(i.location_code,4,1) = 'j' --juv
+	SUBSTRING(i.location_code,4,1) = 'y' --ya
+	i.location_code ~ '\w' --all
+	*/
 )
 
 SELECT
@@ -41,7 +70,11 @@ COALESCE(h.count_holds_on_title,0) AS total_holds
 */
 
 FROM
+unowned o
+JOIN
 sierra_view.bib_record_property b
+ON
+o.bib_record_id = b.bib_record_id
 JOIN
 sierra_view.bib_record_item_record_link l
 ON
@@ -49,41 +82,11 @@ b.bib_record_id = l.bib_record_id
 JOIN
 sierra_view.item_record i
 ON
-i.id = l.item_record_id
-JOIN
-(
-SELECT
-l.bib_record_id
-FROM
-sierra_view.bib_record_item_record_link l
-JOIN
-sierra_view.item_record i
-ON
-l.item_record_id = i.id AND i.item_status_code NOT IN ({{item_status_codes}})
-AND {{age_level}}
-/*
-	SUBSTRING(i.location_code,4,1) NOT IN ('y','j') --adult
-	SUBSTRING(i.location_code,4,1) = 'j' --juv
-	SUBSTRING(i.location_code,4,1) = 'y' --ya
-	i.location_code ~ '\w' --all
-	*/
-)item_filter
-ON
-b.bib_record_id = item_filter.bib_record_id
+l.item_record_id = i.id
 JOIN
 sierra_view.record_metadata m
 ON
 i.id = m.id
-JOIN
-sierra_view.bib_record br
-ON
-l.bib_record_id = br.id
-AND br.bcode3 NOT IN ('g','o','r','z','l','q','n')
-JOIN
-sierra_view.phrase_entry p
-ON
-br.id = p.record_id AND p.index_tag = 'd' AND REPLACE(p.index_entry, ' ', '') LIKE TRANSLATE(REGEXP_REPLACE(LOWER('%{{subject}}%'),'\|[a-z]','','g'), ' .,-()', '')
---subject cannot contain apostrophe's but other formatting such as delimiters will work.
 JOIN
 sierra_view.record_metadata mb
 ON
@@ -167,15 +170,17 @@ c.item_record_id = i.id
 GROUP BY 1) loan
 ON
 i.itype_code_num = loan.itype_code_num
+JOIN
+sierra_view.phrase_entry p
+ON
+o.bib_record_id = p.record_id AND p.index_tag = 'd' AND REPLACE(p.index_entry, ' ', '') LIKE TRANSLATE(REGEXP_REPLACE(LOWER('%{{subject}}%'),'\|[a-z]','','g'), ' .,-()', '')
+--subject cannot contain apostrophe's but other formatting such as delimiters will work.
+
 
 WHERE
 b.material_code IN ({{mat_type}})
 
 GROUP BY
 1,2,3,4,h.count_holds_on_title
-HAVING
-COUNT(i.id) FILTER (WHERE i.location_code ~ '{{location}}') = 0
---location will take the form ^oln, which in this example looks for all locations starting with the string oln.
-AND COUNT(i.id) FILTER (WHERE i.location_code !~ '{{location}}' AND m.creation_date_gmt::DATE < {{created_date}}) > 0
 ORDER BY 5 DESC
 LIMIT {{qty}}
