@@ -17,8 +17,9 @@ LEFT JOIN
 sierra_view.item_record i
 ON
 l.item_record_id = i.id  
-AND i.location_code ~ '^som'-- AND SUBSTRING(i.location_code,4,1) != 'j'
-AND i.item_status_code NOT IN ('w')
+AND i.location_code ~ '^so'-- AND SUBSTRING(i.location_code,4,1) != 'j'
+AND i.item_status_code NOT IN ('w','m','$')
+AND i.icode1 != '25'
 LEFT JOIN
 sierra_view.bib_record_order_record_link ol
 ON
@@ -26,7 +27,7 @@ b.bib_record_id = ol.bib_record_id
 LEFT JOIN
 sierra_view.order_record o
 ON
-ol.order_record_id = o.id AND o.accounting_unit_code_num = '2'
+ol.order_record_id = o.id AND o.accounting_unit_code_num = '31'
 LEFT JOIN
 sierra_view.varfield v
 ON
