@@ -43,7 +43,7 @@ DATE_TRUNC('day', AVG(AGE(now()::date,p.activity_gmt::date)) FILTER(WHERE ((p.mb
 FROM
 
 sierra_view.patron_record p
-JOIN
+LEFT JOIN
 sierra_view.location_myuser l
 ON
 SUBSTRING(p.home_library_code FOR 3) = SUBSTRING(l.code FOR 3) AND l.code ~ '^[a-z1-9]{3}$'
@@ -55,7 +55,7 @@ JOIN
 sierra_view.user_defined_pcode3_myuser p3
 ON
 p.pcode3::varchar = p3.code::VARCHAR
-JOIN
+LEFT JOIN
 fine_data f
 ON
 p.id = f.patron_record_id
