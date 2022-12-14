@@ -1,3 +1,11 @@
+/*
+Jeremy Goldstein
+Minuteman Library Network
+Identifies bib-level holds placed on records where there are items with volume fields
+
+*/
+
+
 SELECT DISTINCT
 rm.record_type_code||rm.record_num||'a' AS bib_number,
 b.best_title AS title,
@@ -37,3 +45,4 @@ ON
 h.patron_record_id = rmp.id
 
 WHERE h.pickup_location_code ~ '{{location}}' 
+--location will take the form ^oln, which in this example looks for all locations starting with the string oln.
