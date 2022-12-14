@@ -1,3 +1,10 @@
+/*
+Jeremy Goldstein
+Minuteman Library Network
+Identifies which libries/accounting units have configured a vendor for edifact ordering
+and lists out the relevant vendor codes for each
+*/
+
 SELECT
 loc.name AS library,
 au.code AS accounting_unit,
@@ -8,7 +15,7 @@ END AS uses_edifact,
 STRING_AGG(v.code,', ') AS vendors
 FROM
 sierra_view.location_myuser loc
-LEFT JOIN
+JOIN
 sierra_view.accounting_unit_myuser au
 ON
 UPPER(loc.code) = au.name
@@ -18,6 +25,6 @@ ON
 au.code = v.accounting_unit_code_num AND v.vcode3 = 'd'
 
 WHERE
-loc.code ~ '^[a-z0-9]{3}$'
+loc.code ~ '^[a-z]{3}$''
 GROUP BY 1,2
 ORDER BY 1
