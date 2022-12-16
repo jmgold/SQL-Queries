@@ -107,6 +107,11 @@ l.item_record_id = i.id
 AND i.item_status_code NOT IN ({{item_status_codes}})
 AND i.location_code ~ {{location}}
 --location will take the form ^oln, which in this example looks for all locations starting with the string oln.
+AND {{age_level}}
+--SUBSTRING(i.location_code,4,1) NOT IN ('y','j') --adult
+--SUBSTRING(i.location_code,4,1) = 'j' --juv
+--SUBSTRING(i.location_code,4,1) = 'y' --ya
+--i.location_code ~ '\w' --all
 JOIN
 sierra_view.record_metadata m
 ON
