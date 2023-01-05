@@ -49,7 +49,8 @@ REPLACE(REPLACE(i.call_number,'|a',''),'|f','') AS call_number,
 ir.location_code AS item_location,
 t.transit_timestamp AS in_transit_time,
 t.origin_loc AS in_transit_origin,
-rm.record_last_updated_gmt::DATE AS on_holdshelf_date
+h.on_holdshelf_gmt::DATE AS on_holdshelf_date,
+h.expire_holdshelf_gmt::DATE AS expire_holdshelf_date
 FROM
 sierra_view.hold h
 JOIN
@@ -76,10 +77,6 @@ LEFT JOIN
 in_transit t
 ON
 h.record_id = t.id AND ir.item_status_code = 't'
-LEFT JOIN
-sierra_view.record_metadata rm
-ON
-ir.id = rm.id AND h.status NOT IN ('0','t')
 JOIN
 sierra_view.record_metadata rec_num
 ON

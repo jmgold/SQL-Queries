@@ -20,9 +20,12 @@ COALESCE(
   'x'
  ) AS record_number,
 REGEXP_REPLACE(ip.call_number,'^\|a','') AS call_number,
-stat.name AS status,
+CASE
+	WHEN o.due_gmt IS NOT NULL THEN 'CHECKED OUT'
+	ELSE stat.name
+END AS status,
 COALESCE(TO_CHAR(o.due_gmt,'YYYY-MM-DD'),'N/A') AS due_date,
-ip.barcode
+''''||ip.barcode AS barcode
 
 FROM
 sierra_view.item_record i
