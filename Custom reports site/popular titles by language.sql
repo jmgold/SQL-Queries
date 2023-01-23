@@ -47,7 +47,8 @@ SUM(i.last_year_to_date_checkout_total) AS total_last_year_to_date_checkouts
 COALESCE(h.count_holds_on_title,0) AS total_holds
 SUM(i.year_to_date_checkout_total + i.last_year_to_date_checkout_total) AS checkout_total
 */
-COUNT (i.id) AS item_total
+COUNT (i.id) AS item_total,
+SUBSTRING(MAX(s.content) FROM '[0-9X]+') AS "isbn/upc"
 
 FROM
 sierra_view.bib_record_property b
@@ -72,6 +73,10 @@ JOIN
 sierra_view.record_metadata m
 ON
 i.id = m.id
+LEFT JOIN
+sierra_view.subfield s
+ON
+b.bib_record_id = s.record_id AND s.marc_tag IN ('020','024') AND s.tag = 'a'
 JOIN
 sierra_view.bib_record br
 ON
