@@ -42,7 +42,6 @@ CASE
 		END
 	) FILTER (WHERE m.creation_date_gmt::DATE != CURRENT_DATE AND i.location_code ~ '{{comp_location}}' AND m.creation_date_gmt::DATE < {{created_date}}),2)
 END AS popularity_metric
-
 /*
 Grouping options
 Total Checkouts

@@ -58,7 +58,6 @@ b.best_title AS title,
 b.best_author AS author,
 b.publish_year,
 {{grouping}}
-
 /*
 Grouping options
 ROUND(AVG((CAST(((i.checkout_total + i.renewal_total) * loan.est_loan_period) AS NUMERIC (12,2))/(NULLIF((CURRENT_DATE - m.creation_date_gmt::DATE),0)) * 100),2) AS time_checked_out_pct
@@ -69,7 +68,8 @@ SUM(i.checkout_total) AS total_checkouts
 SUM(i.year_to_date_checkout_total) AS total_year_to_date_checkouts
 SUM(i.last_year_to_date_checkout_total) AS total_last_year_to_date_checkouts
 COALESCE(h.count_holds_on_title,0) AS total_holds
-*/
+*/,
+SUBSTRING(MAX(s.content) FROM '[0-9X]+') AS "isbn/upc"
 
 FROM
 unowned o
@@ -89,6 +89,10 @@ JOIN
 sierra_view.record_metadata m
 ON
 i.id = m.id
+LEFT JOIN
+sierra_view.subfield s
+ON
+b.bib_record_id = s.record_id AND s.marc_tag IN ('020','024') AND s.tag = 'a'
 JOIN
 sierra_view.record_metadata mb
 ON
