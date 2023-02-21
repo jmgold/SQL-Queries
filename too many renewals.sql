@@ -1,9 +1,9 @@
-﻿--Jeremy Goldstein
+--Jeremy Goldstein
 --Minuteman Library Network
 --id's items that have been renewed too many times
 
 SELECT
-id2reckey(c.item_record_id)||'a' as inumber,
+rm.record_type_code||rm.record_num||'a' as inumber,
 ip.barcode,
 SUBSTRING(i.location_code,1,3) as owning_location,
 CASE
@@ -66,6 +66,10 @@ sierra_view.item_record i
 ON
 c.item_record_id = i.id
 JOIN
+sierra_view.record_metadata rm
+ON
+i.id = rm.id
+JOIN
 sierra_view.bib_record_item_record_link l
 ON
 ip.item_record_id = l.item_record_id
@@ -77,6 +81,9 @@ JOIN
 sierra_view.patron_record_fullname p
 ON
 c.patron_record_id = p.patron_record_id
+JOIN sierra_view.circ_loan_rule lr
+ON
+c.loanrule_code_num = lr.loan_rule_num
 WHERE
-renewal_count > '7'
+c.renewal_count > lr.max_renewal
 ORDER BY 4,8,7
