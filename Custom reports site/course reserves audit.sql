@@ -7,7 +7,7 @@ Gathers up record list for all bibs and items on reserve and the courses they ar
 --Gather up course information for bibs on reserve
 SELECT
 rm.record_type_code||rm.record_num||'a' AS course_number,
-STRING_AGG(course.field_content,', ') AS course,
+STRING_AGG(course.field_content,', ' ORDER BY course.occ_num) AS course,
 prof.field_content AS professor,
 cr.begin_date::DATE AS start_date,
 cr.end_date::DATE AS end_date,
@@ -44,7 +44,7 @@ sierra_view.record_metadata rm
 ON
 cr.id = rm.id AND cr.location_code ~ {{location}}
 LEFT JOIN
-sierra_view.varfield course--phrase_entry p
+sierra_view.varfield course
 ON
 cr.id = course.record_id AND course.varfield_type_code = 'r'
 LEFT JOIN
@@ -59,7 +59,7 @@ UNION
 
 SELECT
 rm.record_type_code||rm.record_num||'a' AS course_number,
-STRING_AGG(course.field_content,', ') AS course,
+STRING_AGG(course.field_content,', ' ORDER BY course.occ_num) AS course,
 prof.field_content AS professor,
 cr.begin_date::DATE AS start_date,
 cr.end_date::DATE AS end_date,
@@ -112,7 +112,7 @@ sierra_view.item_status_property_myuser stat
 ON
 i.item_status_code = stat.code
 LEFT JOIN
-sierra_view.varfield course--phrase_entry p
+sierra_view.varfield course
 ON
 cr.id = course.record_id AND course.varfield_type_code = 'r'
 LEFT JOIN
