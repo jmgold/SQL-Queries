@@ -7,9 +7,9 @@ Used with reports website to generate a booklist from the contents of a review f
 
 SELECT
 --link to Encore
-'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id)   AS field_booklist_entry_encore_url,
+'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id) AS url,
 b.best_title as title,
-REPLACE(SPLIT_PART(SPLIT_PART(b.best_author,' (',1),', ',2),'.','')||' '||SPLIT_PART(b.best_author,', ',1) as field_booklist_entry_author,
+REPLACE(SPLIT_PART(SPLIT_PART(b.best_author,' (',1),', ',2),'.','')||' '||SPLIT_PART(b.best_author,', ',1) AS author,
 CASE
 WHEN b.material_code IN ('a','2','3','9','c','e')
 THEN (SELECT
@@ -29,7 +29,7 @@ WHERE
 b.bib_record_id = s.record_id AND s.marc_tag = '024' AND s.tag = 'a'
 ORDER BY s.occ_num
 LIMIT 1)
-END AS field_booklist_entry_cover
+END AS cover_img
 
 FROM
 sierra_view.bool_info bo

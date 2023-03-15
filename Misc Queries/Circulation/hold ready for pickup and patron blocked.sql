@@ -37,7 +37,7 @@ ON
 p.record_id = C.patron_record_id
 WHERE
 p.ptype_code = 0
-AND (p.owed_amt >= 10.00 OR p.mblock_code != '')
+AND (p.owed_amt >= 100.00 OR p.mblock_code != '')
 
 ORDER BY
 p.owed_amt,
