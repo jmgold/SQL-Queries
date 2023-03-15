@@ -1,3 +1,10 @@
+/*
+Jeremy Goldstein
+Minuteman Library Network
+
+Identifies frequently ordered titles
+*/
+
 WITH bib_list AS(
 SELECT 
 l.bib_record_id,
@@ -27,7 +34,9 @@ ID2RECKEY(b.bib_record_id)||'a' AS bib_number,
 b.best_title AS title,
 b.best_author AS author,
 id2reckey(l.order_record_id)||'a' AS order_number,
-o.location_code
+o.location_code,
+rm.creation_date_gmt::DATE AS order_date,
+o.copies
 
 FROM
 bib_list bl
@@ -47,3 +56,5 @@ JOIN
 sierra_view.record_metadata rm
 ON
 o.order_record_id = rm.id AND rm.creation_date_gmt >= '2021-05-28'
+
+ORDER BY 1,5,6

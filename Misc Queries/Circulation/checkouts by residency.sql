@@ -1,5 +1,12 @@
+/*
+Jeremy Goldstein
+Minuteman Library Network
+
+Gathers the monthly checkout totals at each location grouped by the home town of each patron
+Addresses used for generating a map of library locations.
+*/
+
 SELECT *,
---'=Vlookup(B'||ROW_NUMBER() OVER(ORDER BY a.ma_town, a.checkout_location)+1||',translation!$A$2:$B$150,2,false)' AS Address,
 CASE
 WHEN a.checkout_location = 'ACTON' THEN 'Acton Memorial Library, 486 Main St, Acton, MA 01720'
 WHEN a.checkout_location = 'ARLINGTON' THEN 'Robbins Library, 700 Massachusetts Ave, Arlington, MA 02476'
