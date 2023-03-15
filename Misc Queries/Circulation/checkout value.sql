@@ -5,8 +5,9 @@ Minuteman Library Network
 Captures the daily value of all items checked out in each stat group for each itype and mattype.
 In Minuteman used as data source for a daily checkout value dashboard built in Google Data Studio
 */
+
 SELECT
-to_char(o.transaction_gmt,'YYYY-MM-DD') AS "Date",
+TO_CHAR(o.transaction_gmt,'YYYY-MM-DD') AS "Date",
 SUBSTRING(s.name,1,3) AS "Stat Group",
 loc.name AS Library,
 it.name AS iType,
