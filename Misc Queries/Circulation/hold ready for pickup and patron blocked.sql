@@ -6,7 +6,7 @@ Identifies holds with a ready for pickup status where the patron is currently bl
 
 DROP TABLE IF EXISTS temp_ready_for_pickup
 ;
-CREATE TEMP TABLE temp_ready_for_pickup as
+CREATE TEMP TABLE temp_ready_for_pickup AS
 SELECT
 h.patron_record_id,
 h.record_id,
@@ -18,17 +18,18 @@ h.status IN ('b','i')
 ;
 CREATE INDEX IF NOT EXISTS temp_idx_patron_item_read_for_pickup ON temp_ready_for_pickup ( patron_record_id )
 ;
+
 SELECT
-p.record_id as patron_record_id,
+p.record_id AS patron_record_id,
 p.home_library_code,
 p.owed_amt,
 t.record_id,
 t.pickup_location_code
 
 FROM
-sierra_view.patron_record as p
+sierra_view.patron_record AS p
 JOIN
-temp_ready_for_pickup as t
+temp_ready_for_pickup AS t
 ON
   t.patron_record_id = p.record_id
 LEFT JOIN
