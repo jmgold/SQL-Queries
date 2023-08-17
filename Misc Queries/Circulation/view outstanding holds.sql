@@ -14,7 +14,8 @@ CASE
 	WHEN h.status = 't' THEN 'IN TRANSIT'
 	WHEN h.status IN ('b','i') THEN 'ON HOLDSHELF'
 	ELSE 'OUTSTANDING'
-END AS "Status"
+END AS "Status",
+COALESCE(h.expire_holdshelf_gmt::DATE::VARCHAR,'') AS "Expires From Holdshelf"
 
 FROM
 sierra_view.hold h
