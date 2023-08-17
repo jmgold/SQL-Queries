@@ -1,3 +1,10 @@
+/*
+Jeremy Goldstein
+Minuteman Library Network
+
+Identifies items that were created between 1 and 2 years ago that have been checked out 1 time at most 
+*/
+
 SELECT
 b.best_title,
 id2reckey(i.id)||'a' AS item_number,
@@ -19,5 +26,7 @@ ON
 i.id = m.id AND m.campus_code = '' AND m.creation_date_gmt BETWEEN (NOW()::DATE - INTERVAL '2 years') AND (NOW()::DATE - INTERVAL '1 year')
 
 WHERE
+--limited here to books
 b.material_code = 'a'
+
 ORDER BY 3,1
