@@ -1,3 +1,11 @@
+/*
+Jeremy Goldstein
+Minuteman Library Network
+
+Totals the outstanding fines for each checkout location
+and breaks them out by charge type.
+*/
+
 SELECT
 DISTINCT l.name AS checkout_location,
 COALESCE(SUM(f.item_charge_amt + f.billing_fee_amt + f.processing_fee_amt - f.paid_amt) FILTER(WHERE f.charge_code = '1'),0)::MONEY AS total_manual_charge,

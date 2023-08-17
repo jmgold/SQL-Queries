@@ -85,9 +85,10 @@ sierra_view.varfield innote
 ON
 o.id = innote.record_id AND innote.varfield_type_code = 'z'
 
-WHERE (o.order_status_code = 'a' AND p.paid_date_gmt::DATE < '07-01-20')
-OR (o.order_status_code = 'z' AND rm.creation_date_gmt::DATE < '07-01-20')
+WHERE (o.order_status_code = 'a' AND p.paid_date_gmt::DATE < '07-01-21')
+OR (o.order_status_code = 'z' AND rm.creation_date_gmt::DATE < '07-01-21')
 AND o.order_status_code IN ('a','z')
+
 
 GROUP BY 1,2,3,4,5,8,10,11,12,13,15,16,17,18,19,20,21,22,23,24,25
 ORDER BY 2,3
