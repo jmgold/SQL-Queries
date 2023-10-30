@@ -29,7 +29,7 @@ CASE
     ELSE round(cast((mv.local_holds) AS numeric (12, 2))/CAST((max(mv.local_avail_item_count) + max(mv.order_copies)) AS numeric(12,2)),2)
     END
 AS "local_ratio",
-'http://find.minlib.net/iii/encore/record/C__R'||id2reckey(mv.bib_id)   AS "url"
+'https://catalog.minlib.net/Record/'||id2reckey(mv.bib_id)   AS "url"
 
 FROM sierra_view.bib_record_property brp
 LEFT JOIN 

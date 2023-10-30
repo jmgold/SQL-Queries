@@ -7,7 +7,9 @@ Used with reports website to generate a booklist from the contents of a review f
 
 SELECT
 --link to Encore
-'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id) AS url,
+--'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id) AS url,
+-- link to Aspen
+'https://catalog.minlib.net/Record/'||id2reckey(b.bib_record_id) AS url, 
 b.best_title as title,
 REPLACE(SPLIT_PART(SPLIT_PART(b.best_author,' (',1),', ',2),'.','')||' '||SPLIT_PART(b.best_author,', ',1) AS author,
 CASE
