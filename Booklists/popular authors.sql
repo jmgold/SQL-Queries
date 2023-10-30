@@ -1,8 +1,8 @@
-/*Jeremy Goldstein with Enormous assistance from Ray Voelker
-Minuteman Library Network
+--Jeremy Goldstein with Enormous assistance from Ray Voelker
+--Minuteman Library Network
 
-Gathers the 100 most popular authors based on current holds
-*/
+--Gathers the 100 most popular authors based on current holds
+
 
 DROP TABLE IF EXISTS temp_holds_data
 ;
@@ -45,6 +45,7 @@ r.id = h.record_id
 
 SELECT 
 ROW_NUMBER() OVER (ORDER BY x.total DESC) AS field_booklist_entry_rank,
+'https://minlib.aspendiscovery.org/Union/Search?lookfor='||x.title||'&searchIndex=Author' AS field_booklist_entry_encore_url,
 x.title AS title,
 x.field_booklist_entry_cover AS field_booklist_entry_cover
 FROM(

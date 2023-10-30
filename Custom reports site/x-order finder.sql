@@ -47,9 +47,13 @@ sierra_view.invoice_record i
 ON
 l.invoice_record_id = i.id
 JOIN
+sierra_view.accounting_unit a
+ON
+i.accounting_unit_code_num = a.code_num
+JOIN
 sierra_view.fund_master f
 ON
-l.fund_code::INTEGER = f.code_num
+l.fund_code::INTEGER = f.code_num AND a.id = f.accounting_unit_id
 JOIN
 sierra_view.fund_myuser n
 ON
