@@ -22,7 +22,7 @@ CASE
 END AS author_nonroman,
 {{/if include_nonroman}}
 REPLACE(SPLIT_PART(SPLIT_PART(b.best_author,' (',1),', ',2),'.','')||' '||SPLIT_PART(b.best_author,', ',1) AS author,
-'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id) AS url,
+'https://catalog.minlib.net/Record/'||id2reckey(b.bib_record_id) AS url,
 CASE
 WHEN b.material_code = 'a'
 THEN (SELECT
