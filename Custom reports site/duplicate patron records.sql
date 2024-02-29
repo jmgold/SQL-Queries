@@ -8,6 +8,11 @@ Is passed variable for ptype(s)
 */
 
 SELECT
+*,
+'' AS "DUPLICATE PATRON RECORDS",
+'' AS "https://sic.minlib.net/reports/28"
+FROM
+(SELECT
 t1.created_date,
 MAX(t1.barcode) AS barcode,
 'p'||t1.patron_record_num||'a' AS patron_number,
@@ -151,3 +156,4 @@ GROUP BY 3,1,5,6,7,8,9
 HAVING COUNT(t1.name) = 1
 
 ORDER BY 4,6,1,3
+)a

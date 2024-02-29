@@ -1,4 +1,16 @@
+/*
+Jeremy Goldstein
+Minuteman Library Network
+
+Reproduces clear holdshelf report in the event 
+of the report having been cleared prior to confirming it successfully printed
+*/
+
 SELECT
+*,
+'' AS "CLEAR HOLDSHELF REPORT"
+FROM
+(SELECT
 --use pickup alias if there is one, otherwise name
 CASE
 	WHEN v.field_content IS NOT NULL THEN v.field_content
@@ -44,3 +56,4 @@ AND h.pickup_location_code ~ {{location}}
 AND (h.removed_by_program = 'clearholdshelf' OR h.holdshelf_status = 'c')
 
 ORDER BY 1
+)a

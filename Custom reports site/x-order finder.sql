@@ -19,7 +19,8 @@ copies,
 order_paid_amt,
 invoice_shipping,
 invoice_tax,
-invoice_total
+invoice_total,
+'' AS "X ORDER FINDER"
 FROM
 (
 SELECT DISTINCT ON (1,2,3)

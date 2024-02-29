@@ -53,6 +53,11 @@ unowned AS (
 )
 
 SELECT
+*,
+'' AS "POPULAR TITLES UNOWNED BY LANGUAGE",
+'' AS "https://sic.minlib.net/reports/88"
+FROM
+(SELECT
 'b'||mb.record_num||'a' AS bib_number,
 b.best_title AS title,
 CASE
@@ -201,3 +206,4 @@ GROUP BY
 1,2,3,4,5,6,h.count_holds_on_title
 ORDER BY 7 DESC
 LIMIT {{qty}}
+)a

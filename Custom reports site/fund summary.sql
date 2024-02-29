@@ -6,6 +6,10 @@ Reproduces fund view from the fund function in acquisitions for a specified acco
 */
 
 SELECT
+*,
+'' AS "FUND SUMMARY"
+FROM
+(SELECT
 DISTINCT f.fund_code AS "Fund Code",
 fn.name AS "Fund Name",
 ROUND(CAST(f.appropriation AS NUMERIC (12,2))/100,2)::MONEY AS Appropriation,
@@ -51,3 +55,4 @@ f.acct_unit = {{accounting_unit}}
 AND f.fund_type = 'fbal'
 
 ORDER BY 1
+)a

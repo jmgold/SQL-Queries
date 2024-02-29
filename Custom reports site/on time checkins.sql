@@ -64,7 +64,11 @@ C.stat_group_code_num = s.code
 )
 
 
-SELECT * FROM(
+SELECT
+*,
+'' AS "ON TIME CHECKINS",
+'' AS "https://sic.minlib.net/reports/93"
+FROM(
 SELECT
 {{grouping}}
 /*grouping options are
