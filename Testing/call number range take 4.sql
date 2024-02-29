@@ -4,9 +4,9 @@ i.item_record_id,
 i.call_number_norm AS call_original,
 CASE
 	--author in call
-	WHEN b.best_author_norm != '' AND i.call_number_norm ~ SPLIT_PART(TRANSLATE(b.best_author_norm,'âáãäåāăąÁÂÃÄÅĀĂĄèéééêëēĕėęěĒĔĖĘĚìíîïìĩīĭÌÍÎÏÌĨĪĬóôõöōŏőÒÓÔÕÖŌŎŐùúûüũūŭůÙÚÛÜŨŪŬŮ','aaaaaaaaaaaaaaaaeeeeeeeeeeeeeeeeiiiiiiiiiiiiiiiiooooooooooooooouuuuuuuuuuuuuuuu'), ' ',1) THEN REGEXP_REPLACE(SPLIT_PART(BTRIM(i.call_number_norm),SPLIT_PART(TRANSLATE(b.best_author_norm,'âáãäåāăąÁÂÃÄÅĀĂĄèéééêëēĕėęěĒĔĖĘĚìíîïìĩīĭÌÍÎÏÌĨĪĬóôõöōŏőÒÓÔÕÖŌŎŐùúûüũūŭůÙÚÛÜŨŪŬŮ','aaaaaaaaaaaaaaaaeeeeeeeeeeeeeeeeiiiiiiiiiiiiiiiiooooooooooooooouuuuuuuuuuuuuuuu'), ' ',1),1),'[^\w\s\.]','','g')
+	WHEN b.best_author_norm != '' AND i.call_number_norm ~ SPLIT_PART(TRANSLATE(b.best_author_norm,'Ã¢Ã¡Ã£Ã¤Ã¥ÄÄƒÄ…ÃÃ‚ÃƒÃ„Ã…Ä€Ä‚Ä„Ã¨Ã©Ã©Ã©ÃªÃ«Ä“Ä•Ä—Ä™Ä›Ä’Ä”Ä–Ä˜ÄšÃ¬Ã­Ã®Ã¯Ã¬Ä©Ä«Ä­ÃŒÃÃŽÃÃŒÄ¨ÄªÄ¬Ã³Ã´ÃµÃ¶ÅÅÅ‘Ã’Ã“Ã”Ã•Ã–ÅŒÅŽÅÃ¹ÃºÃ»Ã¼Å©Å«Å­Å¯Ã™ÃšÃ›ÃœÅ¨ÅªÅ¬Å®','aaaaaaaaaaaaaaaaeeeeeeeeeeeeeeeeiiiiiiiiiiiiiiiiooooooooooooooouuuuuuuuuuuuuuuu'), ' ',1) THEN REGEXP_REPLACE(SPLIT_PART(BTRIM(i.call_number_norm),SPLIT_PART(TRANSLATE(b.best_author_norm,'Ã¢Ã¡Ã£Ã¤Ã¥ÄÄƒÄ…ÃÃ‚ÃƒÃ„Ã…Ä€Ä‚Ä„Ã¨Ã©Ã©Ã©ÃªÃ«Ä“Ä•Ä—Ä™Ä›Ä’Ä”Ä–Ä˜ÄšÃ¬Ã­Ã®Ã¯Ã¬Ä©Ä«Ä­ÃŒÃÃŽÃÃŒÄ¨ÄªÄ¬Ã³Ã´ÃµÃ¶ÅÅÅ‘Ã’Ã“Ã”Ã•Ã–ÅŒÅŽÅÃ¹ÃºÃ»Ã¼Å©Å«Å­Å¯Ã™ÃšÃ›ÃœÅ¨ÅªÅ¬Å®','aaaaaaaaaaaaaaaaeeeeeeeeeeeeeeeeiiiiiiiiiiiiiiiiooooooooooooooouuuuuuuuuuuuuuuu'), ' ',1),1),'[^\w\s\.]','','g')
    --first characters of author in call
-	WHEN b.best_author_norm != '' AND i.call_number_norm ~ SUBSTRING(SPLIT_PART(TRANSLATE(b.best_author_norm,'âáãäåāăąÁÂÃÄÅĀĂĄèéééêëēĕėęěĒĔĖĘĚìíîïìĩīĭÌÍÎÏÌĨĪĬóôõöōŏőÒÓÔÕÖŌŎŐùúûüũūŭůÙÚÛÜŨŪŬŮ','aaaaaaaaaaaaaaaaeeeeeeeeeeeeeeeeiiiiiiiiiiiiiiiiooooooooooooooouuuuuuuuuuuuuuuu'), ' ',1)FROM 1 FOR 3) THEN REGEXP_REPLACE(SPLIT_PART(BTRIM(i.call_number_norm),SUBSTRING(SPLIT_PART(TRANSLATE(b.best_author_norm,'âáãäåāăąÁÂÃÄÅĀĂĄèéééêëēĕėęěĒĔĖĘĚìíîïìĩīĭÌÍÎÏÌĨĪĬóôõöōŏőÒÓÔÕÖŌŎŐùúûüũūŭůÙÚÛÜŨŪŬŮ','aaaaaaaaaaaaaaaaeeeeeeeeeeeeeeeeiiiiiiiiiiiiiiiiooooooooooooooouuuuuuuuuuuuuuuu'), ' ',1)FROM 1 FOR 3),1),'[^\w\s\.]','','g')
+	WHEN b.best_author_norm != '' AND i.call_number_norm ~ SUBSTRING(SPLIT_PART(TRANSLATE(b.best_author_norm,'Ã¢Ã¡Ã£Ã¤Ã¥ÄÄƒÄ…ÃÃ‚ÃƒÃ„Ã…Ä€Ä‚Ä„Ã¨Ã©Ã©Ã©ÃªÃ«Ä“Ä•Ä—Ä™Ä›Ä’Ä”Ä–Ä˜ÄšÃ¬Ã­Ã®Ã¯Ã¬Ä©Ä«Ä­ÃŒÃÃŽÃÃŒÄ¨ÄªÄ¬Ã³Ã´ÃµÃ¶ÅÅÅ‘Ã’Ã“Ã”Ã•Ã–ÅŒÅŽÅÃ¹ÃºÃ»Ã¼Å©Å«Å­Å¯Ã™ÃšÃ›ÃœÅ¨ÅªÅ¬Å®','aaaaaaaaaaaaaaaaeeeeeeeeeeeeeeeeiiiiiiiiiiiiiiiiooooooooooooooouuuuuuuuuuuuuuuu'), ' ',1)FROM 1 FOR 3) THEN REGEXP_REPLACE(SPLIT_PART(BTRIM(i.call_number_norm),SUBSTRING(SPLIT_PART(TRANSLATE(b.best_author_norm,'Ã¢Ã¡Ã£Ã¤Ã¥ÄÄƒÄ…ÃÃ‚ÃƒÃ„Ã…Ä€Ä‚Ä„Ã¨Ã©Ã©Ã©ÃªÃ«Ä“Ä•Ä—Ä™Ä›Ä’Ä”Ä–Ä˜ÄšÃ¬Ã­Ã®Ã¯Ã¬Ä©Ä«Ä­ÃŒÃÃŽÃÃŒÄ¨ÄªÄ¬Ã³Ã´ÃµÃ¶ÅÅÅ‘Ã’Ã“Ã”Ã•Ã–ÅŒÅŽÅÃ¹ÃºÃ»Ã¼Å©Å«Å­Å¯Ã™ÃšÃ›ÃœÅ¨ÅªÅ¬Å®','aaaaaaaaaaaaaaaaeeeeeeeeeeeeeeeeiiiiiiiiiiiiiiiiooooooooooooooouuuuuuuuuuuuuuuu'), ' ',1)FROM 1 FOR 3),1),'[^\w\s\.]','','g')
 	--title in call
 	--WHEN i.call_number_norm ~ SPLIT_PART(b.best_title_norm, ' ',1) THEN REGEXP_REPLACE(SPLIT_PART(BTRIM(i.call_number_norm),SPLIT_PART(b.best_title_norm, ' ',1),1),'[^\w\s]','','g')
    --strip year from end
@@ -30,7 +30,7 @@ sierra_view.item_record ir
 ON
 i.item_record_id = ir.id
 AND ir.itype_code_num != '241'
-AND ir.location_code ~ '^fst'
+AND ir.location_code ~ '^ar2'
 )
 
 SELECT
@@ -77,7 +77,7 @@ ON
 i.item_record_id = ir.id
 --avoid comcat items
 AND
-ir.location_code ~ '^fst'
+ir.location_code ~ '^ar2'
 JOIN
 sierra_view.record_metadata rm
 ON

@@ -36,6 +36,11 @@ AND o.order_status_code IN ('o','q','g','d')
 GROUP BY 1,2)
 
 SELECT
+*,
+'' AS "SUBFUND SUMMARY",
+'' AS "https://sic.minlib.net/reports/68"
+FROM
+(SELECT
 fm.code AS fund_code,
 fn.name AS fund_name,
 sub.code AS subfund,
@@ -68,3 +73,4 @@ order_encumbrance oe
 ON
 fm.code = oe.code AND sub.code = oe.subfund
 ORDER BY 1,3
+)a

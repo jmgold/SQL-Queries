@@ -7,6 +7,11 @@ Designed for non-roman records and will use the contents of the 880 fields for a
 */
 
 SELECT
+*,
+'' AS "REVIEW FILE TO BOOKLIST",
+'' AS "https://sic.minlib.net/reports/73"
+FROM
+(SELECT
 DISTINCT(COALESCE(REGEXP_REPLACE(i.call_number,'\|[a-z]',' ','g'), '')) AS call_number,
 {{#if include_nonroman}}
 CASE
@@ -80,3 +85,4 @@ GROUP BY b.bib_record_id,1,b.best_title,b.best_author,b.material_code
 ,2,4
 {{/if include_nonroman}}
 ORDER BY 1,3
+)a
