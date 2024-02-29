@@ -7,43 +7,74 @@ Within Mass these are all items borrowed via the Commonwealth Catalog using Auto
 */
 
 SELECT
-rm.creation_date_gmt::DATE AS created_date,
-rm.record_type_code||rm.record_num||'a' AS item_number,
-rmb.record_type_code||rmb.record_num||'a' AS bib_number,
-b.best_title AS title,
-b.best_author AS author,
-b.material_code AS mattype,
-i.location_code,
-i.itype_code_num,
+rmp.record_type_code||rmp.record_num||'a' AS pnumber,
+rmi.record_type_code||rmi.record_num||'a' AS inumber,
+rmb.record_type_code||rmb.record_num||'a' AS bnumber,
+rmi.creation_date_gmt AS item_creation_date,
+rmi.record_last_updated_gmt AS item_last_updated_date,
+b.field_content AS barcode,
+callnum.field_content AS call_number,
+title.field_content AS title,
+author.field_content AS author,
 CASE
-	WHEN o.due_gmt IS NOT NULL THEN 'out'
-	ELSE i.item_status_code
-END AS status,
-i.checkout_statistic_group_code_num,
-rm.record_last_updated_gmt::DATE AS updated_date,
-COALESCE(TO_CHAR(o.due_gmt,'yyyy-mm-dd'),'') AS due_date
+	WHEN o.id IS NOT NULL THEN 'CHECKOUT'
+	WHEN h.id IS NOT NULL THEN 'HOLD'
+END AS hold_or_checkout,
+o.checkout_gmt AS checkout_date,
+o.due_gmt AS due_date,
+o.loanrule_code_num,
+o.overdue_count,
+h.placed_gmt AS hold_placed,
+h.pickup_location_code,
+CASE
+	WHEN h.status = 't' THEN 'IN TRANSIT'
+	WHEN h.status = '0' THEN 'ON HOLD'
+	WHEN h.status IN ('b','i') THEN 'READY FOR PICKUP'
+END AS hold_status,
+h.on_holdshelf_gmt AS placed_on_holdshelf,
+h.expire_holdshelf_gmt AS holdshelf_expiration_date
+
 
 FROM
-sierra_view.item_record i
+sierra_view.record_metadata rmi
 JOIN
-sierra_view.record_metadata rm
+sierra_view.varfield b
 ON
-i.id = rm.id AND i.virtual_type_code = '$'
-LEFT JOIN
-sierra_view.checkout o
+rmi.id = b.record_id AND b.varfield_type_code = 'b'
+JOIN
+sierra_view.varfield callnum
 ON
-i.id = o.item_record_id
+rmi.id = callnum.record_id AND callnum.varfield_type_code = 'c'
 JOIN
 sierra_view.bib_record_item_record_link l
 ON
-i.id = l.item_record_id
-JOIN
-sierra_view.bib_record_property b
-ON
-l.bib_record_id = b.bib_record_id
+rmi.id = l.item_record_id
 JOIN
 sierra_view.record_metadata rmb
 ON
-b.bib_record_id = rmb.id
+l.bib_record_id = rmb.id
+LEFT JOIN
+sierra_view.hold h
+ON
+rmi.id = h.record_id
+LEFT JOIN
+sierra_view.checkout o
+ON
+rmi.id = o.item_record_id
+JOIN
+sierra_view.varfield title
+ON
+rmb.id = title.record_id AND title.varfield_type_code = 't'
+JOIN
+sierra_view.varfield author
+ON
+rmb.id = author.record_id AND author.varfield_type_code = 'a'
+LEFT JOIN
+sierra_view.record_metadata rmp
+ON
+o.patron_record_id = rmp.id OR h.patron_record_id = rmp.id
 
-ORDER BY rm.creation_date_gmt
+WHERE
+rmi.campus_code = 'ncip' AND rmi.record_type_code = 'i'
+
+ORDER BY 10,1

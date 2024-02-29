@@ -76,8 +76,10 @@ WHERE bl.location_code ~ {{location}}
 GROUP BY 1,2,3
 )
 
-SELECT *
-
+SELECT
+*,
+'' AS "DIVERSITY ANALYSIS",
+'' AS "https://sic.minlib.net/reports/98"
 FROM
 (SELECT
 t.topic,

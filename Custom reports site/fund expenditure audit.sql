@@ -56,6 +56,11 @@ AND i.status_code = 'c'
 GROUP BY 1,2,3,5,i.shipping_amt,i.total_tax_amt,i.discount_amt,copy_count.total_copies)
 
 SELECT
+*,
+'' AS "FUND EXPENDITURE AUDIT",
+'' AS "https://sic.minlib.net/reports/55"
+FROM
+(SELECT
 it.fund_code,
 fn.name,
 ROUND(CAST(f.expenditure AS NUMERIC (12,2))/100,2)::MONEY AS expenditure,
@@ -88,3 +93,4 @@ fp.id = fn.fund_property_id
 GROUP BY 1,2,3
 
 ORDER BY 1
+)a

@@ -60,6 +60,11 @@ unowned AS (
 )
 
 SELECT
+*,
+'' AS "DEI UNOWNED",
+'' AS "https://sic.minlib.net/reports/102"
+FROM
+(SELECT
 'b'||mb.record_num||'a' AS bib_number,
 b.best_title AS title,
 b.best_author AS author,
@@ -192,3 +197,4 @@ GROUP BY
 1,2,3,4,h.count_holds_on_title
 ORDER BY 5 DESC
 LIMIT {{qty}}
+)a

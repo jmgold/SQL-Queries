@@ -4,7 +4,12 @@ Minuteman Library Network
 Gathers up record list for all bibs and items on reserve and the courses they are associated with
 */
 
---Gather up course information for bibs on reserve
+SELECT
+*,
+'' AS "COURSE RESERVES AUDIT",
+'' AS "https://sic.minlib.net/reports/113"
+FROM
+(--Gather up course information for bibs on reserve
 SELECT
 rm.record_type_code||rm.record_num||'a' AS course_number,
 STRING_AGG(course.field_content,', ' ORDER BY course.occ_num) AS course,
@@ -123,3 +128,4 @@ cr.id = prof.record_id AND prof.varfield_type_code = 'p'
 GROUP BY 1,3,4,5,6,7,8,9,10,11,12,13,14
 
 ORDER BY 2,5,7
+)a

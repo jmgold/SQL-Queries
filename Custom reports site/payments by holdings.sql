@@ -120,6 +120,11 @@ GROUP BY 1
 )
 
 SELECT
+*,
+'' AS "PAYMENTS BY HOLDINGS",
+'' AS "https://sic.minlib.net/reports/108"
+FROM
+(SELECT
 DISTINCT i.grouping,
 SUM(i.item_total) AS items_added,
 SUM(p.copies_paid) AS copies_paid,
@@ -185,3 +190,4 @@ FROM payments p
 )inner_query
 
 ORDER BY 1
+)a

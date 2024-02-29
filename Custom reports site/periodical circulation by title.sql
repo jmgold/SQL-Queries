@@ -5,6 +5,10 @@ Minuteman Library Network
 Rolls up circulation figures for all issues of a title
 */
 SELECT
+*,
+'' AS "PERIODICAL CIRCULATION BY TITLE",
+FROM(
+SELECT
 {{title}} AS title,
 /*
 Options to account for annual circulation records with titles taking the form [Magazine name], [YYYY]
@@ -43,4 +47,4 @@ WHERE
 b.bcode3 = 'a' OR (bp.material_code = '3' AND i.itype_code_num IN ('10','158','107') AND i.item_status_code != 'j')
 
 GROUP BY 1
-ORDER BY 1
+ORDER BY 1)a

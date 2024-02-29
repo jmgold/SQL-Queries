@@ -4,10 +4,7 @@ Minuteman Library Network
 
 On Demand Purchase Alert
 */
-SELECT
-*,
-'' AS "PURCHASE ALERT NEW",
-FROM(
+
 SELECT
 	CASE
 		WHEN age_level = 'ADULT' AND is_fiction = 'TRUE' AND mat_type IN ('BOOK', 'LARGE PRINT') THEN 'ADULT FICTION'
@@ -29,14 +26,19 @@ SELECT
 	total_demand_ratio,
 	local_item_count,
 	local_available_item_count,
+	local_available_speed_read,
 	local_order_copies,
 	local_copies_in_process,
 	local_hold_count,
 	local_demand_ratio,
 	CASE
-		WHEN CAST(local_hold_count AS NUMERIC(12, 2)) / CAST({{hold_threshold}} AS NUMERIC(12, 2)) - local_available_item_count - local_order_copies - local_copies_in_process < 0 THEN 0
-		ELSE ROUND(CAST(local_hold_count AS NUMERIC(12, 2)) / CAST({{hold_threshold}} AS NUMERIC(12, 2)) - local_available_item_count - local_order_copies - local_copies_in_process,1)
+		WHEN CAST(local_hold_count AS NUMERIC(12, 2)) / CAST(3 AS NUMERIC(12, 2)) - local_available_item_count - local_order_copies - local_copies_in_process < 0 THEN 0
+		ELSE ROUND(CAST(local_hold_count AS NUMERIC(12, 2)) / CAST(3 AS NUMERIC(12, 2)) - local_available_item_count - local_order_copies - local_copies_in_process,1)
 	END AS suggested_purchase_qty,
+	CASE
+		WHEN CAST(local_hold_count AS NUMERIC(12, 2)) / CAST(3 AS NUMERIC(12, 2)) - local_available_item_count - local_order_copies - local_copies_in_process + local_available_speed_read < 0 THEN 0
+		ELSE ROUND(CAST(local_hold_count AS NUMERIC(12, 2)) / CAST(3 AS NUMERIC(12, 2)) - local_available_item_count - local_order_copies - local_copies_in_process + local_available_speed_read,1)
+	END AS suggested_purchase_qty_speed_read,
 	url,
 	isbn_upc,
 	is_fiction
@@ -55,8 +57,9 @@ FROM (
   		  	WHEN MAX(mv.avail_item_count) + MAX(mv.order_copies) + MAX(mv.processing_copies) = 0 THEN mv.hold_count
   		  	ELSE ROUND(CAST((mv.hold_count) AS NUMERIC(12, 2))/CAST((MAX(mv.avail_item_count) + MAX(mv.order_copies) + MAX(mv.processing_copies)) AS NUMERIC(12,2)),2)
   		END AS total_demand_ratio,
-		COUNT(DISTINCT ir.id) FILTER(WHERE ir.location_code ~ {{location}}) AS local_item_count,
+		COUNT(DISTINCT ir.id) FILTER(WHERE ir.location_code ~ '^lex') AS local_item_count,
 		MAX(mv.local_avail_item_count) AS local_available_item_count,
+		MAX(mv.local_avail_speed_read) AS local_available_speed_read,
 		MAX(mv.order_copies) AS local_order_copies,
 		CASE
 			WHEN MAX(mv.processing_copies) > 0 AND MAX(mv.in_process_item_count) < MAX(mv.processing_copies) THEN MAX(mv.processing_copies) - MAX(mv.in_process_item_count)
@@ -102,12 +105,13 @@ FROM (
 		SELECT 
 			b.id AS bib_id, 
 			COUNT(DISTINCT h.id) AS hold_count,
-			COUNT(DISTINCT h.id) FILTER(WHERE h.pickup_location_code ~ {{location}}) AS local_holds,
+			COUNT(DISTINCT h.id) FILTER(WHERE h.pickup_location_code ~ '^lex') AS local_holds,
 			--location will take the form ^oln, which in this example looks for all locations starting with the string oln.
 			COUNT(DISTINCT i.id) AS item_count,
-			COUNT(DISTINCT ia.id) AS avail_item_count, 
-			COUNT(DISTINCT ia.id) FILTER(WHERE ia.location_code ~ {{location}} AND rmia.creation_date_gmt::DATE >= CURRENT_DATE - INTERVAL '14 days') AS in_process_item_count,
-			COUNT(DISTINCT ia.id) FILTER(WHERE ia.location_code ~ {{location}}) AS local_avail_item_count,
+			COUNT(DISTINCT ia.id) AS avail_item_count,
+			COUNT(DISTINCT ia.id) FILTER(WHERE ia.location_code ~ '^lex' AND rmia.creation_date_gmt::DATE >= CURRENT_DATE - INTERVAL '14 days') AS in_process_item_count,
+			COUNT(DISTINCT ia.id) FILTER(WHERE ia.location_code ~ '^lex') AS local_avail_item_count,
+			COUNT(DISTINCT ia.id) FILTER(WHERE ia.location_code ~ '^lex' AND ia.itype_code_num IN ('5','21','109','133','160','183'))AS local_avail_speed_read, 
 			--location will take the form ^oln, which in this example looks for all locations starting with the string oln.
 			MAX(o1.order_count) AS order_count,
 			CASE
@@ -130,9 +134,9 @@ FROM (
 		LEFT JOIN sierra_view.item_record ia
 			ON ia.id=bri.item_record_id
 				AND ia.item_status_code IN ('-','t','p','!')
-				AND ((ia.location_code !~ {{location}} 
+				AND ((ia.location_code !~ '^lex' 
 					AND ia.itype_code_num NOT IN ('5','21','109','133','160','183','239','240','241','244','248','249')) 
-					OR ia.location_code ~ {{location}})
+					OR ia.location_code ~ '^lex')
 					--location will take the form ^oln, which in this example looks for all locations starting with the string oln.
 		LEFT JOIN sierra_view.record_metadata rmia
 			ON
@@ -148,7 +152,7 @@ FROM (
 			JOIN sierra_view.order_record o
 				ON o.id=bro.order_record_id
 			JOIN sierra_view.order_record_cmf oc
-				ON oc.order_record_id=bro.order_record_id AND oc.location_code ~ {{location}}	
+				ON oc.order_record_id=bro.order_record_id AND oc.location_code ~ '^lex'	
 				--location will take the form ^oln, which in this example looks for all locations starting with the string oln.
         
 		  WHERE o.order_status_code IN ('o','a')
@@ -166,15 +170,14 @@ FROM (
 	LEFT JOIN sierra_view.control_field f
 		ON mv.bib_id = f.record_id
 	
-	GROUP BY brp.bib_record_id,1, 2, 3, 4, 5, 6, 8, 14, 16, 19
-	HAVING mv.local_holds >= {{min_local_holds}}
+	GROUP BY brp.bib_record_id,1, 2, 3, 4, 5, 6, 8, 15, 17, 20
+	HAVING mv.local_holds >= 1
 
 	)inner_query
 
 ORDER BY
 	1,2, 
 	CASE
-		WHEN CAST(local_hold_count AS NUMERIC(12, 2)) / CAST({{hold_threshold}} AS NUMERIC(12, 2))  - local_available_item_count - local_order_copies - local_copies_in_process < 0 THEN 0
-		ELSE ROUND(CAST(local_hold_count AS NUMERIC(12, 2)) / CAST({{hold_threshold}} AS NUMERIC(12, 2)) - local_available_item_count - local_order_copies - local_copies_in_process,1)
+		WHEN CAST(local_hold_count AS NUMERIC(12, 2)) / CAST(3 AS NUMERIC(12, 2))  - local_available_item_count - local_order_copies - local_copies_in_process + local_available_speed_read < 0 THEN 0
+		ELSE ROUND(CAST(local_hold_count AS NUMERIC(12, 2)) / CAST(3 AS NUMERIC(12, 2)) - local_available_item_count - local_order_copies - local_copies_in_process + local_available_speed_read,1)
 	END DESC
-)a
