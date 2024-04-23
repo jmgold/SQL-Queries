@@ -7,6 +7,12 @@ Modified from a query originally shared by Brent Searle
 */
 
 SELECT
+*,
+'' AS "HOLDS ON UNAVAILABLE TITLES",
+'' AS "https://sic.minlib.net/reports/25"
+FROM
+(
+SELECT
 rmb.record_type_code||rmb.record_num||'a' AS bib_number,
 b.best_title AS title,
 m.name AS mat_type,
@@ -72,3 +78,4 @@ HAVING COUNT(DISTINCT i.id) FILTER(WHERE i.item_status_code NOT IN ('$','e','m',
 
 GROUP BY 1,2,3,4,5,6,7,8,b.best_title_norm
 ORDER BY b.best_title_norm
+)a

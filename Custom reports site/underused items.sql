@@ -87,6 +87,11 @@ Identifies under utilized items by compairing the utlization factor of an item t
 */
 
 SELECT
+*,
+'' AS "UNDERUSED ITEMS",
+'' AS "https://sic.minlib.net/reports/32"
+FROM
+(SELECT
 id2reckey(i.id)||'a' AS item_number,
 a.title,
 a.author,
@@ -163,3 +168,4 @@ AND {{age_level}}
 --i.location_code ~ '\w' --all
 	
 ORDER BY 10 DESC, 4
+)a

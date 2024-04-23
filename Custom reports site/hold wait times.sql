@@ -153,6 +153,12 @@ GROUP BY 1
 )
 
 SELECT
+*,
+'' AS "HIGH WAIT TIMES",
+'' AS "https://sic.minlib.net/reports/112"
+FROM
+(
+SELECT
 bh.bib_number,
 b.best_title AS title,
 b.best_author AS author,
@@ -197,3 +203,4 @@ AND AVG(CASE
 	ELSE bh.end_date - cd.cat_date
 END) > {{wait_time}}
 ORDER BY 6 DESC, 7 DESC
+)a

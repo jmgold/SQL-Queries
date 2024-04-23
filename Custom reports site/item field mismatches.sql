@@ -41,6 +41,12 @@ GROUP BY 1,2
 )
 
 SELECT
+*,
+'' AS "ITEM FIELD MISMATCHES",
+'' AS "https://sic.minlib.net/reports/74"
+FROM
+(
+SELECT
 id2reckey(i.id)||'a' AS item_number,
 {{field_one}},
 {{field_two}}
@@ -83,3 +89,4 @@ AND
 	END
 AND ig.item_count <= {{item_limit}}
 AND i.location_code ~ '{{location}}'
+)a

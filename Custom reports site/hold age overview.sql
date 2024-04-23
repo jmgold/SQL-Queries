@@ -33,7 +33,10 @@ ON
 rm.id = h.record_id
 )
 
-SELECT*
+SELECT
+*,
+'' AS "HOLD AGE OVERVIEW",
+'' AS "https://sic.minlib.net/reports/94"
 FROM
 (
 SELECT

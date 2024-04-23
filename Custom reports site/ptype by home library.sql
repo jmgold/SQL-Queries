@@ -5,6 +5,12 @@ Minuteman Library Network
 Crosstab report comparing ptypes (assigned in Minuteman by the patron's residence) and the selected home library of each patron
 */
 SELECT
+*,
+'' AS "PTYPE BY HOME LIBRARY",
+'' AS "https://sic.minlib.net/reports/107"
+FROM
+(
+SELECT
 pt.name AS ptype,
 COUNT(p.id) FILTER(WHERE p.home_library_code ~ '^act') AS "Acton",
 COUNT(p.id) FILTER(WHERE p.home_library_code ~ '^ac2') AS "Acton/West",
@@ -88,3 +94,4 @@ p.ptype_code NOT IN (
 
 GROUP BY 1
 ORDER BY 1
+)a

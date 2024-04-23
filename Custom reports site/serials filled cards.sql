@@ -6,6 +6,12 @@ Identifies checkin cards that are nearly filled so staff may proactively make sp
 */
 
 SELECT
+*,
+'' AS "FILLED CARDS",
+'' AS "https://sic.minlib.net/reports/63"
+FROM
+(
+SELECT
 bp.best_title AS title,
 ID2RECKEY(bp.bib_record_id)||'a' AS bib_number,
 ID2RECKEY(h.id)||'a' AS checkin_number,
@@ -79,3 +85,4 @@ GROUP BY 1,2,3,6,7,8,9
 HAVING COUNT(b.id) >= {{box_count}}
 
 ORDER BY 1
+)a

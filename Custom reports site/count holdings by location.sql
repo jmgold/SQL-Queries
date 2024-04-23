@@ -6,6 +6,12 @@ Counts either items or titles owned by a location, grouped by a variety of categ
 */
 
 SELECT
+*,
+'' AS "COUNT HOLDINGS BY LOCATION",
+'' AS "https://sic.minlib.net/reports/45"
+FROM
+(
+SELECT
 {{Grouping}},
 /*
 alternative groupings
@@ -112,3 +118,4 @@ i.item_status_code NOT IN ({{Item_Status_Codes}})
 
 GROUP BY 1
 ORDER BY 1
+)a

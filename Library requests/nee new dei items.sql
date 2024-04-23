@@ -1,11 +1,13 @@
+SELECT 
+*
+FROM (
 SELECT
-TO_CHAR(rm.creation_date_gmt,'YYYY-MM') AS "month",
 CASE
+	WHEN i.icode1 = '92' THEN 'BIOGRAPHY'
 	WHEN i.icode1 BETWEEN '10' AND '100' AND ip.call_number_norm ~ '^(?!express)\w+ \d' THEN '[LANGUAGE] NONFICTION'
 	WHEN i.icode1 = '1' AND ip.call_number_norm ~ '^(?!express)\w+ fiction' THEN '[LANGUAGE] FICTION'
 	WHEN i.icode1 BETWEEN '195' AND '237' AND ip.call_number_norm ~ '^j world' THEN 'J WORLD/[LANGUAGE]'
 	WHEN i.icode1 BETWEEN '10' AND '100' THEN 'NONFICTION'
-	WHEN i.icode1 = '92' THEN 'BIOGRAPHY'
 	WHEN i.icode1 = '117' THEN 'GENEALOGY'
 	WHEN i.icode1 = '115' THEN 'REF'
 	WHEN i.icode1 = '124' THEN 'ELL'
@@ -49,7 +51,7 @@ CASE
 	WHEN i.icode1 = '236' THEN 'J PLAYAWAY VIDEO'
 	WHEN i.icode1 = '237' THEN 'J TABLET/EREADER'
 	ELSE 'UNKNOWN'
-END AS collection,
+END AS "collection",
 COUNT(i.id) FILTER(WHERE LOWER(TRIM(REGEXP_REPLACE(v.field_content,'dei:\s?','','i'))) ~ 'asia') AS "Asian",
 COUNT(i.id) FILTER(WHERE LOWER(TRIM(REGEXP_REPLACE(v.field_content,'dei:\s?','','i'))) ~ 'black') AS "Black",
 COUNT(i.id) FILTER(WHERE LOWER(TRIM(REGEXP_REPLACE(v.field_content,'dei:\s?','','i'))) ~ '(disab)|(neuro)') AS "Disabilities & Neurodiversity",
@@ -78,7 +80,45 @@ sierra_view.item_record_property ip
 ON
 i.id = ip.item_record_id
 
-WHERE rm.creation_date_gmt::DATE >= '2023-07-01'
+WHERE rm.creation_date_gmt::DATE >= CURRENT_DATE - INTERVAL '1 month'
 
-GROUP BY 1,2
-ORDER BY 1,2
+GROUP BY 1
+
+UNION
+
+SELECT
+'TOTAL' AS "Collection",
+COUNT(i.id) FILTER(WHERE LOWER(TRIM(REGEXP_REPLACE(v.field_content,'dei:\s?','','i'))) ~ 'asia') AS "Asian",
+COUNT(i.id) FILTER(WHERE LOWER(TRIM(REGEXP_REPLACE(v.field_content,'dei:\s?','','i'))) ~ 'black') AS "Black",
+COUNT(i.id) FILTER(WHERE LOWER(TRIM(REGEXP_REPLACE(v.field_content,'dei:\s?','','i'))) ~ '(disab)|(neuro)') AS "Disabilities & Neurodiversity",
+COUNT(i.id) FILTER(WHERE LOWER(TRIM(REGEXP_REPLACE(v.field_content,'dei:\s?','','i'))) ~ '(equi)|(social)') AS "Equity & Social Issues",
+COUNT(i.id) FILTER(WHERE LOWER(TRIM(REGEXP_REPLACE(v.field_content,'dei:\s?','','i'))) ~ '(spani)|(latin)') AS "Hispanic & Latino",
+COUNT(i.id) FILTER(WHERE LOWER(TRIM(REGEXP_REPLACE(v.field_content,'dei:\s?','','i'))) ~ 'indig') AS "Indigenous",
+COUNT(i.id) FILTER(WHERE LOWER(TRIM(REGEXP_REPLACE(v.field_content,'dei:\s?','','i'))) ~ '(lgbt)|(gender)') AS "LGBTQIA+ & Gender Studies",
+COUNT(i.id) FILTER(WHERE LOWER(TRIM(REGEXP_REPLACE(v.field_content,'dei:\s?','','i'))) ~ '(mental)|(emotion)') AS "Mental & Emotional Health",
+COUNT(i.id) FILTER(WHERE LOWER(TRIM(REGEXP_REPLACE(v.field_content,'dei:\s?','','i'))) ~ '(middle)|(north africa)') AS "Middle Eastern & North African",
+COUNT(i.id) FILTER(WHERE LOWER(TRIM(REGEXP_REPLACE(v.field_content,'dei:\s?','','i'))) ~ 'multicult') AS "Multicultural",
+COUNT(i.id) FILTER(WHERE LOWER(TRIM(REGEXP_REPLACE(v.field_content,'dei:\s?','','i'))) ~ 'religio') AS "Religion",
+COUNT(i.id) FILTER(WHERE LOWER(TRIM(REGEXP_REPLACE(v.field_content,'dei:\s?','','i'))) ~ '(substance)|(addict)') AS "Substance Abuse & Addiction",
+COUNT(i.id) AS total_items_added
+FROM
+sierra_view.item_record i
+JOIN
+sierra_view.record_metadata rm
+ON
+i.id = rm.id AND i.location_code ~ '^nee'
+JOIN
+sierra_view.varfield v
+ON
+i.id = v.record_id AND v.varfield_type_code = 'x' AND v.field_content LIKE 'DEI:%'
+JOIN
+sierra_view.item_record_property ip
+ON
+i.id = ip.item_record_id
+
+WHERE rm.creation_date_gmt::DATE >= CURRENT_DATE - INTERVAL '1 month'
+
+GROUP BY 1
+)a
+
+ORDER BY CASE WHEN a.Collection = 'TOTAL' THEN 2 ELSE 1 END,1

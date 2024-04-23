@@ -5,6 +5,12 @@ shelf list for all items owned by a location
 */
 
 SELECT
+*,
+'' AS "SHELF LIST",
+'' AS "https://sic.minlib.net/reports/95"
+FROM
+(
+SELECT
 DISTINCT rm.record_type_code||rm.record_num||'a' AS item_number,
 loc.name AS location,
 TRIM(REPLACE(ip.call_number,'|a','')) AS call_number,
@@ -89,3 +95,4 @@ AND {{age_level}}
 --i.location_code ~ '\w' --all
 
 ORDER BY 2,3,4
+)a

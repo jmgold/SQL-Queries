@@ -83,6 +83,12 @@ GROUP BY 1
 )
 
 SELECT
+*,
+'' AS "DAILY FINES",
+'' AS "https://sic.minlib.net/reports/61"
+FROM
+(
+SELECT
 d.all_dates AS DATE,
 COUNT(DISTINCT f.id) FILTER (WHERE f.charge_code IN ({{charge_codes}})) AS fines_assessed_count,
 COALESCE(SUM(f.item_charge_amt + f.processing_fee_amt + f.billing_fee_amt) FILTER (WHERE f.charge_code IN ({{charge_codes}})),'0')::MONEY AS fines_assessed_total,
@@ -96,8 +102,8 @@ p.fines_removed_total
 
 FROM
 (SELECT
-DISTINCT (current_date - offs)::DATE AS all_dates 
-FROM generate_series(0,35,1) AS offs) d
+DISTINCT (CURRENT_DATE - offs)::DATE AS all_dates 
+FROM GENERATE_SERIES(0,35,1) AS offs) d
 LEFT JOIN
 paid_per_day p
 ON
@@ -157,3 +163,4 @@ ELSE f.loanrule_code_num = 0
 END
 
 GROUP BY 1,4,5,6,7,8,9
+)a

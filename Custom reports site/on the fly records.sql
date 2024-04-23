@@ -5,6 +5,12 @@ Returns on the fly records that may need to be upgraded
 Is passed variables for owning location, created before date, and whether to exclude items attached to an on the fly bib record
 */
 
+SELECT
+*,
+'' AS "ON THE FLY RECORDS",
+'' AS "https://sic.minlib.net/reports/18"
+FROM
+(
 SELECT 
 id2reckey(i.id)||'a' AS item_number,
 b.best_title AS title,
@@ -62,4 +68,5 @@ AND b.best_title NOT LIKE '%MLN ILL%'
 AND i.item_status_code != 'w'
 AND i.location_code ~ {{Location}}
 --location will take the form ^oln, which in this example looks for all locations starting with the string oln.
-ORDER BY 3, 4;
+ORDER BY 3, 4
+)a
