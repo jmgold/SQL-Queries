@@ -5,7 +5,12 @@ Minuteman Library Network
 Identifies items records that have been linked to multiple bib records
 */
 
-SELECT
+SELECT *,
+'' AS "ITEMS LINKED TO MULTIPLE BIBS",
+'' AS "https://sic.minlib.net/reports/40"
+
+FROM
+(SELECT
 ir.record_type_code||ir.record_num||'a' AS item_number,
 i.location_code,
 r.record_type_code||r.record_num||'a' AS bib_number,
@@ -43,10 +48,10 @@ l.item_record_id IN (
 	l.item_record_id
 
 	HAVING
-	count(item_record_id) > 1
+	COUNT(item_record_id) > 1
 )
 AND i.location_code ~ {{location}}
 --location will take the form ^oln, which in this example looks for all locations starting with the string oln.
 
-ORDER BY 1,4;
-
+ORDER BY 1,4)
+a

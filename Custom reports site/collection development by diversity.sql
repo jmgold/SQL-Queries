@@ -78,7 +78,9 @@ GROUP BY 1,2,3,4,5,6
 WHERE
 a.topic IS NOT NULL)
 
-SELECT *
+SELECT *,
+'' AS "DEI COLLECTION DEVELOPMENT",
+'' AS "https://sic.minlib.net/reports/99"
 
 FROM
 (SELECT

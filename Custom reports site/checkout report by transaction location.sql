@@ -4,8 +4,12 @@ Minuteman Library Network
 Provides various performance metrics for checkouts over the prior month
 */
 
-SELECT
+SELECT *,
+'' AS "CHECKOUT: CHECKOUT LOCATION",
+'' AS "https://sic.minlib.net/reports/62"
 
+FROM
+(SELECT
 {{grouping}},
 /*Possible groupings
 --it.name AS itype,
@@ -417,3 +421,4 @@ AND C.op_code IN ('o','f')
 AND C.transaction_gmt::DATE {{relative_date}}
 
 ORDER BY 1
+)a

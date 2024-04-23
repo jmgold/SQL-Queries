@@ -62,11 +62,14 @@ JOIN
 sierra_view.statistic_group_myuser s
 ON
 C.stat_group_code_num = s.code
-
 )
 
+SELECT *,
+'' AS "CHECKOUT LOC BY CHECKIN LOC",
+'' AS "https://sic.minlib.net/reports/57"
 
-SELECT
+FROM
+(SELECT
 DISTINCT l.name AS checkout_location,
 COUNT(C.id) AS checkin_total,
 COUNT(C.id) FILTER (WHERE SUBSTRING(s.location_code,1,2) != cl.checkout_location) AS checked_out_elsewhere,
@@ -134,3 +137,4 @@ AND C.transaction_gmt::DATE >= NOW()::DATE - INTERVAL '1 MONTH'
 
 GROUP BY 1
 ORDER BY 1
+)a

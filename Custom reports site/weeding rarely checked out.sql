@@ -82,7 +82,9 @@ c.item_record_id = i.id
 
 GROUP BY 1)
 
-SELECT *
+SELECT *,
+'' AS "WEEDING: RARELY CHECKED OUT",
+'' AS "https://sic.minlib.net/reports/97"
 FROM(
 SELECT
 DISTINCT rm.record_type_code||rm.record_num||'a' AS item_number,

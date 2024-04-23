@@ -4,7 +4,12 @@ Minuteman Library Network
 Counts number of items attached to periodical records for a given location
 */
 
-SELECT
+SELECT *,
+'' AS "PERIODICAL HOLDINGS (ITEM)",
+'' AS "https://sic.minlib.net/reports/106"
+
+FROM
+(SELECT
 rm.record_type_code||rm.record_num||'a' AS bib_num,
 bp.best_title AS title,
 string_agg(DISTINCT(i.location_code), ',') AS item_locations,
@@ -32,5 +37,5 @@ i.id = vi.record_id AND vi.varfield_type_code = 'v' AND i.item_status_code = 'j'
 WHERE bp.material_code = '3'
 
 GROUP BY 1,2,4
-
 ORDER BY 2
+)a

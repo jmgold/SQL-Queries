@@ -7,7 +7,12 @@ Census block geoids are stored in patron census fields and can be used to
 join results to census data
 */
 
-SELECT
+SELECT *,
+'' AS "PATRONS BY GEOGRAPHY",
+'' AS "https://sic.minlib.net/reports/84"
+
+FROM
+(SELECT
 CASE
 	WHEN '{{geo}}' = 'zip' THEN SUBSTRING(a.postal_code,'^\d{5}')
 	WHEN v.field_content IS NULL THEN 'no data'
@@ -66,3 +71,4 @@ WHERE SUBSTRING(REGEXP_REPLACE(v.field_content,'\|(s|c|t|b)','','g'),6,6) IN ({{
 
 GROUP BY 1,15
 ORDER BY 2 DESC
+)a

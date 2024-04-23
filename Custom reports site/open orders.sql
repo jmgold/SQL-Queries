@@ -5,7 +5,12 @@ Minuteman Library Network
 Report identifies all order records that are currently contributing to the encumbrance totals with a given accounting unit and order date range
 */
 
-SELECT
+SELECT *,
+'' AS "OPEN ORDERS",
+'' AS "https://sic.minlib.net/reports/92"
+
+FROM
+(SELECT
 rm.record_type_code||rm.record_num||'a' AS order_number,
 b.best_title AS title,
 o.order_date_gmt::DATE AS order_date,
@@ -64,4 +69,5 @@ WHERE o.order_date_gmt::DATE < {{order_date}}
 AND o.accounting_unit_code_num = {{accounting_unit}}
 AND order_status_code IN ('o','q','g','d')
 GROUP BY 1,2,3,4,5,6,7,8,9
-ORDER BY 3,2;
+ORDER BY 3,2
+)a

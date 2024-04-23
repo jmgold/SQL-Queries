@@ -6,8 +6,14 @@ Identifies bib-level holds placed on records where there are items with volume f
 */
 
 
-SELECT DISTINCT
-rm.record_type_code||rm.record_num||'a' AS bib_number,
+SELECT
+*,
+'' AS "BIB HOLDS WHERE ITEMS HAVE VOLUMES",
+'' AS "https://sic.minlib.net/reports/109"
+FROM
+(
+SELECT 
+DISTINCT rm.record_type_code||rm.record_num||'a' AS bib_number,
 b.best_title AS title,
 m.name AS mat_type,
 rmp.record_type_code||rmp.record_num||'a' AS patron_number,
@@ -46,3 +52,4 @@ h.patron_record_id = rmp.id
 
 WHERE h.pickup_location_code ~ '{{location}}' 
 --location will take the form ^oln, which in this example looks for all locations starting with the string oln.
+)a

@@ -56,6 +56,12 @@ COUNT(v.*) = 0
 )
 
 SELECT
+*,
+'' AS "TITLES WITH MULTIPLE ITEM CALL #'s",
+'' AS "https://sic.minlib.net/reports/91"
+FROM
+(
+SELECT
 id2reckey(inner_query.bib_record_id)||'a' AS bib_number,
 inner_query.best_title AS title,
 inner_query.item_count,
@@ -85,5 +91,5 @@ sierra_view.item_record_property ip
 ON
 i.id = ip.item_record_id
 
-
 GROUP BY 1,2,3
+)a

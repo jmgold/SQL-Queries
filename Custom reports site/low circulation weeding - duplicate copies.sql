@@ -6,7 +6,12 @@ and recent circ suggests that some copies could be weeded
 Passed variables for owning location, item statuses to exclude, copies greater than x and turnover less than y
 */
 
-SELECT 
+SELECT *,
+'' AS "WEEDING: MULTIPLE COPIES",
+'' AS "https://sic.minlib.net/reports/21"
+
+FROM
+(SELECT 
 id2reckey(b.bib_record_id)||'a' AS bib_number,
 b.best_title AS title,
 count(i.id) AS item_count,
@@ -61,3 +66,4 @@ AND (SUM(i.year_to_date_checkout_total) + sum(i.last_year_to_date_checkout_total
 AND COUNT(v.*) = 0 
 {{/if Exclude}}
 ORDER BY 6,3 DESC
+)a
