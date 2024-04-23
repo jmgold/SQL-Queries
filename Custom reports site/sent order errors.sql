@@ -4,7 +4,9 @@ Minuteman Library Network
 Identifies order records that were ftp'd multiple times or not at al but are associated with an edifact enabled vendor
 */
 
-SELECT *
+SELECT *,
+'' AS "SENT ORDER ERRORS",
+'' AS "https://sic.minlib.net/reports/70"
 FROM(
 
 SELECT

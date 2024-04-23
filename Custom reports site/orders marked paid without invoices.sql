@@ -6,6 +6,12 @@ Identifies order records that have been marked paid but were not invoiced
 */
 
 SELECT
+*,
+'' AS "ORDERS PAID WITHOUT INVOICE",
+'' AS "https://sic.minlib.net/reports/47"
+FROM
+(
+SELECT
 id2reckey(o.id)||'a' order_record_number,
 o.order_date_gmt::DATE AS order_date,
 STRING_AGG(fm.code, ', ') AS fund,
@@ -51,6 +57,5 @@ AND p.id IS NULL
 AND o.accounting_unit_code_num = {{accounting_unit}}
 
 GROUP BY 1,o.order_date_gmt,5,6,7,8
-
-
 ORDER BY o.order_date_gmt
+)a

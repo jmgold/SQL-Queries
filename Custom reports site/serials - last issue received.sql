@@ -11,7 +11,9 @@ t1.rec_num AS bib_number,
 t1.title,
 t1.enum_level_a AS volume,
 t1.enum_level_b AS "number",
-t1.cover_date
+t1.cover_date,
+'' AS "SERIALS: LAST ISSUE RECEIVED",
+'' AS "https://sic.minlib.net/reports/23"
 
 FROM 
 (SELECT

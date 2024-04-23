@@ -4,7 +4,12 @@ Minuteman Library Network
 Gathers list of titles for which there are holdings/checking records
 Retrieves the location, copy count from the checkin record and holdings varfield
 */
-SELECT
+SELECT *,
+'' AS "PERIODICAL HOLDINGS (CHECKIN)",
+'' AS "https://sic.minlib.net/reports/105"
+
+FROM
+(SELECT
 rm.record_type_code||rm.record_num||'a' AS bib_num,
 bp.best_title AS title,
 STRING_AGG(DISTINCT(hl.location_code), ',') AS checkin_rec_location,
@@ -40,5 +45,5 @@ h.id = v.record_id AND varfield_type_code = 'h'
 WHERE bp.material_code = '3'
 
 GROUP BY 1,2,5
-
 ORDER BY 2
+)a

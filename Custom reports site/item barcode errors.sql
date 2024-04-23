@@ -3,7 +3,9 @@ a.location,
 a.item_number,
 MAX(a.barcode) AS barcode,
 a.field_name,
-a.error_type
+a.error_type,
+'' AS "ITEM BARCODE ERRORS",
+'' AS "https://sic.minlib.net/reports/20"
 
 FROM
 (

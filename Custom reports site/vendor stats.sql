@@ -23,7 +23,11 @@ o.id = rm.id AND rm.creation_date_gmt::DATE >= {{created_date}}
 WHERE o.accounting_unit_code_num = {{accounting_unit}}
 )
 
-SELECT * FROM(
+SELECT
+*,
+'' AS "VENDOR STATISTICS",
+'' AS "https://sic.minlib.net/reports/58"
+FROM(
 SELECT
 o.vendor_record_code AS vendor_code,
 n.field_content AS vendor_name,

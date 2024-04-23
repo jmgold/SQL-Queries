@@ -1,0 +1,39 @@
+SELECT
+  rmi.record_type_code||rmi.record_num AS "RecordID",
+  ip.barcode AS "Barcode",
+  rmb.record_type_code||rmb.record_num AS "BibRecordID",
+  TO_CHAR(t.transaction_gmt, 'YYYY-MM-DD HH24:MI:SS') AS "Checkout Date",
+  SUBSTRING(sg.location_code,1,3) AS "Check out branch",rmp.record_type_code||rmp.record_num AS "UserID",
+  t.due_date_gmt::DATE AS "Due Date",
+  i.last_checkin_gmt::DATE AS "Check in date"
+  
+FROM
+sierra_view.circ_trans t
+JOIN
+sierra_view.item_record i
+ON
+t.item_record_id = i.id
+JOIN
+sierra_view.record_metadata rmi
+ON
+i.id = rmi.id
+JOIN
+sierra_view.item_record_property ip
+ON
+i.id = ip.item_record_id
+JOIN
+sierra_view.record_metadata rmb
+ON
+t.bib_record_id = rmb.id
+JOIN
+sierra_view.record_metadata rmp
+ON
+t.patron_record_id = rmp.id
+JOIN
+sierra_view.statistic_group_myuser sg
+ON
+t.stat_group_code_num = sg.code
+
+WHERE
+t.op_code = 'o'
+AND t.transaction_gmt::DATE = CURRENT_DATE - INTERVAL '1 day'

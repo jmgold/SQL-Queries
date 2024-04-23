@@ -4,6 +4,13 @@ Minuteman Library Network
 
 Identifies titles with copies that are likely missing given recent checkout history and the number of billed/lost/missing copies
 */
+
+SELECT
+*,
+'' AS "POTENTIALLY MISSING ITEMS",
+'' AS "https://sic.minlib.net/reports/37"
+FROM
+(
 SELECT
 REPLACE(ip.call_number,'|a','') AS call_number,
 id2reckey(i.id)||'a' AS item_number,
@@ -89,3 +96,4 @@ sierra_view.checkout co
 WHERE
 co.item_record_id = i.id
 )
+)a

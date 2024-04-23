@@ -9,6 +9,12 @@ Is passed an owning location variable
 */
 
 SELECT
+*,
+'' AS "ORPHANED ORDER RECORDS",
+'' AS "https://sic.minlib.net/reports/17"
+FROM
+(
+SELECT
 DISTINCT id2reckey(b.bib_record_id)||'a' AS rec_num,
 b.best_title AS title,
 MAX(o.paid_date_gmt::DATE) AS paid_date
@@ -26,7 +32,6 @@ JOIN
 sierra_view.order_record_paid o
 ON
 l.order_record_id = o.order_record_id
-
 
 WHERE 
 EXISTS
@@ -52,4 +57,5 @@ l.bib_record_id = bl.bib_record_id
 )
 
 GROUP BY 1,2
-ORDER BY 3;
+ORDER BY 3
+)a

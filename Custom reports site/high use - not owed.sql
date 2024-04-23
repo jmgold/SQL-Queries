@@ -80,7 +80,11 @@ c.item_record_id = i.id
 
 GROUP BY 1)
 
-SELECT
+SELECT *,
+'' AS "HIGH USE: NOT OWNED",
+'' AS "https://sic.minlib.net/reports/33"
+FROM
+(SELECT
 b.best_title AS title,
 b.best_author AS author,
 'b'||mb.record_num||'a' AS bib_number,
@@ -130,3 +134,4 @@ COUNT(i.id) FILTER (WHERE i.location_code ~ '{{location}}') = 0
 --location will take the form ^oln, which in this example looks for all locations starting with the string oln.
 ORDER BY 6 DESC,1
 LIMIT {{qty}}
+)a

@@ -6,6 +6,12 @@ Identifies item level holds that should be transferred to bib level holds
 */
 
 SELECT
+*,
+'' AS "ITEM HOLD ERRORS",
+'' AS "https://sic.minlib.net/reports/41"
+FROM
+(
+SELECT
 ID2RECKEY(l.bib_record_id)||'a' AS bib_number,
 m.record_type_code||m.record_num||'a' AS item_number,
 b.best_title AS title,
@@ -95,3 +101,4 @@ AND checkout.id IS NULL
 GROUP BY 1,2,3,4
 
 ORDER BY 4,6
+)a

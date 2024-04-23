@@ -81,6 +81,12 @@ c.item_record_id = i.id
 GROUP BY 1)
 
 SELECT
+*,
+'' AS "HIGH USE: OWNED",
+'' AS "https://sic.minlib.net/reports/34"
+FROM
+(
+SELECT
 b.best_title AS title,
 b.best_author AS author,
 'b'||mb.record_num||'a' AS bib_number,
@@ -134,3 +140,4 @@ b.material_code IN ({{mat_type}})
 GROUP BY 1,2,3
 ORDER BY 6 DESC,1
 LIMIT {{qty}}
+)a
