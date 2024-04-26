@@ -1,11 +1,26 @@
+/*
+Jeremy Goldstein
+Minuteman Library Network
+*/
+
 SELECT
-  rmi.record_type_code||rmi.record_num AS "RecordID",
+  rmi.record_type_code||rmi.record_num AS "ItemNum",
   ip.barcode AS "Barcode",
-  rmb.record_type_code||rmb.record_num AS "BibRecordID",
-  TO_CHAR(t.transaction_gmt, 'YYYY-MM-DD HH24:MI:SS') AS "Checkout Date",
-  SUBSTRING(sg.location_code,1,3) AS "Check out branch",rmp.record_type_code||rmp.record_num AS "UserID",
-  t.due_date_gmt::DATE AS "Due Date",
-  i.last_checkin_gmt::DATE AS "Check in date"
+  rmb.record_type_code||rmb.record_num AS "BibNum",
+  rmp.record_type_code||rmp.record_num AS "PatronNum",
+  TO_CHAR(t.transaction_gmt, 'YYYY-MM-DD HH24:MI:SS') AS "CheckoutDate",
+  SUBSTRING(sg.location_code,1,3) AS "BranchCodeNum",
+  CASE
+    WHEN t.op_code = 'r' THEN 'RENEWAL'
+    WHEN t.op_code = 'o' THEN 'CHECKOUT'
+    WHEN t.op_code = 'u' THEN 'USE COUNT'
+  END AS "TransactionType",
+  t.due_date_gmt::DATE AS "DueDate",
+  i.last_checkin_gmt::DATE AS "CheckInDate",
+  CASE
+    WHEN rmi.campus_code = 'ncip' THEN TRUE
+    ELSE FALSE
+  END AS "IsVirtual"
   
 FROM
 sierra_view.circ_trans t
@@ -35,5 +50,5 @@ ON
 t.stat_group_code_num = sg.code
 
 WHERE
-t.op_code = 'o'
+t.op_code IN ('o','r','u')
 AND t.transaction_gmt::DATE = CURRENT_DATE - INTERVAL '1 day'
