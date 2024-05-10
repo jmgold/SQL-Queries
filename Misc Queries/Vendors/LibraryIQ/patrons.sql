@@ -8,6 +8,7 @@ SELECT
   TO_CHAR(p.expiration_date_gmt,'YYYY-MM-DD HH24:MI:SS') AS "ExpireDate",
   p.ptype_code AS "PatronType",
   pt.name AS "PatronTypeName",
+  l.code AS "PatronBranch",
   --missing YTDYearCount and PreviousYearCount
   p.checkout_total + p.renewal_total AS "TotalCheckout",
   TO_CHAR(p.activity_gmt,'YYYY-MM-DD HH24:MI:SS') AS "ActivityDate",
@@ -33,6 +34,10 @@ JOIN
 sierra_view.ptype_property_myuser pt
 ON
 p.ptype_code = pt.value
+LEFT JOIN
+sierra_view.location_myuser l
+ON
+UPPER(REGEXP_REPLACE(REGEXP_REPLACE(pt.name,'Fram State|Fram. State','Framingham STATE'),' (eCard|Exempt|Faculty|Student|Teacher|Homebound|CrossReg Student)','')) = REGEXP_REPLACE(l.name,' (COLLEGE|UNIVERSITY)','')
 JOIN
 sierra_view.record_metadata rmp
 ON
@@ -43,4 +48,8 @@ ON
 p.id = a.patron_record_id AND a.patron_record_address_type_id = 1
 
 --use filter for delta file
-WHERE rmp.record_last_updated_gmt::DATE = CURRENT_DATE - INTERVAL '1 day'
+WHERE 
+CASE
+  WHEN EXTRACT(DAY FROM CURRENT_DATE) = 1 THEN rmp.record_last_updated_gmt::DATE < CURRENT_DATE
+  ELSE rmp.record_last_updated_gmt::DATE = CURRENT_DATE - INTERVAL '1 day'
+END

@@ -80,6 +80,10 @@ ON
 i.id = o.item_record_id
 
 --use filter for delta file
-WHERE rmi.record_last_updated_gmt::DATE = CURRENT_DATE - INTERVAL '1 day'
+WHERE
+CASE
+  WHEN EXTRACT(DAY FROM CURRENT_DATE) = 1 THEN rmi.record_last_updated_gmt::DATE < CURRENT_DATE
+  ELSE rmi.record_last_updated_gmt::DATE = CURRENT_DATE - INTERVAL '1 day'
+END
 
 GROUP BY 1,2,3,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24

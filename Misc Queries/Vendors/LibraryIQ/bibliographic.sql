@@ -34,6 +34,10 @@ ON
 b.material_code = mp.code
 
 --use filter for delta file
-WHERE rm.record_last_updated_gmt::DATE = CURRENT_DATE - INTERVAL '1 day'
+WHERE
+CASE
+  WHEN EXTRACT(DAY FROM CURRENT_DATE) = 1 THEN rm.record_last_updated_gmt::DATE < CURRENT_DATE
+  ELSE rm.record_last_updated_gmt::DATE = CURRENT_DATE - INTERVAL '1 day'
+END
 
 GROUP BY 1,5,6,7,8,9
