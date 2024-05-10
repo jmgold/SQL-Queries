@@ -28,7 +28,8 @@ b.best_author AS author,
 'N/A' AS itype,
 'N/A' AS item_status,
 'N/A' AS call_number,
-'N/A' AS item_location
+'N/A' AS item_location,
+'N/A' AS checkout_total
 
 FROM
 sierra_view.course_record cr
@@ -57,7 +58,7 @@ sierra_view.varfield prof
 ON
 cr.id = prof.record_id AND prof.varfield_type_code = 'p'
 
-GROUP BY 1,3,4,5,6,7,8,9,10,11,12,13,14
+GROUP BY 1,3,4,5,6,7,8,9,10,11,12,13,14,15
 
 --Union with course information for items on reserve
 UNION
@@ -79,7 +80,8 @@ b.best_author AS author,
 i.itype_code_num::VARCHAR AS itype,
 stat.name AS item_status,
 REPLACE(ip.call_number,'|a','') AS call_number,
-i.location_code AS item_location
+i.location_code AS item_location,
+i.checkout_total::VARCHAR AS checkout_total
 
 FROM
 sierra_view.course_record cr
@@ -125,7 +127,7 @@ sierra_view.varfield prof
 ON
 cr.id = prof.record_id AND prof.varfield_type_code = 'p'
 
-GROUP BY 1,3,4,5,6,7,8,9,10,11,12,13,14
+GROUP BY 1,3,4,5,6,7,8,9,10,11,12,13,14,15
 
 ORDER BY 2,5,7
 )a
