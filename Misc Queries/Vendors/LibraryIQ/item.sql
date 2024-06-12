@@ -15,7 +15,7 @@ SELECT
   it.name AS "ItypeName",
   mp.name AS "MaterialType",
   SUBSTRING(i.location_code,1,3) AS "BranchId",
-  TRIM(LEADING '|a' FROM TRIM(ip.call_number)) AS "CallNumber",
+  TRIM(LEADING '|a' FROM TRIM(ip.call_number))||COALESCE(' '||v.field_content,'') AS "CallNumber",
   i.location_code,
   loc.name AS location_name,
   TO_CHAR(rmi.creation_date_gmt,'YYYY-MM-DD HH24:MI:SS') AS "CREATED",
@@ -38,6 +38,7 @@ JOIN
 sierra_view.itype_property_myuser it
 ON
 i.itype_code_num = it.code
+AND SUBSTRING(i.location_code,1,3) NOT IN ('trn','hpl','int','knp','','zzz','cmc')
 JOIN
 sierra_view.record_metadata rmi
 ON
@@ -78,11 +79,15 @@ LEFT JOIN
 sierra_view.checkout o
 ON
 i.id = o.item_record_id
+LEFT JOIN
+sierra_view.varfield v
+ON
+i.id = v.record_id AND v.varfield_type_code = 'v'
 
---use filter for delta file
+--Pull full list on Fridays, Delta files other days
 WHERE
 CASE
-  WHEN EXTRACT(DAY FROM CURRENT_DATE) = 1 THEN rmi.record_last_updated_gmt::DATE < CURRENT_DATE
+  WHEN EXTRACT(DOW FROM CURRENT_DATE) = 5 THEN rmi.record_last_updated_gmt::DATE < CURRENT_DATE
   ELSE rmi.record_last_updated_gmt::DATE = CURRENT_DATE - INTERVAL '1 day'
 END
 

@@ -101,10 +101,10 @@ def main():
     JOIN sierra_view.material_property_myuser mp
       ON b.material_code = mp.code
 
-    --use filter for delta file
+    --Pull full data on Fridays, delta files other days
     WHERE
     CASE
-      WHEN EXTRACT(DAY FROM CURRENT_DATE) = 1 THEN rm.record_last_updated_gmt::DATE < CURRENT_DATE
+      WHEN EXTRACT(DOW FROM CURRENT_DATE) = 5 THEN rm.record_last_updated_gmt::DATE < CURRENT_DATE
       ELSE rm.record_last_updated_gmt::DATE = CURRENT_DATE - INTERVAL '1 day'
     END
 
@@ -144,6 +144,7 @@ def main():
     FROM sierra_view.item_record i
     JOIN sierra_view.itype_property_myuser it
       ON i.itype_code_num = it.code
+      AND SUBSTRING(i.location_code,1,3) NOT IN ('trn','hpl','int','knp','','zzz','cmc')
     JOIN sierra_view.record_metadata rmi
       ON i.id = rmi.id
     JOIN sierra_view.item_record_property ip
@@ -165,10 +166,10 @@ def main():
     LEFT JOIN sierra_view.checkout o
       ON i.id = o.item_record_id
 
-    --use filter for delta file
+    --Pull full file on Fridays, delta file other days
     WHERE
     CASE
-      WHEN EXTRACT(DAY FROM CURRENT_DATE) = 1 THEN rmi.record_last_updated_gmt::DATE < CURRENT_DATE
+      WHEN EXTRACT(DOW FROM CURRENT_DATE) = 5 THEN rmi.record_last_updated_gmt::DATE < CURRENT_DATE
       ELSE rmi.record_last_updated_gmt::DATE = CURRENT_DATE - INTERVAL '1 day'
     END
 
@@ -225,10 +226,10 @@ def main():
     JOIN sierra_view.patron_record_address a
       ON p.id = a.patron_record_id AND a.patron_record_address_type_id = 1
 
-    --use filter for delta file
+    --Pull full file on Fridays, delta file other days
     WHERE 
     CASE
-      WHEN EXTRACT(DAY FROM CURRENT_DATE) = 1 THEN rmp.record_last_updated_gmt::DATE < CURRENT_DATE
+      WHEN EXTRACT(DOW FROM CURRENT_DATE) = 5 THEN rmp.record_last_updated_gmt::DATE < CURRENT_DATE
       ELSE rmp.record_last_updated_gmt::DATE = CURRENT_DATE - INTERVAL '1 day'
     END
     """
