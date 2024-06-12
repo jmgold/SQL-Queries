@@ -33,10 +33,10 @@ sierra_view.material_property_myuser mp
 ON
 b.material_code = mp.code
 
---use filter for delta file
+--Pull full list on Fridays, Delta files other days
 WHERE
 CASE
-  WHEN EXTRACT(DAY FROM CURRENT_DATE) = 1 THEN rm.record_last_updated_gmt::DATE < CURRENT_DATE
+  WHEN EXTRACT(DOW FROM CURRENT_DATE) = 5 THEN rm.record_last_updated_gmt::DATE < CURRENT_DATE
   ELSE rm.record_last_updated_gmt::DATE = CURRENT_DATE - INTERVAL '1 day'
 END
 
