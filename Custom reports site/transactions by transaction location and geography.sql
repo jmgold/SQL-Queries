@@ -8,6 +8,12 @@ Census options can be used to join results to census data
 */
 
 SELECT
+*,
+'' AS "TRANSACTIONS BY TRANSACTION LOCATION",
+'' AS "https://sic.minlib.net/reports/85"
+FROM
+(
+SELECT
 CASE
 	WHEN '{{geo}}' = 'zip' THEN SUBSTRING(a.postal_code,'^\d{5}')
 	WHEN v.field_content IS NULL THEN 'no data'
@@ -148,3 +154,4 @@ CASE
 END
 GROUP BY 1,12
 ORDER BY 2 DESC
+)a

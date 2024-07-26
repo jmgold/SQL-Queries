@@ -20,4 +20,6 @@ sierra_view.record_metadata rm
 ON
 l.bib_record_id = rm.id
 
+WHERE h.expires_gmt::DATE > CURRENT_DATE
+
 GROUP BY 1,2

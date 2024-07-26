@@ -49,6 +49,12 @@ i.id = ip.item_record_id
 GROUP BY 1
 )
 
+SELECT
+*,
+'' AS "WEEDING: MULTIPLE NETWORK COPIES",
+'' AS "https://sic.minlib.net/reports/103"
+FROM
+(
 SELECT *
 FROM( 
 SELECT
@@ -101,3 +107,4 @@ AND COUNT(v.*) = 0
 )a
 WHERE a.local_turnover < a.non_local_turnover
 ORDER BY a.non_local_turnover - a.local_turnover DESC, a.non_local_copies - a.local_copies DESC
+)a

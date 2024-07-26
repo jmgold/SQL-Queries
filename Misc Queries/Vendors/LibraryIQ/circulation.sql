@@ -40,7 +40,7 @@ JOIN
 sierra_view.record_metadata rmb
 ON
 t.bib_record_id = rmb.id
-JOIN
+LEFT JOIN
 sierra_view.record_metadata rmp
 ON
 t.patron_record_id = rmp.id
@@ -51,4 +51,4 @@ t.stat_group_code_num = sg.code
 
 WHERE
 t.op_code IN ('o','r','u')
-AND t.transaction_gmt::DATE = CURRENT_DATE - INTERVAL '1 day'
+AND t.transaction_gmt::DATE > CURRENT_DATE - INTERVAL '4 days'

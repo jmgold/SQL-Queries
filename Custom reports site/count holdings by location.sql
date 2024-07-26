@@ -88,6 +88,7 @@ COUNT({{bib_or_item}}) FILTER(WHERE SUBSTRING(i.location_code FROM 1 FOR 3) = 'w
 COUNT({{bib_or_item}}) FILTER(WHERE SUBSTRING(i.location_code FROM 1 FOR 3) = 'wsn') AS "WESTON",
 COUNT({{bib_or_item}}) FILTER(WHERE SUBSTRING(i.location_code FROM 1 FOR 3) = 'wwd') AS "WESTWOOD",
 COUNT({{bib_or_item}}) FILTER(WHERE SUBSTRING(i.location_code FROM 1 FOR 3) = 'ww2') AS "WESTWOOD/ISLINGTON",
+COUNT({{bib_or_item}}) FILTER(WHERE SUBSTRING(i.location_code FROM 1 FOR 3) = 'ww3') AS "WESTWOOD/BOOKMOBILE",
 COUNT({{bib_or_item}}) FILTER(WHERE SUBSTRING(i.location_code FROM 1 FOR 3) = 'wob') AS "WOBURN"
 
 FROM
