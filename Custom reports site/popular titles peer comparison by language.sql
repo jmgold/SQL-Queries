@@ -22,6 +22,12 @@ WITH hold_count AS
 )
 
 SELECT
+*,
+'' AS "PEER COMPARISON BY LANGUAGE",
+'' AS "https://sic.minlib.net/reports/87"
+FROM
+(
+SELECT
 'b'||mb.record_num||'a' AS bib_number,
 b.best_title AS title,
 CASE
@@ -205,3 +211,4 @@ COUNT(i.id) FILTER (WHERE i.location_code ~ '{{location}}') = 0
 AND COUNT(i.id) FILTER (WHERE i.location_code ~ '{{comp_location}}' AND m.creation_date_gmt::DATE < {{created_date}}) > 0
 ORDER BY 7 DESC
 LIMIT {{qty}}
+)a

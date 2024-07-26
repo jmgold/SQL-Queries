@@ -10,7 +10,7 @@ import csv
 import configparser
 import pysftp
 import os
-from datetime import datetime
+import datetime
 from datetime import date
 
 #generate populate csv file with results of a sql query
@@ -53,169 +53,6 @@ def runquery(query,csv_file):
     
     end_file = csvWriter(rows, headers, csv_file)
     
-    return end_file
-
-def runlargequery(csv_file):
-    offset = 0
-    large_items_query = """\
-    SELECT
-    rmi.record_type_code||rmi.record_num AS "ItemNum",
-    ip.barcode,
-    rmb.record_type_code||rmb.record_num AS "BibNum",
-    STRING_AGG(SUBSTRING(num.content FROM '[0-9xX]+'),';') FILTER(WHERE num.marc_tag = '020') AS isbn,
-    STRING_AGG(num.content,';') FILTER(WHERE num.marc_tag = '022') issn,
-    STRING_AGG(SUBSTRING(num.content FROM '[0-9]+'),';') FILTER(WHERE num.marc_tag = '024') AS upc,
-    i.icode1,
-    i.itype_code_num AS itype,
-    it.name AS "ItypeName",
-    mp.name AS "MaterialType",
-    SUBSTRING(i.location_code,1,3) AS "BranchId",
-    TRIM(LEADING '|a' FROM TRIM(ip.call_number))||COALESCE(' '||v.field_content,'') AS "CallNumber",
-    i.location_code,
-    loc.name AS location_name,
-    TO_CHAR(rmi.creation_date_gmt,'YYYY-MM-DD HH24:MI:SS') AS "CREATED",
-    CASE
-      WHEN o.id IS NULL THEN isp.name
-      ELSE 'CHECKED OUT'
-    END AS status,
-    TO_CHAR(i.last_checkout_gmt,'YYYY-MM-DD HH24:MI:SS') AS "LOutDate",
-    TO_CHAR(o.checkout_gmt,'YYYY-MM-DD HH24:MI:SS') AS "OutDate",
-    TO_CHAR(i.last_checkin_gmt,'YYYY-MM-DD HH24:MI:SS') AS "CheckInDate",
-    TO_CHAR(o.due_gmt,'YYYY-MM-DD HH24:MI:SS') AS "DueDate",
-    i.year_to_date_checkout_total AS "YTDCIRC",
-    i.last_year_to_date_checkout_total AS "LYRCIRC",
-    i.checkout_total AS "TOT_CHKOUT",
-    i.renewal_total AS "TOT_RENEW"
-  
-    FROM sierra_view.item_record i
-    JOIN sierra_view.itype_property_myuser it
-      ON i.itype_code_num = it.code
-      AND SUBSTRING(i.location_code,1,3) NOT IN ('trn','hpl','int','knp','','zzz','cmc')
-    JOIN sierra_view.record_metadata rmi
-      ON i.id = rmi.id
-    JOIN sierra_view.item_record_property ip
-      ON i.id = ip.item_record_id
-    JOIN sierra_view.location_myuser loc
-      ON i.location_code = loc.code
-    JOIN sierra_view.bib_record_item_record_link l
-      ON i.id = l.item_record_id
-    JOIN sierra_view.bib_record_property bp
-      ON l.bib_record_id = bp.bib_record_id
-    JOIN sierra_view.record_metadata rmb
-      ON l.bib_record_id = rmb.id
-    JOIN sierra_view.material_property_myuser mp
-      ON bp.material_code = mp.code
-    LEFT JOIN sierra_view.subfield num
-      ON bp.bib_record_id = num.record_id AND num.marc_tag IN ('020','022','024') AND num.tag = 'a'
-    JOIN sierra_view.item_status_property_myuser isp
-      ON i.item_status_code = isp.code
-    LEFT JOIN sierra_view.checkout o
-      ON i.id = o.item_record_id
-    LEFT JOIN sierra_view.varfield v
-      ON i.id = v.record_id AND v.varfield_type_code = 'v'
-
-    --Pull full file on Fridays, delta file other days
-    WHERE rmi.record_last_updated_gmt::DATE < CURRENT_DATE 
-
-    GROUP BY 1,2,3,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24  
-    
-    LIMIT 250000
-    OFFSET {}""".format(offset)
-
-    config = configparser.ConfigParser()
-    config.read('C:\\SQL Reports\\creds\\libraryiq.ini')
-      
-    try:
-	    # variable connection string should be defined in the imported config file
-        conn = psycopg2.connect( config['db']['connection_string'] )
-    except:
-        print("unable to connect to the database")
-        clear_connection()
-        return
-        
-    #Opening a session and querying the database for weekly new items
-    cursor = conn.cursor()
-    cursor.execute(large_items_query)
-    #For now, just storing the data in a variable. We'll use it later.
-    
-    headers = [i[0] for i in cursor.description]
-    rows = cursor.fetchall()
-    end_file = csvWriter(rows, headers, csv_file)
-    
-    while offset < 6000000:
-        offset += 250000
-        large_items_query = """\
-        SELECT
-        rmi.record_type_code||rmi.record_num AS "ItemNum",
-        ip.barcode,
-        rmb.record_type_code||rmb.record_num AS "BibNum",
-        STRING_AGG(SUBSTRING(num.content FROM '[0-9xX]+'),';') FILTER(WHERE num.marc_tag = '020') AS isbn,
-        STRING_AGG(num.content,';') FILTER(WHERE num.marc_tag = '022') issn,
-        STRING_AGG(SUBSTRING(num.content FROM '[0-9]+'),';') FILTER(WHERE num.marc_tag = '024') AS upc,
-        i.icode1,
-        i.itype_code_num AS itype,
-        it.name AS "ItypeName",
-        mp.name AS "MaterialType",
-        SUBSTRING(i.location_code,1,3) AS "BranchId",
-        TRIM(LEADING '|a' FROM TRIM(ip.call_number))||COALESCE(' '||v.field_content,'') AS "CallNumber",
-        i.location_code,
-        loc.name AS location_name,
-        TO_CHAR(rmi.creation_date_gmt,'YYYY-MM-DD HH24:MI:SS') AS "CREATED",
-        CASE
-          WHEN o.id IS NULL THEN isp.name
-          ELSE 'CHECKED OUT'
-        END AS status,
-        TO_CHAR(i.last_checkout_gmt,'YYYY-MM-DD HH24:MI:SS') AS "LOutDate",
-        TO_CHAR(o.checkout_gmt,'YYYY-MM-DD HH24:MI:SS') AS "OutDate",
-        TO_CHAR(i.last_checkin_gmt,'YYYY-MM-DD HH24:MI:SS') AS "CheckInDate",
-        TO_CHAR(o.due_gmt,'YYYY-MM-DD HH24:MI:SS') AS "DueDate",
-        i.year_to_date_checkout_total AS "YTDCIRC",
-        i.last_year_to_date_checkout_total AS "LYRCIRC",
-        i.checkout_total AS "TOT_CHKOUT",
-        i.renewal_total AS "TOT_RENEW"
-  
-        FROM sierra_view.item_record i
-        JOIN sierra_view.itype_property_myuser it
-          ON i.itype_code_num = it.code
-          AND SUBSTRING(i.location_code,1,3) NOT IN ('trn','hpl','int','knp','','zzz','cmc')
-        JOIN sierra_view.record_metadata rmi
-          ON i.id = rmi.id
-        JOIN sierra_view.item_record_property ip
-          ON i.id = ip.item_record_id
-        JOIN sierra_view.location_myuser loc
-          ON i.location_code = loc.code
-        JOIN sierra_view.bib_record_item_record_link l
-          ON i.id = l.item_record_id
-        JOIN sierra_view.bib_record_property bp
-          ON l.bib_record_id = bp.bib_record_id
-        JOIN sierra_view.record_metadata rmb
-          ON l.bib_record_id = rmb.id
-        JOIN sierra_view.material_property_myuser mp
-          ON bp.material_code = mp.code
-        LEFT JOIN sierra_view.subfield num
-          ON bp.bib_record_id = num.record_id AND num.marc_tag IN ('020','022','024') AND num.tag = 'a'
-        JOIN sierra_view.item_status_property_myuser isp
-          ON i.item_status_code = isp.code
-        LEFT JOIN sierra_view.checkout o
-          ON i.id = o.item_record_id
-        LEFT JOIN sierra_view.varfield v
-          ON i.id = v.record_id AND v.varfield_type_code = 'v'
-
-        --Pull full file on Fridays, delta file other days
-        WHERE rmi.record_last_updated_gmt::DATE < CURRENT_DATE 
-
-        GROUP BY 1,2,3,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24  
-    
-        LIMIT 250000
-        OFFSET {}""".format(offset)
-        cursor.execute(large_items_query)
-        rows = cursor.fetchall()
-        with open(end_file,'a', encoding='utf-8', newline='') as tempFile:
-            myFile = csv.writer(tempFile, delimiter=',')
-            myFile.writerows(rows)
-            tempFile.close()
-            
-    conn.close()
     return end_file
 
 def ftp_file(file1):
@@ -279,7 +116,7 @@ def main():
     it.name AS "ItypeName",
     mp.name AS "MaterialType",
     SUBSTRING(i.location_code,1,3) AS "BranchId",
-    TRIM(LEADING '|a' FROM TRIM(ip.call_number))||COALESCE(' '||v.field_content,'') AS "CallNumber",
+    TRIM(LEADING '|a' FROM TRIM(ip.call_number)) AS "CallNumber",
     i.location_code,
     loc.name AS location_name,
     TO_CHAR(rmi.creation_date_gmt,'YYYY-MM-DD HH24:MI:SS') AS "CREATED",
@@ -320,15 +157,17 @@ def main():
       ON i.item_status_code = isp.code
     LEFT JOIN sierra_view.checkout o
       ON i.id = o.item_record_id
-    LEFT JOIN sierra_view.varfield v
-      ON i.id = v.record_id AND v.varfield_type_code = 'v'
 
     --Pull full file on Fridays, delta file other days
-    WHERE rmi.record_last_updated_gmt::DATE > CURRENT_DATE - INTERVAL '4 days'
+    WHERE
+    CASE
+      WHEN EXTRACT(DOW FROM CURRENT_DATE) = 5 THEN rmi.record_last_updated_gmt::DATE < CURRENT_DATE
+      ELSE rmi.record_last_updated_gmt::DATE = CURRENT_DATE - INTERVAL '1 day'
+    END
 
     GROUP BY 1,2,3,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24
     """
-    
+
     holds_query = """\
     SELECT
     DISTINCT rm.record_type_code||rm.record_num AS "BibNum",
@@ -441,11 +280,7 @@ def main():
     ftp_file(patrons_csv)
     circ_csv = runquery(circ_query,circ_file)
     ftp_file(circ_csv)
-    
-    if datetime.now().weekday() == 4:
-        items_csv = runlargequery(items_file)
-    else:
-        items_csv = runquery(items_query,items_file)
+    items_csv = runquery(items_query,items_file)
     ftp_file(items_csv)
     
 main()

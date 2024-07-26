@@ -7,6 +7,12 @@ limited by subject
 */
 
 SELECT
+*,
+'' AS "PURCHASE ALERT BY SUBJECT",
+'' AS "https://sic.minlib.net/reports/89"
+FROM
+(
+SELECT
 id2reckey(mv.bib_id)||'a' AS "bib_number",
 brp.best_title AS "title", 
 brp.best_author AS "author", 
@@ -121,4 +127,5 @@ AND COUNT(ir.id) >= 0 --all ages
 --OR max(mv.hold_count)/(max(mv.item_count) + max(mv.order_copies))>=4
 ORDER BY 5, {{sort}} DESC
 --sort = 9 or mv.local_holds
-LIMIT {{qty}};
+LIMIT {{qty}}
+)a
