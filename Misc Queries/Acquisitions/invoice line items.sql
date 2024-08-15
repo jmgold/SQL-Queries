@@ -12,7 +12,13 @@ fm.code AS fund_code,
 fn.name AS fund_name,
 l.title,
 l.copies_paid_cnt AS qty,
-l.paid_amt::MONEY AS paid_amt,
+/*
+estimates shipping charge per line item assuming equal distribution among copies.
+omits use of MONEY formatting in order to avoid rounding errors
+Collaboration with Pam Skittino
+*/
+(i.discount_amt / (SUM(l.copies_paid_cnt) OVER (PARTITION BY rm.record_num)))*l.copies_paid_cnt AS est_shipping,
+(l.paid_amt + (i.discount_amt / (SUM(l.copies_paid_cnt) OVER (PARTITION BY rm.record_num)))*l.copies_paid_cnt) AS paid_plus_shipping,
 i.grand_total_amt::MONEY AS invoice_total,
 i.paid_date_gmt::DATE AS paid_date
  
