@@ -5,9 +5,9 @@ Minuteman Library Network
 
 SELECT
   rm.record_type_code||rm.record_num AS "BibNum",
-  STRING_AGG(SUBSTRING(num.content FROM '[0-9xX]+'),';') FILTER(WHERE num.marc_tag = '020') AS isbn,
-  STRING_AGG(num.content,';') FILTER(WHERE num.marc_tag = '022') issn,
-  STRING_AGG(SUBSTRING(num.content FROM '[0-9]+'),';') FILTER(WHERE num.marc_tag = '024') AS upc,
+  STRING_AGG(SUBSTRING(num.content FROM '[0-9xX]+'),';' ORDER BY num.occ_num) FILTER(WHERE num.marc_tag = '020') AS isbn,
+  STRING_AGG(num.content,';' ORDER BY num.occ_num) FILTER(WHERE num.marc_tag = '022') issn,
+  STRING_AGG(SUBSTRING(num.content FROM '[0-9]+'),';' ORDER BY num.occ_num) FILTER(WHERE num.marc_tag = '024') AS upc,
   mp.name AS "MaterialType",
   b.best_title,
   b.best_author,
