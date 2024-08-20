@@ -4,8 +4,12 @@ Minuteman Library Network
 Provides various performance metrics for checkouts over the prior month
 */
 
-SELECT
+SELECT *,
+'' AS "CHECKOUT: CHECKOUT LOCATION",
+'' AS "https://sic.minlib.net/reports/62"
 
+FROM
+(SELECT
 {{grouping}},
 /*Possible groupings
 --it.name AS itype,
@@ -24,8 +28,10 @@ COUNT(C.id) FILTER(WHERE C.item_location_code !~ {{location}} AND C.op_code = 'o
 ROUND(100.0 * (CAST(COUNT(C.id) FILTER(WHERE C.item_location_code !~ {{location}} AND C.op_code = 'o')AS NUMERIC (12,2)) / COUNT(C.id) FILTER(WHERE C.op_code = 'o')),2)||'%' AS pct_non_local,
 ROUND(100 * (CAST(COUNT(C.id) FILTER(WHERE C.op_code = 'o') AS NUMERIC (12,2)) / 
 	(SELECT CAST(COUNT (C.id) as numeric (12,2)) FROM sierra_view.circ_trans C WHERE CASE 
-   WHEN  {{location}} = '^act' THEN C.stat_group_code_num BETWEEN '100' AND '109'
-	--location using the form ^act in order to reuse an existing filter
+   --location using the form ^act in order to reuse an existing filter
+	WHEN  {{location}} = '^ac' THEN (C.stat_group_code_num BETWEEN '100' AND '109' OR C.stat_group_code_num BETWEEN '870' AND '879')
+	WHEN  {{location}} = '^act' THEN C.stat_group_code_num BETWEEN '100' AND '109'
+	WHEN  {{location}} = '^ac2' THEN C.stat_group_code_num BETWEEN '870' AND '879'
 	WHEN  {{location}} = '^arl' THEN (C.stat_group_code_num BETWEEN '110' AND '119' OR C.stat_group_code_num = '996')
 	WHEN  {{location}} = '^ar2' THEN C.stat_group_code_num BETWEEN '120' AND '129'
 	WHEN  {{location}} = '^ar' THEN (C.stat_group_code_num BETWEEN '110' AND '129' OR C.stat_group_code_num = '996')
@@ -68,10 +74,11 @@ ROUND(100 * (CAST(COUNT(C.id) FILTER(WHERE C.op_code = 'o') AS NUMERIC (12,2)) /
 	WHEN  {{location}} = '^mil' THEN C.stat_group_code_num BETWEEN '490' AND '499'
 	WHEN  {{location}} = '^mld' THEN C.stat_group_code_num BETWEEN '500' AND '509'
 	WHEN  {{location}} = '^mwy' THEN C.stat_group_code_num BETWEEN '520' AND '529'
-	WHEN  {{location}} = '^nat' THEN C.stat_group_code_num BETWEEN '530' AND '539'
+	WHEN  {{location}} = '^na(t|4)' THEN C.stat_group_code_num BETWEEN '530' AND '539' OR C.stat_group_code_num BETWEEN '560' AND '569'
 	WHEN  {{location}} = '^na2' THEN C.stat_group_code_num BETWEEN '540' AND '549'
 	WHEN  {{location}} = '^na3' THEN C.stat_group_code_num BETWEEN '550' AND '559'
 	WHEN  {{location}} = '^na' THEN C.stat_group_code_num BETWEEN '530' AND '559'
+	WHEN  {{location}} = '^na[^2]' THEN C.stat_group_code_num BETWEEN '530' AND '539' OR C.stat_group_code_num BETWEEN '550' AND '569'
 	WHEN  {{location}} = '^nee' THEN C.stat_group_code_num BETWEEN '570' AND '579'
 	WHEN  {{location}} = '^nor' THEN C.stat_group_code_num BETWEEN '580' AND '589'
 	WHEN  {{location}} = '^ntn' THEN C.stat_group_code_num BETWEEN '590' AND '599'
@@ -82,8 +89,10 @@ ROUND(100 * (CAST(COUNT(C.id) FILTER(WHERE C.op_code = 'o') AS NUMERIC (12,2)) /
 	WHEN  {{location}} = '^so' THEN C.stat_group_code_num BETWEEN '640' AND '679'
 	WHEN  {{location}} = '^sto' THEN C.stat_group_code_num BETWEEN '680' AND '689'
 	WHEN  {{location}} = '^sud' THEN C.stat_group_code_num BETWEEN '690' AND '699'
-	WHEN  {{location}} = '^wlm' THEN C.stat_group_code_num BETWEEN '700' AND '709'
-	WHEN  {{location}} = '^wat' THEN C.stat_group_code_num BETWEEN '710' AND '739'
+	WHEN  {{location}} = '^wlm' THEN C.stat_group_code_num BETWEEN '700' AND '709' OR C.stat_group_code_num = '993'
+	WHEN  {{location}} = '^wa' THEN C.stat_group_code_num BETWEEN '710' AND '739'
+	WHEN  {{location}} = '^wa[^4]' THEN C.stat_group_code_num BETWEEN '710' AND '729'
+	WHEN  {{location}} = '^wa4' THEN C.stat_group_code_num BETWEEN '730' AND '739'
 	WHEN  {{location}} = '^wyl' THEN C.stat_group_code_num BETWEEN '740' AND '749'
 	WHEN  {{location}} = '^wel' THEN C.stat_group_code_num BETWEEN '750' AND '759'
 	WHEN  {{location}} = '^we2' THEN C.stat_group_code_num BETWEEN '760' AND '769'
@@ -94,8 +103,8 @@ ROUND(100 * (CAST(COUNT(C.id) FILTER(WHERE C.op_code = 'o') AS NUMERIC (12,2)) /
 	WHEN  {{location}} = '^wsn' THEN C.stat_group_code_num BETWEEN '800' AND '809'
 	WHEN  {{location}} = '^wwd' THEN C.stat_group_code_num BETWEEN '810' AND '819'
 	WHEN  {{location}} = '^ww2' THEN C.stat_group_code_num BETWEEN '820' AND '829'
-	WHEN  {{location}} = '^ww' THEN C.stat_group_code_num BETWEEN '810' AND '829'
-	WHEN  {{location}} = '^pmc' THEN C.stat_group_code_num BETWEEN '830' AND '839'
+	WHEN  {{location}} = '^ww3' THEN C.stat_group_code_num = '831'
+	WHEN  {{location}} = '^ww' THEN C.stat_group_code_num BETWEEN '810' AND '829' OR C.stat_group_code_num = '831'
 	WHEN  {{location}} = '^reg' THEN C.stat_group_code_num BETWEEN '840' AND '849'
 	WHEN  {{location}} = '^shr' THEN C.stat_group_code_num BETWEEN '850' AND '859'
 	WHEN  {{location}} = '\w' THEN C.stat_group_code_num BETWEEN '100' AND '999'
@@ -134,7 +143,9 @@ C.stat_group_code_num = sg.code
 
 WHERE 
 CASE 
-WHEN  {{location}} = '^act' THEN C.stat_group_code_num BETWEEN '100' AND '109'
+	WHEN  {{location}} = '^ac' THEN (C.stat_group_code_num BETWEEN '100' AND '109' OR C.stat_group_code_num BETWEEN '870' AND '879')
+	WHEN  {{location}} = '^act' THEN C.stat_group_code_num BETWEEN '100' AND '109'
+	WHEN  {{location}} = '^ac2' THEN C.stat_group_code_num BETWEEN '870' AND '879'
 	WHEN  {{location}} = '^arl' THEN (C.stat_group_code_num BETWEEN '110' AND '119' OR C.stat_group_code_num = '996')
 	WHEN  {{location}} = '^ar2' THEN C.stat_group_code_num BETWEEN '120' AND '129'
 	WHEN  {{location}} = '^ar' THEN (C.stat_group_code_num BETWEEN '110' AND '129' OR C.stat_group_code_num = '996')
@@ -177,10 +188,11 @@ WHEN  {{location}} = '^act' THEN C.stat_group_code_num BETWEEN '100' AND '109'
 	WHEN  {{location}} = '^mil' THEN C.stat_group_code_num BETWEEN '490' AND '499'
 	WHEN  {{location}} = '^mld' THEN C.stat_group_code_num BETWEEN '500' AND '509'
 	WHEN  {{location}} = '^mwy' THEN C.stat_group_code_num BETWEEN '520' AND '529'
-	WHEN  {{location}} = '^nat' THEN C.stat_group_code_num BETWEEN '530' AND '539'
+	WHEN  {{location}} = '^na(t|4)' THEN C.stat_group_code_num BETWEEN '530' AND '539' OR C.stat_group_code_num BETWEEN '560' AND '569'
 	WHEN  {{location}} = '^na2' THEN C.stat_group_code_num BETWEEN '540' AND '549'
 	WHEN  {{location}} = '^na3' THEN C.stat_group_code_num BETWEEN '550' AND '559'
 	WHEN  {{location}} = '^na' THEN C.stat_group_code_num BETWEEN '530' AND '559'
+	WHEN  {{location}} = '^na[^2]' THEN C.stat_group_code_num BETWEEN '530' AND '539' OR C.stat_group_code_num BETWEEN '550' AND '569'
 	WHEN  {{location}} = '^nee' THEN C.stat_group_code_num BETWEEN '570' AND '579'
 	WHEN  {{location}} = '^nor' THEN C.stat_group_code_num BETWEEN '580' AND '589'
 	WHEN  {{location}} = '^ntn' THEN C.stat_group_code_num BETWEEN '590' AND '599'
@@ -191,8 +203,10 @@ WHEN  {{location}} = '^act' THEN C.stat_group_code_num BETWEEN '100' AND '109'
 	WHEN  {{location}} = '^so' THEN C.stat_group_code_num BETWEEN '640' AND '679'
 	WHEN  {{location}} = '^sto' THEN C.stat_group_code_num BETWEEN '680' AND '689'
 	WHEN  {{location}} = '^sud' THEN C.stat_group_code_num BETWEEN '690' AND '699'
-	WHEN  {{location}} = '^wlm' THEN C.stat_group_code_num BETWEEN '700' AND '709'
-	WHEN  {{location}} = '^wat' THEN C.stat_group_code_num BETWEEN '710' AND '739'
+	WHEN  {{location}} = '^wlm' THEN C.stat_group_code_num BETWEEN '700' AND '709' OR C.stat_group_code_num = '993'
+	WHEN  {{location}} = '^wa' THEN C.stat_group_code_num BETWEEN '710' AND '739'
+	WHEN  {{location}} = '^wa[^4]' THEN C.stat_group_code_num BETWEEN '710' AND '729'
+	WHEN  {{location}} = '^wa4' THEN C.stat_group_code_num BETWEEN '730' AND '739'
 	WHEN  {{location}} = '^wyl' THEN C.stat_group_code_num BETWEEN '740' AND '749'
 	WHEN  {{location}} = '^wel' THEN C.stat_group_code_num BETWEEN '750' AND '759'
 	WHEN  {{location}} = '^we2' THEN C.stat_group_code_num BETWEEN '760' AND '769'
@@ -203,8 +217,8 @@ WHEN  {{location}} = '^act' THEN C.stat_group_code_num BETWEEN '100' AND '109'
 	WHEN  {{location}} = '^wsn' THEN C.stat_group_code_num BETWEEN '800' AND '809'
 	WHEN  {{location}} = '^wwd' THEN C.stat_group_code_num BETWEEN '810' AND '819'
 	WHEN  {{location}} = '^ww2' THEN C.stat_group_code_num BETWEEN '820' AND '829'
-	WHEN  {{location}} = '^ww' THEN C.stat_group_code_num BETWEEN '810' AND '829'
-	WHEN  {{location}} = '^pmc' THEN C.stat_group_code_num BETWEEN '830' AND '839'
+	WHEN  {{location}} = '^ww3' THEN C.stat_group_code_num = '831'
+	WHEN  {{location}} = '^ww' THEN C.stat_group_code_num BETWEEN '810' AND '829' OR C.stat_group_code_num = '831'
 	WHEN  {{location}} = '^reg' THEN C.stat_group_code_num BETWEEN '840' AND '849'
 	WHEN  {{location}} = '^shr' THEN C.stat_group_code_num BETWEEN '850' AND '859'
 	WHEN  {{location}} = '\w' THEN C.stat_group_code_num BETWEEN '100' AND '999'
@@ -227,7 +241,9 @@ COUNT(C.id) FILTER(WHERE C.item_location_code !~ {{location}} AND C.op_code = 'o
 ROUND(100.0 * (CAST(COUNT(C.id) FILTER(WHERE C.item_location_code !~ {{location}} AND C.op_code = 'o')AS NUMERIC (12,2)) / COUNT(C.id) FILTER(WHERE C.op_code = 'o')),2)||'%' AS pct_non_local,
 ROUND(100 * (CAST(COUNT(C.id) FILTER(WHERE C.op_code = 'o') AS NUMERIC (12,2)) / 
 	(SELECT CAST(COUNT (C.id) as numeric (12,2)) FROM sierra_view.circ_trans C WHERE CASE 
-WHEN  {{location}} = '^act' THEN C.stat_group_code_num BETWEEN '100' AND '109'
+WHEN  {{location}} = '^ac' THEN (C.stat_group_code_num BETWEEN '100' AND '109' OR C.stat_group_code_num BETWEEN '870' AND '879')
+	WHEN  {{location}} = '^act' THEN C.stat_group_code_num BETWEEN '100' AND '109'
+	WHEN  {{location}} = '^ac2' THEN C.stat_group_code_num BETWEEN '870' AND '879'
 	WHEN  {{location}} = '^arl' THEN (C.stat_group_code_num BETWEEN '110' AND '119' OR C.stat_group_code_num = '996')
 	WHEN  {{location}} = '^ar2' THEN C.stat_group_code_num BETWEEN '120' AND '129'
 	WHEN  {{location}} = '^ar' THEN (C.stat_group_code_num BETWEEN '110' AND '129' OR C.stat_group_code_num = '996')
@@ -270,10 +286,11 @@ WHEN  {{location}} = '^act' THEN C.stat_group_code_num BETWEEN '100' AND '109'
 	WHEN  {{location}} = '^mil' THEN C.stat_group_code_num BETWEEN '490' AND '499'
 	WHEN  {{location}} = '^mld' THEN C.stat_group_code_num BETWEEN '500' AND '509'
 	WHEN  {{location}} = '^mwy' THEN C.stat_group_code_num BETWEEN '520' AND '529'
-	WHEN  {{location}} = '^nat' THEN C.stat_group_code_num BETWEEN '530' AND '539'
+	WHEN  {{location}} = '^na(t|4)' THEN C.stat_group_code_num BETWEEN '530' AND '539' OR C.stat_group_code_num BETWEEN '560' AND '569'
 	WHEN  {{location}} = '^na2' THEN C.stat_group_code_num BETWEEN '540' AND '549'
 	WHEN  {{location}} = '^na3' THEN C.stat_group_code_num BETWEEN '550' AND '559'
 	WHEN  {{location}} = '^na' THEN C.stat_group_code_num BETWEEN '530' AND '559'
+	WHEN  {{location}} = '^na[^2]' THEN C.stat_group_code_num BETWEEN '530' AND '539' OR C.stat_group_code_num BETWEEN '550' AND '569'
 	WHEN  {{location}} = '^nee' THEN C.stat_group_code_num BETWEEN '570' AND '579'
 	WHEN  {{location}} = '^nor' THEN C.stat_group_code_num BETWEEN '580' AND '589'
 	WHEN  {{location}} = '^ntn' THEN C.stat_group_code_num BETWEEN '590' AND '599'
@@ -284,8 +301,10 @@ WHEN  {{location}} = '^act' THEN C.stat_group_code_num BETWEEN '100' AND '109'
 	WHEN  {{location}} = '^so' THEN C.stat_group_code_num BETWEEN '640' AND '679'
 	WHEN  {{location}} = '^sto' THEN C.stat_group_code_num BETWEEN '680' AND '689'
 	WHEN  {{location}} = '^sud' THEN C.stat_group_code_num BETWEEN '690' AND '699'
-	WHEN  {{location}} = '^wlm' THEN C.stat_group_code_num BETWEEN '700' AND '709'
-	WHEN  {{location}} = '^wat' THEN C.stat_group_code_num BETWEEN '710' AND '739'
+	WHEN  {{location}} = '^wlm' THEN C.stat_group_code_num BETWEEN '700' AND '709' OR C.stat_group_code_num = '993'
+	WHEN  {{location}} = '^wa' THEN C.stat_group_code_num BETWEEN '710' AND '739'
+	WHEN  {{location}} = '^wa[^4]' THEN C.stat_group_code_num BETWEEN '710' AND '729'
+	WHEN  {{location}} = '^wa4' THEN C.stat_group_code_num BETWEEN '730' AND '739'
 	WHEN  {{location}} = '^wyl' THEN C.stat_group_code_num BETWEEN '740' AND '749'
 	WHEN  {{location}} = '^wel' THEN C.stat_group_code_num BETWEEN '750' AND '759'
 	WHEN  {{location}} = '^we2' THEN C.stat_group_code_num BETWEEN '760' AND '769'
@@ -296,8 +315,8 @@ WHEN  {{location}} = '^act' THEN C.stat_group_code_num BETWEEN '100' AND '109'
 	WHEN  {{location}} = '^wsn' THEN C.stat_group_code_num BETWEEN '800' AND '809'
 	WHEN  {{location}} = '^wwd' THEN C.stat_group_code_num BETWEEN '810' AND '819'
 	WHEN  {{location}} = '^ww2' THEN C.stat_group_code_num BETWEEN '820' AND '829'
-	WHEN  {{location}} = '^ww' THEN C.stat_group_code_num BETWEEN '810' AND '829'
-	WHEN  {{location}} = '^pmc' THEN C.stat_group_code_num BETWEEN '830' AND '839'
+	WHEN  {{location}} = '^ww3' THEN C.stat_group_code_num = '831'
+	WHEN  {{location}} = '^ww' THEN C.stat_group_code_num BETWEEN '810' AND '829' OR C.stat_group_code_num = '831'
 	WHEN  {{location}} = '^reg' THEN C.stat_group_code_num BETWEEN '840' AND '849'
 	WHEN  {{location}} = '^shr' THEN C.stat_group_code_num BETWEEN '850' AND '859'
 	WHEN  {{location}} = '\w' THEN C.stat_group_code_num BETWEEN '100' AND '999'
@@ -318,7 +337,9 @@ C.itype_code_num = it.code
 
 WHERE 
 CASE 
-WHEN  {{location}} = '^act' THEN C.stat_group_code_num BETWEEN '100' AND '109'
+WHEN  {{location}} = '^ac' THEN (C.stat_group_code_num BETWEEN '100' AND '109' OR C.stat_group_code_num BETWEEN '870' AND '879')
+	WHEN  {{location}} = '^act' THEN C.stat_group_code_num BETWEEN '100' AND '109'
+	WHEN  {{location}} = '^ac2' THEN C.stat_group_code_num BETWEEN '870' AND '879'
 	WHEN  {{location}} = '^arl' THEN (C.stat_group_code_num BETWEEN '110' AND '119' OR C.stat_group_code_num = '996')
 	WHEN  {{location}} = '^ar2' THEN C.stat_group_code_num BETWEEN '120' AND '129'
 	WHEN  {{location}} = '^ar' THEN (C.stat_group_code_num BETWEEN '110' AND '129' OR C.stat_group_code_num = '996')
@@ -361,10 +382,11 @@ WHEN  {{location}} = '^act' THEN C.stat_group_code_num BETWEEN '100' AND '109'
 	WHEN  {{location}} = '^mil' THEN C.stat_group_code_num BETWEEN '490' AND '499'
 	WHEN  {{location}} = '^mld' THEN C.stat_group_code_num BETWEEN '500' AND '509'
 	WHEN  {{location}} = '^mwy' THEN C.stat_group_code_num BETWEEN '520' AND '529'
-	WHEN  {{location}} = '^nat' THEN C.stat_group_code_num BETWEEN '530' AND '539'
+	WHEN  {{location}} = '^na(t|4)' THEN C.stat_group_code_num BETWEEN '530' AND '539' OR C.stat_group_code_num BETWEEN '560' AND '569'
 	WHEN  {{location}} = '^na2' THEN C.stat_group_code_num BETWEEN '540' AND '549'
 	WHEN  {{location}} = '^na3' THEN C.stat_group_code_num BETWEEN '550' AND '559'
 	WHEN  {{location}} = '^na' THEN C.stat_group_code_num BETWEEN '530' AND '559'
+	WHEN  {{location}} = '^na[^2]' THEN C.stat_group_code_num BETWEEN '530' AND '539' OR C.stat_group_code_num BETWEEN '550' AND '569'
 	WHEN  {{location}} = '^nee' THEN C.stat_group_code_num BETWEEN '570' AND '579'
 	WHEN  {{location}} = '^nor' THEN C.stat_group_code_num BETWEEN '580' AND '589'
 	WHEN  {{location}} = '^ntn' THEN C.stat_group_code_num BETWEEN '590' AND '599'
@@ -375,8 +397,10 @@ WHEN  {{location}} = '^act' THEN C.stat_group_code_num BETWEEN '100' AND '109'
 	WHEN  {{location}} = '^so' THEN C.stat_group_code_num BETWEEN '640' AND '679'
 	WHEN  {{location}} = '^sto' THEN C.stat_group_code_num BETWEEN '680' AND '689'
 	WHEN  {{location}} = '^sud' THEN C.stat_group_code_num BETWEEN '690' AND '699'
-	WHEN  {{location}} = '^wlm' THEN C.stat_group_code_num BETWEEN '700' AND '709'
-	WHEN  {{location}} = '^wat' THEN C.stat_group_code_num BETWEEN '710' AND '739'
+	WHEN  {{location}} = '^wlm' THEN C.stat_group_code_num BETWEEN '700' AND '709' OR C.stat_group_code_num = '993'
+	WHEN  {{location}} = '^wa' THEN C.stat_group_code_num BETWEEN '710' AND '739'
+	WHEN  {{location}} = '^wa[^4]' THEN C.stat_group_code_num BETWEEN '710' AND '729'
+	WHEN  {{location}} = '^wa4' THEN C.stat_group_code_num BETWEEN '730' AND '739'
 	WHEN  {{location}} = '^wyl' THEN C.stat_group_code_num BETWEEN '740' AND '749'
 	WHEN  {{location}} = '^wel' THEN C.stat_group_code_num BETWEEN '750' AND '759'
 	WHEN  {{location}} = '^we2' THEN C.stat_group_code_num BETWEEN '760' AND '769'
@@ -387,8 +411,8 @@ WHEN  {{location}} = '^act' THEN C.stat_group_code_num BETWEEN '100' AND '109'
 	WHEN  {{location}} = '^wsn' THEN C.stat_group_code_num BETWEEN '800' AND '809'
 	WHEN  {{location}} = '^wwd' THEN C.stat_group_code_num BETWEEN '810' AND '819'
 	WHEN  {{location}} = '^ww2' THEN C.stat_group_code_num BETWEEN '820' AND '829'
-	WHEN  {{location}} = '^ww' THEN C.stat_group_code_num BETWEEN '810' AND '829'
-	WHEN  {{location}} = '^pmc' THEN C.stat_group_code_num BETWEEN '830' AND '839'
+	WHEN  {{location}} = '^ww3' THEN C.stat_group_code_num = '831'
+	WHEN  {{location}} = '^ww' THEN C.stat_group_code_num BETWEEN '810' AND '829' OR C.stat_group_code_num = '831'
 	WHEN  {{location}} = '^reg' THEN C.stat_group_code_num BETWEEN '840' AND '849'
 	WHEN  {{location}} = '^shr' THEN C.stat_group_code_num BETWEEN '850' AND '859'
 	WHEN  {{location}} = '\w' THEN C.stat_group_code_num BETWEEN '100' AND '999'
@@ -397,3 +421,4 @@ AND C.op_code IN ('o','f')
 AND C.transaction_gmt::DATE {{relative_date}}
 
 ORDER BY 1
+)a

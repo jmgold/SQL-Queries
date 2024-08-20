@@ -1,47 +1,70 @@
-/*
-Jeremy Goldstein
-Minuteman Lirary Network
-Gathers together various performance metrics for portions of a library's collection
-Is passed variables for owning location, item status to exclude from the report, and the field to group the collection by
-*/
+WITH call_number_mod AS(
+SELECT
+i.item_record_id,
+i.call_number_norm AS call_original,
+CASE
+	--author in call
+	WHEN b.best_author_norm != '' AND i.call_number_norm ~ SPLIT_PART(TRANSLATE(b.best_author_norm,'Ã¢Ã¡Ã£Ã¤Ã¥ÄÄƒÄ…ÃÃ‚ÃƒÃ„Ã…Ä€Ä‚Ä„Ã¨Ã©Ã©Ã©ÃªÃ«Ä“Ä•Ä—Ä™Ä›Ä’Ä”Ä–Ä˜ÄšÃ¬Ã­Ã®Ã¯Ã¬Ä©Ä«Ä­ÃŒÃÃŽÃÃŒÄ¨ÄªÄ¬Ã³Ã´ÃµÃ¶ÅÅÅ‘Ã’Ã“Ã”Ã•Ã–ÅŒÅŽÅÃ¹ÃºÃ»Ã¼Å©Å«Å­Å¯Ã™ÃšÃ›ÃœÅ¨ÅªÅ¬Å®','aaaaaaaaaaaaaaaaeeeeeeeeeeeeeeeeiiiiiiiiiiiiiiiiooooooooooooooouuuuuuuuuuuuuuuu'), ' ',1) THEN REGEXP_REPLACE(SPLIT_PART(BTRIM(i.call_number_norm),SPLIT_PART(TRANSLATE(b.best_author_norm,'Ã¢Ã¡Ã£Ã¤Ã¥ÄÄƒÄ…ÃÃ‚ÃƒÃ„Ã…Ä€Ä‚Ä„Ã¨Ã©Ã©Ã©ÃªÃ«Ä“Ä•Ä—Ä™Ä›Ä’Ä”Ä–Ä˜ÄšÃ¬Ã­Ã®Ã¯Ã¬Ä©Ä«Ä­ÃŒÃÃŽÃÃŒÄ¨ÄªÄ¬Ã³Ã´ÃµÃ¶ÅÅÅ‘Ã’Ã“Ã”Ã•Ã–ÅŒÅŽÅÃ¹ÃºÃ»Ã¼Å©Å«Å­Å¯Ã™ÃšÃ›ÃœÅ¨ÅªÅ¬Å®','aaaaaaaaaaaaaaaaeeeeeeeeeeeeeeeeiiiiiiiiiiiiiiiiooooooooooooooouuuuuuuuuuuuuuuu'), ' ',1),1),'[^\w\s\.]','','g')
+   --first characters of author in call
+	WHEN b.best_author_norm != '' AND i.call_number_norm ~ SUBSTRING(SPLIT_PART(TRANSLATE(b.best_author_norm,'Ã¢Ã¡Ã£Ã¤Ã¥ÄÄƒÄ…ÃÃ‚ÃƒÃ„Ã…Ä€Ä‚Ä„Ã¨Ã©Ã©Ã©ÃªÃ«Ä“Ä•Ä—Ä™Ä›Ä’Ä”Ä–Ä˜ÄšÃ¬Ã­Ã®Ã¯Ã¬Ä©Ä«Ä­ÃŒÃÃŽÃÃŒÄ¨ÄªÄ¬Ã³Ã´ÃµÃ¶ÅÅÅ‘Ã’Ã“Ã”Ã•Ã–ÅŒÅŽÅÃ¹ÃºÃ»Ã¼Å©Å«Å­Å¯Ã™ÃšÃ›ÃœÅ¨ÅªÅ¬Å®','aaaaaaaaaaaaaaaaeeeeeeeeeeeeeeeeiiiiiiiiiiiiiiiiooooooooooooooouuuuuuuuuuuuuuuu'), ' ',1)FROM 1 FOR 3) THEN REGEXP_REPLACE(SPLIT_PART(BTRIM(i.call_number_norm),SUBSTRING(SPLIT_PART(TRANSLATE(b.best_author_norm,'Ã¢Ã¡Ã£Ã¤Ã¥ÄÄƒÄ…ÃÃ‚ÃƒÃ„Ã…Ä€Ä‚Ä„Ã¨Ã©Ã©Ã©ÃªÃ«Ä“Ä•Ä—Ä™Ä›Ä’Ä”Ä–Ä˜ÄšÃ¬Ã­Ã®Ã¯Ã¬Ä©Ä«Ä­ÃŒÃÃŽÃÃŒÄ¨ÄªÄ¬Ã³Ã´ÃµÃ¶ÅÅÅ‘Ã’Ã“Ã”Ã•Ã–ÅŒÅŽÅÃ¹ÃºÃ»Ã¼Å©Å«Å­Å¯Ã™ÃšÃ›ÃœÅ¨ÅªÅ¬Å®','aaaaaaaaaaaaaaaaeeeeeeeeeeeeeeeeiiiiiiiiiiiiiiiiooooooooooooooouuuuuuuuuuuuuuuu'), ' ',1)FROM 1 FOR 3),1),'[^\w\s\.]','','g')
+	--title in call
+	--WHEN i.call_number_norm ~ SPLIT_PART(b.best_title_norm, ' ',1) THEN REGEXP_REPLACE(SPLIT_PART(BTRIM(i.call_number_norm),SPLIT_PART(b.best_title_norm, ' ',1),1),'[^\w\s]','','g')
+   --strip year from end
+	WHEN BTRIM(i.call_number_norm) ~ '\s*[12][0-9]{3}$' THEN REGEXP_REPLACE(SUBSTRING(BTRIM(i.call_number_norm),1,STRPOS(BTRIM(i.call_number_norm), (regexp_match(BTRIM(i.call_number_norm), '\s*[12][0-9]{3}$'))[1])-1),'[^\w\s\.]','','g')
+	--only digits are a volume,copy,series, etc number at the end
+	WHEN BTRIM(i.call_number_norm) ~ '(v|vol|c|#|s|season|sea|set|ser|series|p|pt|part|col|collection|b|bk|book)\.?\s*[0-9]{1,3}$' THEN REGEXP_REPLACE(SUBSTRING(BTRIM(i.call_number_norm),1,STRPOS(BTRIM(i.call_number_norm), (regexp_match(BTRIM(i.call_number_norm), '(v|vol|c|#|s|season|sea|set|ser|series|p|pt|part|col|collection|b|bk|book)\.?\s*[0-9]{1,3}$'))[1])-1),'[^\w\s\.]','','g')
+	ELSE REGEXP_REPLACE(BTRIM(i.call_number_norm),'[^\w\s\.]','','g')
+END AS call_number_norm
+FROM
+sierra_view.item_record_property i
+JOIN
+sierra_view.bib_record_item_record_link l
+ON
+i.item_record_id = l.item_record_id
+JOIN
+sierra_view.bib_record_property b
+ON
+l.bib_record_id = b.bib_record_id
+JOIN
+sierra_view.item_record ir
+ON
+i.item_record_id = ir.id
+AND ir.itype_code_num != '241'
+AND ir.location_code ~ '^ar2'
+)
+
 SELECT
 COALESCE(CASE
-  /*call number does not exist*/
-  WHEN ip.call_number_norm = '' OR ip.call_number_norm IS NULL THEN 'no call number'
-  /*biographies*/
-  WHEN TRIM(BOTH FROM ip.call_number_norm) ~ '^(.*biography|.*biog|.*bio)' THEN SUBSTRING(REGEXP_REPLACE(ip.call_number_norm,'\(|\)|\[|\]','','gi')FROM '^(.*biography|.*biog|.*bio)')
-  /*graphic novels & manga*/
-  WHEN TRIM(BOTH FROM ip.call_number_norm) ~ '^(.*graphic|.*manga)' AND REGEXP_REPLACE(REVERSE(TRIM(BOTH FROM ip.call_number_norm)), '^[0-9]{1,3}\s{0,1}\.{0,1}v|lov|c|#|s|nosaes|aes|tes|res|seires|p|tp|trap|loc|noitcelloc|b|kb|koob', '') !~ '\d' THEN SUBSTRING(REGEXP_REPLACE(ip.call_number_norm,'\(|\)|\[|\]','','gi')FROM '^(.*graphic|manga)')
-  /*call number contains no numbers and ends with a name in the form last, first and could use initials*/
-  WHEN TRIM(BOTH FROM ip.call_number_norm) !~ '\d' AND REVERSE(REPLACE(TRIM(BOTH FROM ip.call_number_norm),'-','')) ~ '^[a-z\.]+\s{0,1}(.[a-z]\s{0,1})*,[\.a-z]' THEN REVERSE(REGEXP_REPLACE(REPLACE(REPLACE(REVERSE(REGEXP_REPLACE(REPLACE(TRIM(BOTH FROM ip.call_number_norm),'-',''),'(\(|\)|\[|\])','','gi')),' .',''),'.',''),'^\w+\s{0,1},{0,1}\w+', ''))
-  /*call number contains no numbers and a single word*/
-  WHEN TRIM(BOTH FROM ip.call_number_norm) !~ '\d' AND TRIM(BOTH FROM ip.call_number_norm) !~ '\s' THEN REGEXP_REPLACE(TRIM(BOTH FROM ip.call_number_norm),'\(|\)|\[|\]','','gi')
-  /*call number contains no numbers 2 words*/
-  WHEN TRIM(BOTH FROM ip.call_number_norm) !~ '\d' AND TRIM(BOTH FROM ip.call_number_norm) ~ '^([\w\-\.]+\s)[\w\-\.]+$' THEN SPLIT_PART(REGEXP_REPLACE(TRIM(BOTH FROM ip.call_number_norm),'\(|\)|\[|\]','','gi'),' ','1')
-  /*call number contains no numbers and 3-4 words*/
-  WHEN TRIM(BOTH FROM ip.call_number_norm) !~ '\d' AND TRIM(BOTH FROM ip.call_number_norm) ~ '^([\w\-\.]+\s)([\w\-\.]+\s){0,2}[\w\-\.]+$' THEN REVERSE(REGEXP_REPLACE(REVERSE(REGEXP_REPLACE(TRIM(BOTH FROM ip.call_number_norm),'\(|\)|\[|\]','','gi')),'^[\w\-\.\/\'']*\s', ''))
-  /*call number contains no numbers and > 4 words*/
-  WHEN TRIM(BOTH FROM ip.call_number_norm) !~ '\d' THEN SPLIT_PART(REGEXP_REPLACE(TRIM(BOTH FROM ip.call_number_norm),'\(|\)|\[|\]','','gi'),' ','1')||' '||SPLIT_PART(REGEXP_REPLACE(TRIM(BOTH FROM ip.call_number_norm),'\(|\)|\[|\]','','gi'),' ','2')||' '||SPLIT_PART(REGEXP_REPLACE(TRIM(BOTH FROM ip.call_number_norm),'\(|\)|\[|\]','','gi'),' ','3')
-  /*only digits are a year at the end*/
-  WHEN REGEXP_REPLACE(REVERSE(TRIM(BOTH FROM ip.call_number_norm)), '^[0-9]{3}[12]', '') !~ '\d' THEN REVERSE(REGEXP_REPLACE(REVERSE(REGEXP_REPLACE(TRIM(BOTH FROM REGEXP_REPLACE(ip.call_number_norm,'\s{0,1}\d{4}$','')),'\(|\)|\[|\]','','gi')),'^\w+\s', ''))
-  /*only digits are a volume,copy,series, etc number at the end*/
-  WHEN REGEXP_REPLACE(REVERSE(TRIM(BOTH FROM ip.call_number_norm)), '^[0-9]{1,3}\s{0,1}\.{0,1}v|lov|c|#|s|nosaes|aes|tes|res|seires|p|tp|trap|loc|noitcelloc|b|kb|koob', '') !~ '\d' THEN REVERSE(REGEXP_REPLACE(REGEXP_REPLACE(REVERSE(TRIM(BOTH FROM REGEXP_REPLACE(ip.call_number_norm,'\(|\)|\[|\]','','gi'))),'^[0-9]{1,3}\s{0,1}\.{0,1}v|lov|c|#|s|nosaes|aes|tes|res|seires|p|tp|trap|loc|noitcelloc|b|kb|koob',''),'^\w+\s', ''))
-  /*only digits are a cutter at the end*/
-  WHEN REGEXP_REPLACE(REVERSE(TRIM(BOTH FROM ip.call_number_norm)), '^[a-z]*[0-9]{2,3}[a-z]\s{0,1}','') !~ '\d' THEN REVERSE(REGEXP_REPLACE(REGEXP_REPLACE(REVERSE(REGEXP_REPLACE(TRIM(BOTH FROM ip.call_number_norm),'\(|\)|\[|\]','','gi')),'^[a-z]*[0-9]{2}[a-z]\s{0,1}', ''),'^[\w\-\.\'']*\s', ''))
-  /*contains an LC number in the 1000-9999 range*/
-  WHEN TRIM(BOTH FROM ip.call_number_norm) ~ '(^|\s)[a-z]{1,3}\s{0,1}[0-9]{4}(\.\d{1,3}){0,1}\s{0,1}\.{0,1}[a-z][0-9]' THEN SUBSTRING(REGEXP_REPLACE(TRIM(BOTH FROM ip.call_number_norm),'\(|\)|\[|\]',''),'^[a-z\s\[\]\&\-\.\,\(\)]*[a-z]{1,2}\s{0,1}[0-9]')||'000-'||SUBSTRING(REGEXP_REPLACE(TRIM(BOTH FROM ip.call_number_norm),'\(|\)|\[|\]','','gi'),'^[a-z\s\[\]\&\-\.\,\(\)]*[a-z]{1,2}\s{0,1}[0-9]')||'999'
-  /*contains an LC number in the 001-999 range*/
-  WHEN TRIM(BOTH FROM ip.call_number_norm) ~ '(^|\s)[a-z]{1,3}\s{0,1}[0-9]{1,3}(\.\d{1,3}){0,1}\s{0,1}\.[a-z][0-9]' THEN SUBSTRING(REGEXP_REPLACE(TRIM(BOTH FROM ip.call_number_norm),'\(|\)|\[|\]','','gi'),'^[a-z\s\[\]\&\-\.\,\(\)]*[a-z]{1,2}')||'001-999'
-  /*contains a dewey number*/
-  WHEN TRIM(BOTH FROM ip.call_number_norm) ~ '[0-9]{3}\.{0,1}[0-9]*' THEN SUBSTRING(REGEXP_REPLACE(TRIM(BOTH FROM ip.call_number_norm),'\(|\)|\[|\]','','gi'),'^[a-z\s\[\]\&\-\.\,\(\)]*[0-9]{2}')||'0'
-  /*PS4*/
-  WHEN TRIM(BOTH FROM ip.call_number_norm) ~ 'ps4' THEN REVERSE(REGEXP_REPLACE(REVERSE(REGEXP_REPLACE(TRIM(BOTH FROM ip.call_number_norm),'\(|\)|\[|\]','','gi')),'^[\w\-\.\/\'']*\s', ''))
-  /*mp3*/
-  WHEN TRIM(BOTH FROM ip.call_number_norm) ~ 'mp3' THEN REVERSE(REGEXP_REPLACE(REVERSE(REGEXP_REPLACE(TRIM(BOTH FROM ip.call_number_norm),'\(|\)|\[|\]','','gi')),'^[\w\-\.\/\'']*\s', ''))
-  /*leftover number suffixes*/
-  WHEN TRIM(BOTH FROM ip.call_number_norm) ~ '\d' THEN REVERSE(REGEXP_REPLACE(REVERSE(REGEXP_REPLACE(REGEXP_REPLACE(TRIM(BOTH FROM ip.call_number_norm),'\(|\)|\[|\]','','gi'),'\d\w*','')),'^[\w\-\.\/\'']*\s', ''))
-  ELSE 'unknown'
-  END,'unknown'),
+   --call number does not exist
+	WHEN ic.call_number_norm = '' OR ic.call_number_norm IS NULL THEN 'no call number'
+	--biographies
+   WHEN ic.call_number_norm ~ '^(.*biography|.*biog|.*bio)\y' THEN BTRIM(SUBSTRING(ic.call_number_norm FROM '^.*((biography)|(biog)|(bio))\y'))
+	--graphic novels & manga
+   WHEN ic.call_number_norm ~ '^(.*graphic|.*manga)' AND ic.call_number_norm !~ '\d' THEN BTRIM(SUBSTRING(ic.call_number_norm FROM '^(.*graphic|.*manga)'))
+	--call number contains no numbers and a 1 or 2 words
+	WHEN ic.call_number_norm !~ '\d' AND (ic.call_number_norm !~ '\s' OR ic.call_number_norm ~ '^([\w\-\.]+\s)[\w\-\.]+$') THEN BTRIM(ic.call_number_norm)
+	--call number contains no numbers 2 words
+	--WHEN i.call_number_norm !~ '\d' AND i.call_number_norm ~ '^([\w\-\.]+\s)[\w\-\.]+$' THEN SPLIT_PART(REGEXP_REPLACE(i.call_number_norm,'\(|\)|\[|\]','','gi'),' ','1')
+	--call number contains no numbers and 3-4 words
+	WHEN ic.call_number_norm !~ '\d' AND ic.call_number_norm ~ '^([\w\-\.]+\s)([\w\-\.]+\s){0,2}[\w\-\.]+$' THEN BTRIM(REVERSE(REGEXP_REPLACE(REVERSE(ic.call_number_norm),'^[\w\-\.\/\'']*\s', '')))
+	--call number contains no numbers and > 4 words
+   WHEN ic.call_number_norm !~ '\d' THEN BTRIM(SPLIT_PART(ic.call_number_norm,' ','1')||' '||SPLIT_PART(ic.call_number_norm,' ','2')||' '||SPLIT_PART(ic.call_number_norm,' ','3'))
+	--only digits are a cutter at the end
+	WHEN REGEXP_REPLACE(REVERSE(ic.call_number_norm), '^[a-z]*[0-9]{2,3}[a-z]\s?','') !~ '\d' THEN BTRIM(REVERSE(REGEXP_REPLACE(REGEXP_REPLACE(REVERSE(ic.call_number_norm),'^[a-z]*[0-9]{2}[a-z]\s?', ''),'^[\w\-\.\'']*\s', '')))
+   --contains an LC number in the 1000-9999 range
+   WHEN ic.call_number_norm ~ '(^|\s)[a-z]{1,3}\s?[0-9]{4}(\.\d{1,3})?\s?\.?[a-z][0-9]' THEN BTRIM(SUBSTRING(ic.call_number_norm,'^[a-z\s\[\]\&\-\.\,\(\)]*[a-z]{1,2}\s?[0-9]')||'000-'||SUBSTRING(ic.call_number_norm,'^[a-z\s\[\]\&\-\.\,\(\)]*[a-z]{1,2}\s?[0-9]')||'999')
+	--contains an LC number in the 001-999 range
+	WHEN ic.call_number_norm ~ '(^|\s)[a-z]{1,3}\s?[0-9]{1,3}(\.\d{1,3})?\s?\.[a-z][0-9]' THEN BTRIM(SUBSTRING(ic.call_number_norm,'^[a-z\s\[\]\&\-\.\,\(\)]*[a-z]{1,2}')||'001-999')
+   --contains a dewey number
+	WHEN ic.call_number_norm ~ '[0-9]{3}\.?[0-9]*' THEN BTRIM(SUBSTRING(ic.call_number_norm,'^[a-z\s\[\]\&\-\.\,\(\)]*[0-9]{2}')||'0')
+  --PS4
+	WHEN ic.call_number_norm ~ 'ps4' THEN BTRIM(REVERSE(REGEXP_REPLACE(REVERSE(ic.call_number_norm),'^[\w\-\.\/\'']*\s', '')))
+	--mp3
+	WHEN ic.call_number_norm ~ 'mp3' THEN BTRIM(REVERSE(REGEXP_REPLACE(REVERSE(ic.call_number_norm),'^[\w\-\.\/\'']*\s', '')))
+	--leftover number suffixes
+   WHEN ic.call_number_norm ~ '\d' THEN BTRIM(REVERSE(REGEXP_REPLACE(REVERSE(REGEXP_REPLACE(ic.call_number_norm,'\d\w*','')),'^[\w\-\.\/\'']*\s', '')))
+	ELSE 'unknown'
+END,'unknown') AS call_number_range,
 COUNT (i.id) AS "Item total",
 SUM(i.checkout_total) AS "Total_Checkouts",
 SUM(i.renewal_total) AS "Total_Renewals",
@@ -61,10 +84,14 @@ COUNT (i.id) FILTER(WHERE i.last_checkout_gmt is null) AS "0_circs",
 ROUND(100.0 * (CAST(COUNT(i.id) FILTER(WHERE i.last_checkout_gmt is null) AS NUMERIC (12,2)) / CAST(COUNT (i.id) AS NUMERIC (12,2))), 4)||'%' AS "Percentage_0_circs",
 ROUND((COUNT(i.id) *(AVG(i.price) FILTER(WHERE i.price>'0' AND i.price <'10000'))/(NULLIF((SUM(i.checkout_total) + SUM(i.renewal_total)),0))),2)::MONEY AS "Cost_Per_Circ_By_AVG_price",
 round(cast(SUM(i.checkout_total) + SUM(i.renewal_total) as numeric (12,2))/cast(COUNT (i.id) as numeric (12,2)), 2) as turnover,
-round(100.0 * (cast(COUNT(i.id) as numeric (12,2)) / (select cast(COUNT (i.id) as numeric (12,2))from sierra_view.item_record i WHERE i.location_code ~ '^act' AND i.item_status_code not in ('e','w','$','o'))), 6)||'%' as relative_item_total,
-round(100.0 * (cast(SUM(i.checkout_total) + SUM(i.renewal_total) as numeric (12,2)) / (SELECT cast(SUM(i.checkout_total) + SUM(i.renewal_total) as numeric (12,2)) from sierra_view.item_record i WHERE i.location_code ~ '^act' AND i.item_status_code NOT IN ('e','w','$','o'))), 6)||'%' as relative_circ
+round(100.0 * (cast(COUNT(i.id) as numeric (12,2)) / (select cast(COUNT (i.id) as numeric (12,2))from sierra_view.item_record i WHERE i.location_code ~ '^ntn' AND i.item_status_code not in ('w','m','$'))), 6)||'%' as relative_item_total,
+round(100.0 * (cast(SUM(i.checkout_total) + SUM(i.renewal_total) as numeric (12,2)) / (SELECT cast(SUM(i.checkout_total) + SUM(i.renewal_total) as numeric (12,2)) from sierra_view.item_record i WHERE i.location_code ~ '^ntn' AND i.item_status_code NOT IN ('w','m','$'))), 6)||'%' as relative_circ
 FROM
 sierra_view.item_record i
+JOIN
+call_number_mod ic
+ON
+i.id = ic.item_record_id
 JOIN
 sierra_view.item_record_property ip
 ON
@@ -88,10 +115,12 @@ JOIN
 sierra_view.itype_property_myuser it
 ON
 i.itype_code_num = it.code
-JOIN
-sierra_view.language_property_myuser ln
+LEFT JOIN
+sierra_view.language_property_myuser LN
 ON
 b.language_code = ln.code
-WHERE location_code ~ '^act' and item_status_code not IN ('e','w','$','o')
+WHERE location_code ~ '^ar2'
+--location will take the form ^oln, which in this example looks for all locations starting with the string oln.
+AND item_status_code NOT IN ('w','m','$')
 GROUP BY 1
 ORDER BY 1;

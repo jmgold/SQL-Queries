@@ -8,7 +8,10 @@ Takes variables for transaction location and unit of time to group the report by
 
 */
 
-SELECT * FROM
+SELECT *,
+'' AS "CHECKOUT: UNIQUE PATRON COUNT",
+'' AS "https://sic.minlib.net/reports/16"
+FROM
 (
 SELECT
 CASE
@@ -50,6 +53,6 @@ WHEN transaction_time = 'Tuesday' THEN '2'
 WHEN transaction_time = 'Wednesday' THEN '3'
 WHEN transaction_time = 'Thursday' THEN '4'
 WHEN transaction_time = 'Friday' THEN '5'
-WHEN transaction_time = 'Satday' THEN '0'
+WHEN transaction_time = 'Saturday' THEN '6'
 ELSE transaction_time
 END

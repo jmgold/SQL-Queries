@@ -7,24 +7,27 @@ Designed for non-roman records and will use the contents of the 880 fields for a
 */
 
 SELECT
+*,
+'' AS "REVIEW FILE TO BOOKLIST",
+'' AS "https://sic.minlib.net/reports/73"
+FROM
+(SELECT
 DISTINCT(COALESCE(REGEXP_REPLACE(i.call_number,'\|[a-z]',' ','g'), '')) AS call_number,
 {{#if include_nonroman}}
 CASE
 	WHEN vt.field_content IS NULL THEN b.best_title
-	WHEN REGEXP_REPLACE(SPLIT_PART(SUBSTRING(vt.field_content FROM 10 FOR 2),'|',1),'\s?(\.|\,|\:|\/|\;|\=)\s?$','') ~ '\$\d' THEN REGEXP_REPLACE(SPLIT_PART(SUBSTRING(vt.field_content FROM 14),'|',1),'\s?(\.|\,|\:|\/|\;|\=)\s?$','')
-	ELSE REGEXP_REPLACE(SPLIT_PART(SUBSTRING(vt.field_content FROM 11),'|',1),'\s?(\.|\,|\:|\/|\;|\=)\s?$','')
+	ELSE REGEXP_REPLACE(SPLIT_PART(REGEXP_REPLACE(vt.field_content,'^.*\|a',''),'|',1),'\s?(\.|\,|\:|\/|\;|\=)\s?$','')
 END AS title_nonroman,
 {{/if include_nonroman}}
 b.best_title AS title,
 {{#if include_nonroman}}
 CASE
-	WHEN va.field_content IS NULL THEN REPLACE(SPLIT_PART(SPLIT_PART(b.best_author,' (',1),', ',2),'.','')||' '||SPLIT_PART(b.best_author,', ',1)
-	WHEN SUBSTRING(va.field_content FROM 10 FOR 2) ~ '\$\d' THEN REGEXP_REPLACE(SPLIT_PART(SUBSTRING(va.field_content FROM 14),'|',1),'\s?(\.|\,|\:|\/|\;)\s?$','')
-	ELSE REGEXP_REPLACE(SPLIT_PART(SUBSTRING(va.field_content FROM 11),'|',1),'\s?(\.|\,|\:|\/|\;)\s?$','')
+	WHEN va.field_content IS NULL THEN b.best_author
+   ELSE REGEXP_REPLACE(REPLACE(REPLACE(REGEXP_REPLACE(va.field_content,'^.*\|a',''),'|d',' '),'|q',' '),'\s?(\.|\,|\:|\/|\;|\=)\s?$','')
 END AS author_nonroman,
 {{/if include_nonroman}}
 REPLACE(SPLIT_PART(SPLIT_PART(b.best_author,' (',1),', ',2),'.','')||' '||SPLIT_PART(b.best_author,', ',1) AS author,
-'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id) AS url,
+'https://catalog.minlib.net/Record/'||id2reckey(b.bib_record_id) AS url,
 CASE
 WHEN b.material_code = 'a'
 THEN (SELECT
@@ -82,3 +85,4 @@ GROUP BY b.bib_record_id,1,b.best_title,b.best_author,b.material_code
 ,2,4
 {{/if include_nonroman}}
 ORDER BY 1,3
+)a

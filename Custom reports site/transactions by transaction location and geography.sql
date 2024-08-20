@@ -8,6 +8,12 @@ Census options can be used to join results to census data
 */
 
 SELECT
+*,
+'' AS "TRANSACTIONS BY TRANSACTION LOCATION",
+'' AS "https://sic.minlib.net/reports/85"
+FROM
+(
+SELECT
 CASE
 	WHEN '{{geo}}' = 'zip' THEN SUBSTRING(a.postal_code,'^\d{5}')
 	WHEN v.field_content IS NULL THEN 'no data'
@@ -19,10 +25,14 @@ END AS geoid,
 --Possible options are zip, county, tract, block group
 COUNT(DISTINCT t.id) FILTER(WHERE t.op_code = 'i') AS "5_week_checkin_count",
 COUNT(DISTINCT t.id) FILTER(WHERE t.op_code = 'i' AND t.due_date_gmt::DATE > t.transaction_gmt::DATE) AS "5_week_overdue_checkin",
+ROUND(100.0 * (CAST(COUNT(DISTINCT t.id) FILTER(WHERE t.op_code = 'i' AND t.due_date_gmt::DATE > t.transaction_gmt::DATE) AS NUMERIC (12,2))) / NULLIF(CAST(COUNT(DISTINCT t.id) FILTER(WHERE t.op_code = 'i') AS NUMERIC (12,2)),0), 4) ||'%' AS pct_overdue_checkin,
 COUNT(DISTINCT t.id) FILTER(WHERE t.op_code = 'o') AS "5_week_checkout_count",
 COUNT(DISTINCT t.id) FILTER(WHERE t.op_code = 'o' AND SUBSTRING(t.item_location_code,1,3) ~ {{location}}) AS "5_week_local_checkout_count",
 COUNT(DISTINCT t.id) FILTER(WHERE t.op_code = 'o' AND SUBSTRING(t.item_location_code,1,3) !~ {{location}}) AS "5_week_network_checkout_count",
 COUNT(DISTINCT t.id) FILTER(WHERE t.op_code = 'f') AS "5_week_filled_hold_count",
+COUNT(DISTINCT t.patron_record_id) FILTER(WHERE t.op_code = 'o') AS "5_week_unique_patron_checkout_count",
+COUNT(DISTINCT t.patron_record_id) FILTER(WHERE t.op_code = 'i') AS "5_week_unique_patron_checkin_count",
+COUNT(DISTINCT t.patron_record_id) FILTER(WHERE t.op_code = 'f') AS "5_week_unique_patron_filled_hold_count",
 CASE
 	WHEN '{{geo}}' = 'zip' THEN 'https://censusreporter.org/profiles/86000US'||SUBSTRING(a.postal_code,'^\d{5}')
 	WHEN v.field_content IS NULL OR v.field_content = '' THEN 'na'
@@ -62,8 +72,10 @@ l.bib_record_id = b.bib_record_id AND b.material_code IN ({{mat_type}})
 
 WHERE 
 CASE
-	WHEN  {{location}} = '^act' THEN t.stat_group_code_num BETWEEN '100' AND '109'
 	--location using the form ^act in order to reuse an existing filter
+	WHEN  {{location}} = '^ac' THEN (t.stat_group_code_num BETWEEN '100' AND '109' OR t.stat_group_code_num BETWEEN '870' AND '879')
+	WHEN  {{location}} = '^act' THEN t.stat_group_code_num BETWEEN '100' AND '109'
+	WHEN  {{location}} = '^ac2' THEN t.stat_group_code_num BETWEEN '870' AND '879'
 	WHEN  {{location}} = '^arl' THEN (t.stat_group_code_num BETWEEN '110' AND '119' OR t.stat_group_code_num = '996')
 	WHEN  {{location}} = '^ar2' THEN t.stat_group_code_num BETWEEN '120' AND '129'
 	WHEN  {{location}} = '^ar' THEN (t.stat_group_code_num BETWEEN '110' AND '129' OR t.stat_group_code_num = '996')
@@ -106,10 +118,11 @@ CASE
 	WHEN  {{location}} = '^mil' THEN t.stat_group_code_num BETWEEN '490' AND '499'
 	WHEN  {{location}} = '^mld' THEN t.stat_group_code_num BETWEEN '500' AND '509'
 	WHEN  {{location}} = '^mwy' THEN t.stat_group_code_num BETWEEN '520' AND '529'
-	WHEN  {{location}} = '^nat' THEN t.stat_group_code_num BETWEEN '530' AND '539'
+	WHEN  {{location}} = '^na(t|4)' THEN t.stat_group_code_num BETWEEN '530' AND '539' OR t.stat_group_code_num BETWEEN '560' AND '569'
 	WHEN  {{location}} = '^na2' THEN t.stat_group_code_num BETWEEN '540' AND '549'
 	WHEN  {{location}} = '^na3' THEN t.stat_group_code_num BETWEEN '550' AND '559'
-	WHEN  {{location}} = '^na' THEN t.stat_group_code_num BETWEEN '530' AND '559'
+	WHEN  {{location}} = '^na' THEN t.stat_group_code_num BETWEEN '530' AND '569'
+	WHEN  {{location}} = '^na[^2]' THEN t.stat_group_code_num BETWEEN '530' AND '539' OR t.stat_group_code_num BETWEEN '550' AND '569'
 	WHEN  {{location}} = '^nee' THEN t.stat_group_code_num BETWEEN '570' AND '579'
 	WHEN  {{location}} = '^nor' THEN t.stat_group_code_num BETWEEN '580' AND '589'
 	WHEN  {{location}} = '^ntn' THEN t.stat_group_code_num BETWEEN '590' AND '599'
@@ -120,8 +133,10 @@ CASE
 	WHEN  {{location}} = '^so' THEN t.stat_group_code_num BETWEEN '640' AND '679'
 	WHEN  {{location}} = '^sto' THEN t.stat_group_code_num BETWEEN '680' AND '689'
 	WHEN  {{location}} = '^sud' THEN t.stat_group_code_num BETWEEN '690' AND '699'
-	WHEN  {{location}} = '^wlm' THEN t.stat_group_code_num BETWEEN '700' AND '709'
-	WHEN  {{location}} = '^wat' THEN t.stat_group_code_num BETWEEN '710' AND '739'
+	WHEN  {{location}} = '^wlm' THEN t.stat_group_code_num BETWEEN '700' AND '709' OR t.stat_group_code_num = '993'
+	WHEN  {{location}} = '^wa' THEN t.stat_group_code_num BETWEEN '710' AND '739'
+	WHEN  {{location}} = '^wa[^4]' THEN t.stat_group_code_num BETWEEN '710' AND '729'
+	WHEN  {{location}} = '^wa4' THEN t.stat_group_code_num BETWEEN '730' AND '739'
 	WHEN  {{location}} = '^wyl' THEN t.stat_group_code_num BETWEEN '740' AND '749'
 	WHEN  {{location}} = '^wel' THEN t.stat_group_code_num BETWEEN '750' AND '759'
 	WHEN  {{location}} = '^we2' THEN t.stat_group_code_num BETWEEN '760' AND '769'
@@ -132,11 +147,11 @@ CASE
 	WHEN  {{location}} = '^wsn' THEN t.stat_group_code_num BETWEEN '800' AND '809'
 	WHEN  {{location}} = '^wwd' THEN t.stat_group_code_num BETWEEN '810' AND '819'
 	WHEN  {{location}} = '^ww2' THEN t.stat_group_code_num BETWEEN '820' AND '829'
-	WHEN  {{location}} = '^ww' THEN t.stat_group_code_num BETWEEN '810' AND '829'
-	WHEN  {{location}} = '^pmc' THEN t.stat_group_code_num BETWEEN '830' AND '839'
+	WHEN  {{location}} = '^ww2' THEN t.stat_group_code_num = '831'
+	WHEN  {{location}} = '^ww' THEN t.stat_group_code_num BETWEEN '810' AND '829' OR THEN t.stat_group_code_num = '831'
 	WHEN  {{location}} = '^reg' THEN t.stat_group_code_num BETWEEN '840' AND '849'
 	WHEN  {{location}} = '^shr' THEN t.stat_group_code_num BETWEEN '850' AND '859'
-	WHEN  {{location}} = '\w' THEN t.stat_group_code_num BETWEEN '100' AND '999'
 END
-GROUP BY 1,8
+GROUP BY 1,12
 ORDER BY 2 DESC
+)a

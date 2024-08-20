@@ -6,6 +6,12 @@ Identifies items with a status of on holdshelf that are not on hold
 */
 
 SELECT
+*,
+'' AS "FALSE HOLDSHELF STATUS",
+'' AS "https://sic.minlib.net/reports/39"
+FROM
+(
+SELECT
 i.location_code AS shelving_location,
 id2reckey(i.id)||'a' AS item_number,
 rm.record_last_updated_gmt::DATE AS last_updated,
@@ -44,3 +50,4 @@ AND i.location_code ~ '{{location}}'
 --location will take the form ^oln, which in this example looks for all locations starting with the string oln.
 
 ORDER BY 1,4
+)a

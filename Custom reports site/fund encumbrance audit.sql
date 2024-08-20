@@ -32,11 +32,16 @@ o.id = op.order_record_id AND o.order_status_code = 'q'
 
 WHERE
 o.accounting_unit_code_num = {{accounting_unit}}
-AND o.order_status_code IN ('o','q','g','d')
+AND o.order_status_code IN ('o','q','g','c')
 
 GROUP BY 1)
 
 SELECT
+*,
+'' AS "FUND ENCUMBRANCE AUDIT",
+'' AS "https://sic.minlib.net/reports/56"
+FROM
+(SELECT
 DISTINCT f.fund_code,
 fn.name AS "name",
 ROUND(CAST(f.encumbrance AS NUMERIC (12,2))/100,2)::MONEY AS encumbrance,
@@ -71,3 +76,4 @@ f.acct_unit = {{accounting_unit}}
 AND f.fund_type = 'fbal'
 
 ORDER BY 1
+)a

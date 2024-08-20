@@ -6,6 +6,12 @@ Counts either items or titles owned by a location, grouped by a variety of categ
 */
 
 SELECT
+*,
+'' AS "COUNT HOLDINGS BY LOCATION",
+'' AS "https://sic.minlib.net/reports/45"
+FROM
+(
+SELECT
 {{Grouping}},
 /*
 alternative groupings
@@ -20,6 +26,7 @@ COUNT({{bib_or_item}}) FILTER(WHERE SUBSTRING(i.location_code FROM 1 FOR 3) = 'a
 /*
 i.id or DISTINCT b.id
 */
+COUNT({{bib_or_item}}) FILTER(WHERE SUBSTRING(i.location_code FROM 1 FOR 3) = 'ac2') AS "ACTON/WEST",
 COUNT({{bib_or_item}}) FILTER(WHERE SUBSTRING(i.location_code FROM 1 FOR 3) = 'arl') AS "ARLINGTON",
 COUNT({{bib_or_item}}) FILTER(WHERE SUBSTRING(i.location_code FROM 1 FOR 3) = 'ar2') AS "ARLINGTON/FOX",
 COUNT({{bib_or_item}}) FILTER(WHERE SUBSTRING(i.location_code FROM 1 FOR 3) = 'ash') AS "ASHLAND",
@@ -73,6 +80,7 @@ COUNT({{bib_or_item}}) FILTER(WHERE SUBSTRING(i.location_code FROM 1 FOR 3) = 's
 COUNT({{bib_or_item}}) FILTER(WHERE SUBSTRING(i.location_code FROM 1 FOR 3) = 'sud') AS "SUDBURY",
 COUNT({{bib_or_item}}) FILTER(WHERE SUBSTRING(i.location_code FROM 1 FOR 3) = 'wal') AS "WALTHAM",
 COUNT({{bib_or_item}}) FILTER(WHERE SUBSTRING(i.location_code FROM 1 FOR 3) = 'wat') AS "WATERTOWN",
+COUNT({{bib_or_item}}) FILTER(WHERE SUBSTRING(i.location_code FROM 1 FOR 3) = 'wa4') AS "WATERTOWN/BOOKMOBILE",
 COUNT({{bib_or_item}}) FILTER(WHERE SUBSTRING(i.location_code FROM 1 FOR 3) = 'wyl') AS "WAYLAND",
 COUNT({{bib_or_item}}) FILTER(WHERE SUBSTRING(i.location_code FROM 1 FOR 3) = 'wel') AS "WELLESLEY",
 COUNT({{bib_or_item}}) FILTER(WHERE SUBSTRING(i.location_code FROM 1 FOR 3) = 'we2') AS "WELLESLEY/HILLS",
@@ -80,6 +88,7 @@ COUNT({{bib_or_item}}) FILTER(WHERE SUBSTRING(i.location_code FROM 1 FOR 3) = 'w
 COUNT({{bib_or_item}}) FILTER(WHERE SUBSTRING(i.location_code FROM 1 FOR 3) = 'wsn') AS "WESTON",
 COUNT({{bib_or_item}}) FILTER(WHERE SUBSTRING(i.location_code FROM 1 FOR 3) = 'wwd') AS "WESTWOOD",
 COUNT({{bib_or_item}}) FILTER(WHERE SUBSTRING(i.location_code FROM 1 FOR 3) = 'ww2') AS "WESTWOOD/ISLINGTON",
+COUNT({{bib_or_item}}) FILTER(WHERE SUBSTRING(i.location_code FROM 1 FOR 3) = 'ww3') AS "WESTWOOD/BOOKMOBILE",
 COUNT({{bib_or_item}}) FILTER(WHERE SUBSTRING(i.location_code FROM 1 FOR 3) = 'wob') AS "WOBURN"
 
 FROM
@@ -110,3 +119,4 @@ i.item_status_code NOT IN ({{Item_Status_Codes}})
 
 GROUP BY 1
 ORDER BY 1
+)a

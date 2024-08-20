@@ -5,7 +5,12 @@ Minuteman Library Network
 Counts renewals each day for the past month by their source
 */
 
-SELECT
+SELECT *,
+'' AS "RENEWALS THIS MONTH",
+'' AS "https://sic.minlib.net/reports/59"
+
+FROM
+(SELECT
 C.transaction_gmt::DATE AS "date",
 COUNT(C.id) AS total_renewals,
 COUNT(C.id) FILTER(WHERE c.application_name = 'autonotices') AS total_autorenewals,
@@ -20,3 +25,4 @@ AND C.item_location_code ~ {{location}}
 --location will take the form ^oln, which in this example looks for all locations starting with the string oln.
 GROUP BY 1
 ORDER BY 1
+)a

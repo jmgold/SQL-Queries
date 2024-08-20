@@ -21,18 +21,22 @@ JOIN
 sierra_view.item_record as i
 ON
 i.id = l.item_record_id
-AND i.icode1 IN ('1','2') 
-AND i.location_code ~ '^lex'
+AND i.icode1 ='220'--BETWEEN '10' AND '99' 
+AND i.location_code ~ '^lexj'
 JOIN
 sierra_view.record_metadata m
 ON
-i.id = m.id --AND m.creation_date_gmt < {{created_date}}
+i.id = m.id --AND m.creation_date_gmt < '2021-01-01'
+LEFT JOIN
+sierra_view.varfield v
+ON i.id = v.record_id AND v.varfield_type_code = 'v'
 
 WHERE
 b.bcode1 = 'm' 
-AND b.bcode2 IN ('a') 
+--AND b.bcode2 IN ('a') 
+AND v.id IS NULL
 group by 1
-having count(i.id) > 2
+having count(i.id) > 1
 )
 
 SELECT
@@ -66,7 +70,11 @@ l.item_record_id = ip.item_record_id
 JOIN
 sierra_view.item_record i
 ON
-ip.item_record_id = i.id AND i.location_code ~ '^lex'
+ip.item_record_id = i.id AND i.location_code ~'^lexj' AND i.icode1 = '220'--= 'lexa' AND i.icode1 BETWEEN '10' AND '99'
+JOIN
+sierra_view.record_metadata rm
+ON
+i.id = rm.id --AND rm.creation_date_gmt::DATE < '2021-01-01'
 LEFT JOIN
 sierra_view.checkout C
 ON
@@ -75,5 +83,6 @@ JOIN
 sierra_view.item_status_property_myuser status
 ON
 i.item_status_code = status.code
+
 
 ORDER BY 1,6,7

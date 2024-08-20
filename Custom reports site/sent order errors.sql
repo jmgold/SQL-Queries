@@ -4,7 +4,9 @@ Minuteman Library Network
 Identifies order records that were ftp'd multiple times or not at al but are associated with an edifact enabled vendor
 */
 
-SELECT *
+SELECT *,
+'' AS "SENT ORDER ERRORS",
+'' AS "https://sic.minlib.net/reports/70"
 FROM(
 
 SELECT
@@ -20,13 +22,13 @@ b.best_title AS title
 FROM
 sierra_view.order_record o
 JOIN
-sierra_view.varfield sent1
+sierra_view.subfield sent1
 ON
-o.id = sent1.record_id AND sent1.varfield_type_code = 'b' AND TO_DATE(SUBSTRING(sent1.field_content, '\d{2}\-\d{2}\-\d{4}'),'MM-DD-YYYY') IS NOT NULL AND sent1.occ_num = '0'
+o.id = sent1.record_id AND sent1.field_type_code = 'b' AND sent1.tag = 'b' AND TO_DATE(SUBSTRING(sent1.content, '\d{2}\-\d{2}\-\d{4}'),'MM-DD-YYYY') IS NOT NULL --AND sent1.occ_num = '0'
 JOIN
-sierra_view.varfield sent2
+sierra_view.subfield sent2
 ON
-o.id = sent2.record_id AND sent2.varfield_type_code = 'b' AND TO_DATE(SUBSTRING(sent2.field_content, '\d{2}\-\d{2}\-\d{4}'),'MM-DD-YYYY') IS NOT NULL AND sent1.occ_num != sent2.occ_num
+o.id = sent2.record_id AND sent2.field_type_code = 'b' AND sent2.tag = 'b' AND TO_DATE(SUBSTRING(sent2.content, '\d{2}\-\d{2}\-\d{4}'),'MM-DD-YYYY') IS NOT NULL AND (sent2.varfield_id != sent1.varfield_id OR sent2.display_order != sent1.display_order)
 JOIN
 sierra_view.record_metadata rm
 ON

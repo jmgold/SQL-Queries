@@ -32,11 +32,16 @@ i.id = m.id AND m.creation_date_gmt < {{created_date}}
 WHERE
 b.bcode1 = 'm' 
 AND b.bcode2 IN ({{mat_type}}) 
-group by 1
-having count(i.id) > {{copies}}
+GROUP BY 1
+HAVING COUNT(i.id) > {{copies}}
 )
 
-SELECT
+SELECT *,
+'' AS "MULTIPLE ITEMS",
+'' AS "https://sic.minlib.net/reports/69"
+
+FROM
+(SELECT
 ID2RECKEY(b.bib_record_id)||'a' AS bib_number,
 b.best_title AS title,
 b.best_author AS author,
@@ -87,4 +92,18 @@ sierra_view.record_metadata rm
 ON
 i.id = rm.id AND rm.creation_date_gmt < {{created_date}}
 
+--use to weed out items with volume fields, which in some cases may throw off results
+--{{#if Exclude}}
+LEFT JOIN
+sierra_view.subfield v
+ON
+i.id = v.record_id AND v.field_type_code = 'v'
+
+GROUP BY 1,2,3,4,5,6,7,8,9,10,11,12
+
+HAVING
+COUNT(v.*) = 0 
+--{{/if Exclude}}
+
 ORDER BY 1,6,7
+)a

@@ -7,7 +7,12 @@ Census block geoids are stored in patron census fields and can be used to
 join results to census data
 */
 
-SELECT
+SELECT *,
+'' AS "PATRONS BY GEOGRAPHY",
+'' AS "https://sic.minlib.net/reports/84"
+
+FROM
+(SELECT
 CASE
 	WHEN '{{geo}}' = 'zip' THEN SUBSTRING(a.postal_code,'^\d{5}')
 	WHEN v.field_content IS NULL THEN 'no data'
@@ -29,8 +34,9 @@ COUNT(DISTINCT p.id) FILTER(WHERE rm.creation_date_gmt::DATE >= {{new_date}}) AS
 COUNT(DISTINCT p.id) FILTER(WHERE p.activity_gmt::DATE >= {{active_date}}) AS total_active_patrons,
 --set date you wish to use to determine if a patron is considered to be active
 ROUND(100.0 * (CAST(COUNT(DISTINCT p.id) FILTER(WHERE p.activity_gmt::DATE >= {{active_date}}) AS NUMERIC (12,2))) / CAST(COUNT(DISTINCT p.id) AS NUMERIC (12,2)), 4) ||'%' AS pct_active,
-COUNT(DISTINCT p.id) FILTER(WHERE ((p.mblock_code != '-') OR (p.owed_amt >= 10))) as total_blocked_patrons,
-ROUND(100.0 * (CAST(COUNT(DISTINCT p.id) FILTER(WHERE ((p.mblock_code != '-') OR (p.owed_amt >= 10))) as numeric (12,2)) / cast(COUNT(DISTINCT p.id) as numeric (12,2))),4) ||'%' AS pct_blocked,
+COUNT(DISTINCT p.id) FILTER(WHERE ((p.mblock_code != '-') OR (p.owed_amt >= 100))) as total_blocked_patrons,
+ROUND(100.0 * (CAST(COUNT(DISTINCT p.id) FILTER(WHERE ((p.mblock_code != '-') OR (p.owed_amt >= 100))) AS NUMERIC (12,2)) / CAST(COUNT(DISTINCT p.id) AS NUMERIC (12,2))),4) ||'%' AS pct_blocked,
+ROUND((100.0 * SUM(p.checkout_total))/(100.0 *COUNT(DISTINCT p.id)),2) AS checkouts_per_patron,
 CASE
 	WHEN '{{geo}}' = 'zip' THEN 'https://censusreporter.org/profiles/86000US'||SUBSTRING(a.postal_code,'^\d{5}')
 	WHEN v.field_content IS NULL OR v.field_content = '' THEN 'na'
@@ -57,10 +63,12 @@ p.id = h.patron_record_id
 LEFT JOIN
 sierra_view.varfield v
 ON
-v.record_id = p.id AND v.varfield_type_code = 'k' AND v.field_content ~ '^\|s\d{2}'
+v.record_id = p.id AND v.varfield_type_code = 'k' AND v.field_content ~ '^\|s25'
 
 
-WHERE p.ptype_code IN ({{ptype}})
+WHERE SUBSTRING(REGEXP_REPLACE(v.field_content,'\|(s|c|t|b)','','g'),6,6) IN ({{tracts}})
+--p.ptype_code IN ({{ptype}})
 
-GROUP BY 1,14
+GROUP BY 1,15
 ORDER BY 2 DESC
+)a

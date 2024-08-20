@@ -122,8 +122,14 @@ fp.charge_type_code IN  ('2','4','6')
 )
 
 SELECT
+*,
+'' AS "FREQUENTLY OVERDUE TITLES",
+'' AS "https://sic.minlib.net/reports/80"
+FROM
+(
+SELECT
 --Link to Encore
-b.best_title as title,
+b.best_title AS title,
 SPLIT_PART(b.best_author,', ',1)||', '||REPLACE(TRANSLATE(SPLIT_PART(b.best_author,', ',2),'.',','),',','') AS author,
 COUNT(DISTINCT fc.id) AS overdue_count,
 STRING_AGG(DISTINCT id2reckey(b.bib_record_id)||'a',', ') AS bib_records
@@ -149,3 +155,4 @@ GROUP BY 1,2
 ORDER BY 3 desc
 LIMIT {{qty}}
 --qty will be number of row to return
+)a

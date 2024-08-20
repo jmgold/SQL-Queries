@@ -6,6 +6,11 @@ On Demand Purchase Alert
 */
 
 SELECT
+*,
+'' AS "PURCHASE ALERT",
+'' AS "https://sic.minlib.net/reports/36"
+FROM
+(SELECT
 id2reckey(mv.bib_id)||'a' AS "bib_number",
 brp.best_title AS "title", 
 brp.best_author AS "author", 
@@ -28,7 +33,7 @@ CASE
     ELSE round(cast((mv.local_holds) AS numeric (12, 2))/CAST((max(mv.local_avail_item_count) + max(mv.order_copies)) AS numeric(12,2)),2)
     END
 AS "local_ratio",
-'http://find.minlib.net/iii/encore/record/C__R'||id2reckey(mv.bib_id)   AS "url"
+'https://catalog.minlib.net/Record/'||id2reckey(mv.bib_id)   AS "url"
 
 FROM sierra_view.bib_record_property brp
 LEFT JOIN 
@@ -106,7 +111,7 @@ GROUP BY 1, 2, 3, 4, 5, 6, 8, 13, 15
 HAVING mv.local_holds >= {{min_local_holds}}
 {{age_limit}}
 /*
-AND COUNT(ir.id) FILTER (WHERE (ir.itype_code_num NOT BETWEEN '100' AND '183' OR SUBSTRING(ir.location_code,4,1) NOT IN ('j','y'))) > 0 -- adult
+AND COUNT(ir.id) FILTER (WHERE (ir.itype_code_num NOT BETWEEN '100' AND '183' AND SUBSTRING(ir.location_code,4,1) NOT IN ('j','y'))) > 0 -- adult
 AND COUNT(ir.id) FILTER (WHERE (ir.itype_code_num BETWEEN '150' AND '183' OR SUBSTRING(ir.location_code,4,1) = 'j')) > 0 --juv
 AND COUNT(ir.id) FILTER (WHERE (ir.itype_code_num BETWEEN '100' AND '133' OR SUBSTRING(ir.location_code,4,1) = 'y')) > 0 --ya
 AND COUNT(ir.id) >= 0 --all ages
@@ -115,4 +120,5 @@ AND COUNT(ir.id) >= 0 --all ages
 --OR max(mv.hold_count)/(max(mv.item_count) + max(mv.order_copies))>=4
 ORDER BY 5, {{sort}} DESC
 --sort = 9 or mv.local_holds
-LIMIT {{qty}};
+LIMIT {{qty}}
+)a

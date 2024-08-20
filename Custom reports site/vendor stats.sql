@@ -3,7 +3,7 @@ SELECT
 DISTINCT o.id,
 p.invoice_date_gmt::DATE AS ship_date,
 p.paid_date_gmt::DATE AS paid_date,
-TO_DATE(SUBSTRING(sent.field_content, '\d{2}\-\d{2}\-\d{4}'),'MM-DD-YYYY') AS sent_date
+TO_DATE(SUBSTRING(sent.content, '\d{2}\-\d{2}\-\d{4}'),'MM-DD-YYYY') AS sent_date
 
 FROM
 sierra_view.order_record o
@@ -12,9 +12,9 @@ sierra_view.order_record_paid p
 ON
 o.id = p.order_record_id
 JOIN
-sierra_view.varfield sent
+sierra_view.subfield sent
 ON
-o.id = sent.record_id AND sent.varfield_type_code = 'b' AND TO_DATE(SUBSTRING(sent.field_content, '\d{2}\-\d{2}\-\d{4}'),'MM-DD-YYYY') IS NOT NULL
+o.id = sent.record_id AND sent.field_type_code = 'b' AND sent.tag = 'b' AND TO_DATE(SUBSTRING(sent.content, '\d{2}\-\d{2}\-\d{4}'),'MM-DD-YYYY') IS NOT NULL
 JOIN
 sierra_view.record_metadata rm
 ON
@@ -23,7 +23,11 @@ o.id = rm.id AND rm.creation_date_gmt::DATE >= {{created_date}}
 WHERE o.accounting_unit_code_num = {{accounting_unit}}
 )
 
-SELECT * FROM(
+SELECT
+*,
+'' AS "VENDOR STATISTICS",
+'' AS "https://sic.minlib.net/reports/58"
+FROM(
 SELECT
 o.vendor_record_code AS vendor_code,
 n.field_content AS vendor_name,

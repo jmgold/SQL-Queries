@@ -1,3 +1,17 @@
+/*
+Jeremy Goldstein
+Minuteman Library Network
+
+Identifies titles in a specified subject where there are at least x copies
+Designed for finding titles suitable for book groups
+*/
+
+SELECT
+*,
+'' AS "TITLES IN A SUBJECT WITH X COPIES",
+'' AS "https://sic.minlib.net/reports/52"
+FROM
+(
 SELECT
 id2reckey(b.bib_record_id)||'a' AS bib_number,
 b.best_title AS title,
@@ -24,4 +38,5 @@ b.material_code IN ({{mat_type}})
 GROUP BY
 1,2,3,4
 HAVING
-COUNT(distinct bi.id) >= {{copies}}
+COUNT(DISTINCT bi.id) >= {{copies}}
+)a

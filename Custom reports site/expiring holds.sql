@@ -7,6 +7,12 @@ Takes two filters, pickup locations and number of days before holds expire
 */
 
 SELECT
+*,
+'' AS "HOLDS SOON TO EXPIRE",
+'' AS "https://sic.minlib.net/reports/42"
+FROM
+(
+SELECT
 DISTINCT h.id AS hold_id,
 h.placed_gmt::DATE AS date_placed,
 h.expires_gmt AS date_expires,
@@ -71,3 +77,4 @@ AND h.status = '0'
 
 GROUP BY 1,2,3,4,5,6,7,8,9,10,11
 ORDER BY 4
+)a

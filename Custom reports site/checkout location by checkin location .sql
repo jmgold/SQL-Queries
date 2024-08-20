@@ -62,21 +62,24 @@ JOIN
 sierra_view.statistic_group_myuser s
 ON
 C.stat_group_code_num = s.code
-
 )
 
+SELECT *,
+'' AS "CHECKOUT LOC BY CHECKIN LOC",
+'' AS "https://sic.minlib.net/reports/57"
 
-SELECT
+FROM
+(SELECT
 DISTINCT l.name AS checkout_location,
 COUNT(C.id) AS checkin_total,
 COUNT(C.id) FILTER (WHERE SUBSTRING(s.location_code,1,2) != cl.checkout_location) AS checked_out_elsewhere,
-COUNT(C.id) FILTER (WHERE C.stat_group_code_num BETWEEN '100' AND '109') AS "ACTON",
-COUNT(C.id) FILTER (WHERE C.stat_group_code_num BETWEEN '110' AND '129') AS "ARLINGTON",
+COUNT(C.id) FILTER (WHERE (C.stat_group_code_num BETWEEN '100' AND '109') OR (C.stat_group_code_num BETWEEN '870' AND '879')) AS "ACTON",
+COUNT(C.id) FILTER (WHERE C.stat_group_code_num BETWEEN '110' AND '129' OR C.stat_group_code_num = '996') AS "ARLINGTON",
 COUNT(C.id) FILTER (WHERE C.stat_group_code_num BETWEEN '130' AND '139') AS "ASHLAND",
 COUNT(C.id) FILTER (WHERE C.stat_group_code_num BETWEEN '140' AND '149') AS "BEDFORD",
 COUNT(C.id) FILTER (WHERE C.stat_group_code_num BETWEEN '150' AND '179') AS "BELMONT",
 COUNT(C.id) FILTER (WHERE C.stat_group_code_num BETWEEN '180' AND '209') AS "BROOKLINE",
-COUNT(C.id) FILTER (WHERE C.stat_group_code_num BETWEEN '210' AND '299') AS "CAMBRIDGE",
+COUNT(C.id) FILTER (WHERE (C.stat_group_code_num BETWEEN '210' AND '299') OR C.stat_group_code_num IN ('994','997')) AS "CAMBRIDGE",
 COUNT(C.id) FILTER (WHERE C.stat_group_code_num BETWEEN '300' AND '319') AS "CONCORD",
 COUNT(C.id) FILTER (WHERE C.stat_group_code_num BETWEEN '340' AND '349') AS "DEAN",
 COUNT(C.id) FILTER (WHERE C.stat_group_code_num BETWEEN '320' AND '339') AS "DEDHAM",
@@ -93,7 +96,7 @@ COUNT(C.id) FILTER (WHERE C.stat_group_code_num BETWEEN '500' AND '509') AS "MED
 COUNT(C.id) FILTER (WHERE C.stat_group_code_num BETWEEN '480' AND '489') AS "MEDFORD",
 COUNT(C.id) FILTER (WHERE C.stat_group_code_num BETWEEN '520' AND '529') AS "MEDWAY",
 COUNT(C.id) FILTER (WHERE C.stat_group_code_num BETWEEN '490' AND '499') AS "MILLIS",
-COUNT(C.id) FILTER (WHERE C.stat_group_code_num BETWEEN '530' AND '559') AS "NATICK",
+COUNT(C.id) FILTER (WHERE C.stat_group_code_num BETWEEN '530' AND '569') AS "NATICK",
 COUNT(C.id) FILTER (WHERE C.stat_group_code_num BETWEEN '570' AND '579') AS "NEEDHAM",
 COUNT(C.id) FILTER (WHERE C.stat_group_code_num BETWEEN '590' AND '599') AS "NEWTON",
 COUNT(C.id) FILTER (WHERE C.stat_group_code_num BETWEEN '580' AND '589') AS "NORWOOD",
@@ -104,7 +107,7 @@ COUNT(C.id) FILTER (WHERE C.stat_group_code_num BETWEEN '850' AND '859') AS "SHE
 COUNT(C.id) FILTER (WHERE C.stat_group_code_num BETWEEN '640' AND '679') AS "SOMERVILLE",
 COUNT(C.id) FILTER (WHERE C.stat_group_code_num BETWEEN '680' AND '689') AS "STOW",
 COUNT(C.id) FILTER (WHERE C.stat_group_code_num BETWEEN '690' AND '699') AS "SUDBURY",
-COUNT(C.id) FILTER (WHERE C.stat_group_code_num BETWEEN '700' AND '709') AS "WALTHAM",
+COUNT(C.id) FILTER (WHERE (C.stat_group_code_num BETWEEN '700' AND '709') OR C.stat_group_code_num = '993') AS "WALTHAM",
 COUNT(C.id) FILTER (WHERE C.stat_group_code_num BETWEEN '710' AND '739') AS "WATERTOWN",
 COUNT(C.id) FILTER (WHERE C.stat_group_code_num BETWEEN '740' AND '749') AS "WAYLAND",
 COUNT(C.id) FILTER (WHERE C.stat_group_code_num BETWEEN '750' AND '779') AS "WELLESLEY",
@@ -134,3 +137,4 @@ AND C.transaction_gmt::DATE >= NOW()::DATE - INTERVAL '1 MONTH'
 
 GROUP BY 1
 ORDER BY 1
+)a

@@ -6,6 +6,12 @@ Takes two review files to find either unique or duplicate records between them
 */
 
 SELECT
+*,
+'' AS "COMPARE REVIEW FILES",
+'' AS "https://sic.minlib.net/reports/46"
+FROM
+(
+SELECT
 id2reckey(bs.record_metadata_id)||'a' AS record_number
 
 FROM
@@ -32,3 +38,4 @@ ON
 bi.id = bs.bool_info_id
 
 WHERE bs.bool_info_id = {{review_file_b}}
+)a
