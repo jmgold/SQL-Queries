@@ -18,7 +18,7 @@ CASE
     ELSE REGEXP_REPLACE(REPLACE(REPLACE(REGEXP_REPLACE(SPLIT_PART(va.field_content,'|e',1),'^.*\|a',''),'|d',' '),'|q',' '),'\s?(\.|\,|\:|\/|\;|\=)\s?$','')
 END AS author,
 b.best_author AS author_english,
-'https://find.minlib.net/iii/encore/record/C__R'||id2reckey(b.bib_record_id) AS url,
+'https://catalog.minlib.net/Record/'||id2reckey(b.bib_record_id) AS url,
 (SELECT
 SUBSTRING(s.content FROM '[0-9]+')
 FROM

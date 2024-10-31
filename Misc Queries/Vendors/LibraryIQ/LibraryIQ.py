@@ -76,6 +76,7 @@ def runlargequery(csv_file):
     TO_CHAR(rmi.creation_date_gmt,'YYYY-MM-DD HH24:MI:SS') AS "CREATED",
     CASE
       WHEN o.id IS NULL THEN isp.name
+      WHEN o.id IS NOT NULL AND isp.code != '-' THEN isp.name
       ELSE 'CHECKED OUT'
     END AS status,
     TO_CHAR(i.last_checkout_gmt,'YYYY-MM-DD HH24:MI:SS') AS "LOutDate",
@@ -163,6 +164,7 @@ def runlargequery(csv_file):
         TO_CHAR(rmi.creation_date_gmt,'YYYY-MM-DD HH24:MI:SS') AS "CREATED",
         CASE
           WHEN o.id IS NULL THEN isp.name
+          WHEN o.id IS NOT NULL AND isp.code != '-' THEN isp.name
           ELSE 'CHECKED OUT'
         END AS status,
         TO_CHAR(i.last_checkout_gmt,'YYYY-MM-DD HH24:MI:SS') AS "LOutDate",
@@ -285,6 +287,7 @@ def main():
     TO_CHAR(rmi.creation_date_gmt,'YYYY-MM-DD HH24:MI:SS') AS "CREATED",
     CASE
       WHEN o.id IS NULL THEN isp.name
+      WHEN o.id IS NOT NULL AND isp.code != '-' THEN isp.name
       ELSE 'CHECKED OUT'
     END AS status,
     TO_CHAR(i.last_checkout_gmt,'YYYY-MM-DD HH24:MI:SS') AS "LOutDate",
