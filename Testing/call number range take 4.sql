@@ -30,7 +30,7 @@ sierra_view.item_record ir
 ON
 i.item_record_id = ir.id
 AND ir.itype_code_num != '241'
-AND ir.location_code ~ '^oln'
+AND ir.location_code ~ '^welj'
 )
 
 SELECT
@@ -77,7 +77,7 @@ ON
 i.item_record_id = ir.id
 --avoid comcat items
 AND
-ir.location_code ~ '^oln'
+ir.location_code ~ '^welj'
 JOIN
 sierra_view.record_metadata rm
 ON
