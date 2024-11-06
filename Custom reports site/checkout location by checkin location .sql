@@ -107,7 +107,7 @@ COUNT(C.id) FILTER (WHERE C.stat_group_code_num BETWEEN '850' AND '859') AS "SHE
 COUNT(C.id) FILTER (WHERE C.stat_group_code_num BETWEEN '640' AND '679') AS "SOMERVILLE",
 COUNT(C.id) FILTER (WHERE C.stat_group_code_num BETWEEN '680' AND '689') AS "STOW",
 COUNT(C.id) FILTER (WHERE C.stat_group_code_num BETWEEN '690' AND '699') AS "SUDBURY",
-COUNT(C.id) FILTER (WHERE (C.stat_group_code_num BETWEEN '700' AND '709') OR C.stat_group_code_num = '993') AS "WALTHAM",
+COUNT(C.id) FILTER (WHERE (C.stat_group_code_num BETWEEN '700' AND '709') OR C.stat_group_code_num IN ('993','981')) AS "WALTHAM",
 COUNT(C.id) FILTER (WHERE C.stat_group_code_num BETWEEN '710' AND '739') AS "WATERTOWN",
 COUNT(C.id) FILTER (WHERE C.stat_group_code_num BETWEEN '740' AND '749') AS "WAYLAND",
 COUNT(C.id) FILTER (WHERE C.stat_group_code_num BETWEEN '750' AND '779') AS "WELLESLEY",
