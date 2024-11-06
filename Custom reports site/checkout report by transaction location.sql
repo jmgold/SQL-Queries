@@ -90,6 +90,8 @@ ROUND(100 * (CAST(COUNT(C.id) FILTER(WHERE C.op_code = 'o') AS NUMERIC (12,2)) /
 	WHEN  {{location}} = '^sto' THEN C.stat_group_code_num BETWEEN '680' AND '689'
 	WHEN  {{location}} = '^sud' THEN C.stat_group_code_num BETWEEN '690' AND '699'
 	WHEN  {{location}} = '^wlm' THEN C.stat_group_code_num BETWEEN '700' AND '709' OR C.stat_group_code_num = '993'
+	WHEN  {{location}} = '^wl2' THEN C.stat_group_code_num = '981'
+	WHEN  {{location}} = '^wl' THEN C.stat_group_code_num BETWEEN '700' AND '709' OR C.stat_group_code_num IN ('993','981')
 	WHEN  {{location}} = '^wa' THEN C.stat_group_code_num BETWEEN '710' AND '739'
 	WHEN  {{location}} = '^wa[^4]' THEN C.stat_group_code_num BETWEEN '710' AND '729'
 	WHEN  {{location}} = '^wa4' THEN C.stat_group_code_num BETWEEN '730' AND '739'
@@ -204,6 +206,8 @@ CASE
 	WHEN  {{location}} = '^sto' THEN C.stat_group_code_num BETWEEN '680' AND '689'
 	WHEN  {{location}} = '^sud' THEN C.stat_group_code_num BETWEEN '690' AND '699'
 	WHEN  {{location}} = '^wlm' THEN C.stat_group_code_num BETWEEN '700' AND '709' OR C.stat_group_code_num = '993'
+	WHEN  {{location}} = '^wl2' THEN C.stat_group_code_num = '981'
+	WHEN  {{location}} = '^wl' THEN C.stat_group_code_num BETWEEN '700' AND '709' OR C.stat_group_code_num IN ('993','981')
 	WHEN  {{location}} = '^wa' THEN C.stat_group_code_num BETWEEN '710' AND '739'
 	WHEN  {{location}} = '^wa[^4]' THEN C.stat_group_code_num BETWEEN '710' AND '729'
 	WHEN  {{location}} = '^wa4' THEN C.stat_group_code_num BETWEEN '730' AND '739'
@@ -302,6 +306,8 @@ WHEN  {{location}} = '^ac' THEN (C.stat_group_code_num BETWEEN '100' AND '109' O
 	WHEN  {{location}} = '^sto' THEN C.stat_group_code_num BETWEEN '680' AND '689'
 	WHEN  {{location}} = '^sud' THEN C.stat_group_code_num BETWEEN '690' AND '699'
 	WHEN  {{location}} = '^wlm' THEN C.stat_group_code_num BETWEEN '700' AND '709' OR C.stat_group_code_num = '993'
+	WHEN  {{location}} = '^wl2' THEN C.stat_group_code_num = '981'
+	WHEN  {{location}} = '^wl' THEN C.stat_group_code_num BETWEEN '700' AND '709' OR C.stat_group_code_num IN ('993','981')
 	WHEN  {{location}} = '^wa' THEN C.stat_group_code_num BETWEEN '710' AND '739'
 	WHEN  {{location}} = '^wa[^4]' THEN C.stat_group_code_num BETWEEN '710' AND '729'
 	WHEN  {{location}} = '^wa4' THEN C.stat_group_code_num BETWEEN '730' AND '739'
@@ -398,6 +404,8 @@ WHEN  {{location}} = '^ac' THEN (C.stat_group_code_num BETWEEN '100' AND '109' O
 	WHEN  {{location}} = '^sto' THEN C.stat_group_code_num BETWEEN '680' AND '689'
 	WHEN  {{location}} = '^sud' THEN C.stat_group_code_num BETWEEN '690' AND '699'
 	WHEN  {{location}} = '^wlm' THEN C.stat_group_code_num BETWEEN '700' AND '709' OR C.stat_group_code_num = '993'
+	WHEN  {{location}} = '^wl2' THEN C.stat_group_code_num = '981'
+	WHEN  {{location}} = '^wl' THEN C.stat_group_code_num BETWEEN '700' AND '709' OR C.stat_group_code_num IN ('993','981')
 	WHEN  {{location}} = '^wa' THEN C.stat_group_code_num BETWEEN '710' AND '739'
 	WHEN  {{location}} = '^wa[^4]' THEN C.stat_group_code_num BETWEEN '710' AND '729'
 	WHEN  {{location}} = '^wa4' THEN C.stat_group_code_num BETWEEN '730' AND '739'
