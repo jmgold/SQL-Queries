@@ -16,7 +16,7 @@ JOIN sierra_view.varfield s
 	ON rm.id = s.record_id
 	AND rm.record_type_code = 'b'
 	AND s.marc_tag = '260'
-	AND s.field_content ~ '20241029$'
+	AND s.field_content ~ '20241105$'
 JOIN sierra_view.bib_record_property b
 	ON rm.id = b.bib_record_id
 LEFT JOIN sierra_view.bib_record_item_record_link l
