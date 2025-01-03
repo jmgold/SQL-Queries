@@ -81,7 +81,14 @@ SUM(i.year_to_date_checkout_total) AS total_year_to_date_checkouts
 SUM(i.last_year_to_date_checkout_total) AS total_last_year_to_date_checkouts
 COALESCE(h.count_holds_on_title,0) AS total_holds
 */,
-SUBSTRING(MAX(s.content) FROM '[0-9X]+') AS "isbn/upc"
+(SELECT
+SUBSTRING(s.content FROM '[0-9X]+')
+FROM
+sierra_view.subfield s
+WHERE
+b.bib_record_id = s.record_id AND s.marc_tag IN ('020','024') AND s.tag = 'a'
+ORDER BY s.occ_num
+LIMIT 1) AS "isbn/upc"
 
 FROM
 unowned o
@@ -101,10 +108,6 @@ JOIN
 sierra_view.record_metadata m
 ON
 i.id = m.id
-LEFT JOIN
-sierra_view.subfield s
-ON
-b.bib_record_id = s.record_id AND s.marc_tag IN ('020','024') AND s.tag = 'a'
 JOIN
 sierra_view.record_metadata mb
 ON
@@ -194,7 +197,7 @@ WHERE
 b.material_code IN ({{mat_type}})
 
 GROUP BY
-1,2,3,4,h.count_holds_on_title
+1,2,3,4,6,h.count_holds_on_title
 ORDER BY 5 DESC
 LIMIT {{qty}}
 )a

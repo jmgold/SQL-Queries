@@ -85,8 +85,8 @@ sierra_view.varfield innote
 ON
 o.id = innote.record_id AND innote.varfield_type_code = 'z'
 
-WHERE (o.order_status_code = 'a' AND p.paid_date_gmt::DATE < '07-01-22')
-OR (o.order_status_code = 'z' AND rm.creation_date_gmt::DATE < '07-01-22')
+WHERE (o.order_status_code = 'a' AND (p.paid_date_gmt::DATE < '07-01-23' OR (p.paid_date_gmt IS NULL AND rm.creation_date_gmt::DATE < '07-01-23')))
+OR (o.order_status_code = 'z' AND rm.creation_date_gmt::DATE < '07-01-23')
 AND o.order_status_code IN ('a','z')
 
 
