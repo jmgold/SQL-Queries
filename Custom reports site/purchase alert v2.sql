@@ -6,7 +6,7 @@ On Demand Purchase Alert
 */
 SELECT
 *,
-'' AS "PURCHASE ALERT NEW",
+'' AS "PURCHASE ALERT NEW"
 FROM(
 SELECT
 	CASE
@@ -52,8 +52,22 @@ FROM (
 		MAX(mv.avail_item_count) AS total_available_item_count,
 		mv.hold_count AS total_hold_count,
 		CASE
-  		  	WHEN MAX(mv.avail_item_count) + MAX(mv.order_copies) + MAX(mv.processing_copies) = 0 THEN mv.hold_count
-  		  	ELSE ROUND(CAST((mv.hold_count) AS NUMERIC(12, 2))/CAST((MAX(mv.avail_item_count) + MAX(mv.order_copies) + MAX(mv.processing_copies)) AS NUMERIC(12,2)),2)
+  		  	WHEN MAX(mv.avail_item_count) + MAX(mv.order_copies) + 
+				(
+				CASE
+					WHEN MAX(mv.processing_copies) > 0 AND MAX(mv.in_process_item_count) < MAX(mv.processing_copies) THEN MAX(mv.processing_copies) - MAX(mv.in_process_item_count)
+					ELSE 0
+				END
+				)
+			= 0 THEN mv.hold_count
+  		  	ELSE ROUND(CAST((mv.hold_count) AS NUMERIC(12, 2))/CAST((MAX(mv.avail_item_count) + MAX(mv.order_copies) + 
+				(
+				CASE
+					WHEN MAX(mv.processing_copies) > 0 AND MAX(mv.in_process_item_count) < MAX(mv.processing_copies) THEN MAX(mv.processing_copies) - MAX(mv.in_process_item_count)
+					ELSE 0
+				END
+				)
+			) AS NUMERIC(12,2)),2)
   		END AS total_demand_ratio,
 		COUNT(DISTINCT ir.id) FILTER(WHERE ir.location_code ~ {{location}}) AS local_item_count,
 		MAX(mv.local_avail_item_count) AS local_available_item_count,
@@ -64,8 +78,22 @@ FROM (
 		END AS local_copies_in_process,
 		mv.local_holds AS local_hold_count,
 		CASE
-    		WHEN MAX(mv.local_avail_item_count) + MAX(mv.order_copies) + MAX(mv.processing_copies) = 0 THEN mv.local_holds
-    		ELSE ROUND(CAST((mv.local_holds) AS NUMERIC(12, 2))/CAST((MAX(mv.local_avail_item_count) + MAX(mv.order_copies) + MAX(mv.processing_copies)) AS NUMERIC(12,2)),2)
+    		WHEN MAX(mv.local_avail_item_count) + MAX(mv.order_copies) + 
+				(
+				CASE
+					WHEN MAX(mv.processing_copies) > 0 AND MAX(mv.in_process_item_count) < MAX(mv.processing_copies) THEN MAX(mv.processing_copies) - MAX(mv.in_process_item_count)
+					ELSE 0
+				END
+				)
+			= 0 THEN mv.local_holds
+    		ELSE ROUND(CAST((mv.local_holds) AS NUMERIC(12, 2))/CAST((MAX(mv.local_avail_item_count) + MAX(mv.order_copies) +
+				(
+				CASE
+					WHEN MAX(mv.processing_copies) > 0 AND MAX(mv.in_process_item_count) < MAX(mv.processing_copies) THEN MAX(mv.processing_copies) - MAX(mv.in_process_item_count)
+					ELSE 0
+				END
+				)
+			) AS NUMERIC(12,2)),2)
    	END AS local_demand_ratio,
 		'https://catalog.minlib.net/Record/'||id2reckey(mv.bib_id) AS url,
 		(SELECT

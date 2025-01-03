@@ -35,7 +35,8 @@ b.publish_year,
 {{grouping}},
 /*
 Grouping options
-ROUND(AVG((CAST(((i.checkout_total + i.renewal_total) * loan.est_loan_period) AS NUMERIC (12,2))/(CURRENT_DATE - m.creation_date_gmt::DATE)) * 100),2) AS time_checked_out_pct
+ROUND((CAST(((i.checkout_total + i.renewal_total) * loan.est_loan_period) AS NUMERIC (12,2))/(CURRENT_DATE - m.creation_date_gmt::DATE)) * 100,2) AS time_checked_out_pct
+AVG(ROUND((CAST((i.checkout_total * 14) AS NUMERIC (12,2)) / (CURRENT_DATE - m.creation_date_gmt::DATE)),6)) FILTER (WHERE m.creation_date_gmt::DATE != CURRENT_DATE) AS utilization
 ROUND(CAST(SUM(i.checkout_total) + SUM(i.renewal_total) AS NUMERIC (12,2))/CAST(COUNT (i.id) AS NUMERIC (12,2)), 2) AS turnover
 SUM(i.checkout_total + i.renewal_total) AS total_circulation
 SUM(i.checkout_total) AS total_checkouts
@@ -45,7 +46,14 @@ COALESCE(h.count_holds_on_title,0) AS total_holds
 SUM(i.year_to_date_checkout_total + i.last_year_to_date_checkout_total) AS checkout_total
 */
 COUNT (i.id) AS item_total,
-SUBSTRING(MAX(s.content) FROM '[0-9X]+') AS "isbn/upc"
+(SELECT
+SUBSTRING(s.content FROM '[0-9X]+')
+FROM
+sierra_view.subfield s
+WHERE
+b.bib_record_id = s.record_id AND s.marc_tag IN ('020','024') AND s.tag = 'a'
+ORDER BY s.occ_num
+LIMIT 1) AS "isbn/upc"
 
 FROM
 sierra_view.bib_record_property b
@@ -70,10 +78,6 @@ JOIN
 sierra_view.record_metadata m
 ON
 i.id = m.id
-LEFT JOIN
-sierra_view.subfield s
-ON
-b.bib_record_id = s.record_id AND s.marc_tag IN ('020','024') AND s.tag = 'a'
 JOIN
 sierra_view.bib_record br
 ON
@@ -168,7 +172,7 @@ b.material_code IN ({{mat_type}})
 AND m.creation_date_gmt::DATE < {{created_date}}
 
 GROUP BY
-2,3,1,4,h.count_holds_on_title
+2,3,1,4,7,h.count_holds_on_title
 ORDER BY 5 DESC
 LIMIT {{qty}}
 )a
