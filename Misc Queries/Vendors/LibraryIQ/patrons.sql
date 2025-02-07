@@ -50,6 +50,6 @@ p.id = a.patron_record_id AND a.patron_record_address_type_id = 1
 --Pull full list on Fridays, Delta files other days
 WHERE 
 CASE
-  WHEN EXTRACT(DOW FROM CURRENT_DATE) = 5 THEN rmp.record_last_updated_gmt::DATE < CURRENT_DATE
+  WHEN EXTRACT(DOW FROM CURRENT_DATE) = 5 THEN rmp.record_last_updated_gmt::DATE <= CURRENT_DATE
   ELSE rmp.record_last_updated_gmt::DATE = CURRENT_DATE - INTERVAL '1 day'
 END
