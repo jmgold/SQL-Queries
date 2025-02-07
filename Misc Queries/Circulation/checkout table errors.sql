@@ -24,5 +24,5 @@ o.patron_record_id = rmp.id
 WHERE
 o.due_gmt <= '1970-01-01' --for checkout
 --o.due_date_gmt <= '1970-01-01' AND o.op_code = 'o'--for circ_trans
---o.item_record_id = '450991147359'
+--o.item_record_id = '450973494508'
 --AND o.patron_record_id = '450989127706'

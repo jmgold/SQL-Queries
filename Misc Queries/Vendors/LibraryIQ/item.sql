@@ -88,7 +88,7 @@ i.id = v.record_id AND v.varfield_type_code = 'v'
 --Pull full list on Fridays, Delta files other days
 WHERE
 CASE
-  WHEN EXTRACT(DOW FROM CURRENT_DATE) = 5 THEN rmi.record_last_updated_gmt::DATE < CURRENT_DATE
+  WHEN EXTRACT(DOW FROM CURRENT_DATE) = 5 THEN rmi.record_last_updated_gmt::DATE <= CURRENT_DATE
   ELSE rmi.record_last_updated_gmt::DATE = CURRENT_DATE - INTERVAL '1 day'
 END
 
