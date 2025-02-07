@@ -150,7 +150,7 @@ CASE
 	WHEN  {{location}} = '^wwd' THEN t.stat_group_code_num BETWEEN '810' AND '819'
 	WHEN  {{location}} = '^ww2' THEN t.stat_group_code_num BETWEEN '820' AND '829'
 	WHEN  {{location}} = '^ww2' THEN t.stat_group_code_num = '831'
-	WHEN  {{location}} = '^ww' THEN t.stat_group_code_num BETWEEN '810' AND '829' OR THEN t.stat_group_code_num = '831'
+	WHEN  {{location}} = '^ww' THEN t.stat_group_code_num BETWEEN '810' AND '829' OR t.stat_group_code_num = '831'
 	WHEN  {{location}} = '^reg' THEN t.stat_group_code_num BETWEEN '840' AND '849'
 	WHEN  {{location}} = '^shr' THEN t.stat_group_code_num BETWEEN '850' AND '859'
 END
