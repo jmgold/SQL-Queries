@@ -7,13 +7,14 @@ Rolls up circulation figures for all issues of a title
 SELECT
 *,
 '' AS "PERIODICAL CIRCULATION BY TITLE",
+'' AS "https://sic.minlib.net/reports/43"
 FROM(
 SELECT
 {{title}} AS title,
 /*
 Options to account for annual circulation records with titles taking the form [Magazine name], [YYYY]
 bp.best_title,
-REPLACE(INITCAP(REGEXP_REPLACE(REPLACE(REPLACE(bp.best_title,'.',''),',',''),'\s[\d]{4}$','')),'''S','''s')
+REPLACE(INITCAP(REGEXP_REPLACE(REPLACE(REPLACE(TRIM(bp.best_title),'.',''),',',''),'\s[\d]{4}(\s\w{3}\-\w{3})?$','')),'''S','''s')
 */
 COUNT(i.id) AS total_issues,
 SUM(i.last_year_to_date_checkout_total) AS last_year_checkout_total,
