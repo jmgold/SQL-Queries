@@ -21,12 +21,12 @@ JOIN
 sierra_view.item_record as i
 ON
 i.id = l.item_record_id
-AND i.icode1 ='220'--BETWEEN '10' AND '99' 
-AND i.location_code ~ '^lexj'
+AND i.icode1 ='2'--BETWEEN '10' AND '99' 
+AND i.location_code ~ '^lex'
 JOIN
 sierra_view.record_metadata m
 ON
-i.id = m.id --AND m.creation_date_gmt < '2021-01-01'
+i.id = m.id AND m.creation_date_gmt < '2024-03-01'
 LEFT JOIN
 sierra_view.varfield v
 ON i.id = v.record_id AND v.varfield_type_code = 'v'
@@ -70,11 +70,11 @@ l.item_record_id = ip.item_record_id
 JOIN
 sierra_view.item_record i
 ON
-ip.item_record_id = i.id AND i.location_code ~'^lexj' AND i.icode1 = '220'--= 'lexa' AND i.icode1 BETWEEN '10' AND '99'
+ip.item_record_id = i.id AND i.location_code ~'^lex' AND i.icode1 = '2'--= 'lexa' AND i.icode1 BETWEEN '10' AND '99'
 JOIN
 sierra_view.record_metadata rm
 ON
-i.id = rm.id --AND rm.creation_date_gmt::DATE < '2021-01-01'
+i.id = rm.id AND rm.creation_date_gmt::DATE < '2024-03-01'
 LEFT JOIN
 sierra_view.checkout C
 ON

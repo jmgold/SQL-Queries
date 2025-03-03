@@ -46,7 +46,7 @@ ON
 i.item_status_code = stat.code
 
 WHERE
-i.itype_code_num = '252'
+(i.itype_code_num = '257' OR (i.itype_code_num = '5' AND i.icode1 = '200'))
 AND i.item_status_code != 'a'
 AND i.icode2 = '-'
 AND i.location_code ~ '^we'
