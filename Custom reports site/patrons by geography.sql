@@ -14,7 +14,14 @@ SELECT *,
 FROM
 (SELECT
 CASE
-	WHEN '{{geo}}' = 'zip' THEN SUBSTRING(a.postal_code,'^\d{5}')
+	WHEN '{{geo}}' = 'zip' THEN COALESCE(
+	  --accounting for various instances where addresses were not correctly parsed into the patron_record_address table
+	  CASE
+	    WHEN a.postal_code IS NULL AND TRIM(a.region) ~ '(MA)?\s?\d{5}' THEN SUBSTRING(TRIM(a.region),'\d{5,9}\s?\-?\s?\d{0,4}')
+       WHEN a.postal_code IS NULL AND a.region = '' AND a.city ~ '(MA)?\s?\d{5}' THEN SUBSTRING(TRIM(a.city),'\d{5,9}\s?\-?\s?\d{0,4}$')
+       WHEN a.postal_code IS NULL AND a.region IS NULL AND a.city IS NULL AND a.addr1 ~ '(MA)?\s?\d{5}' THEN SUBSTRING(TRIM(a.addr1),'\d{5,9}\s?\-?\s?\d{0,4}$')
+       ELSE SUBSTRING(a.postal_code,'^\d{5}')
+     END,'')
 	WHEN v.field_content IS NULL THEN 'no data'
 	WHEN v.field_content = '' THEN v.field_content
 	WHEN '{{geo}}' = 'county' THEN SUBSTRING(REGEXP_REPLACE(v.field_content,'\|(s|c|t|b)','','g'),1,5)
