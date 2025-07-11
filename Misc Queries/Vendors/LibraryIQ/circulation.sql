@@ -14,6 +14,8 @@ SELECT
     WHEN t.op_code = 'r' THEN 'RENEWAL'
     WHEN t.op_code = 'o' THEN 'CHECKOUT'
     WHEN t.op_code = 'u' THEN 'USE COUNT'
+    --added clause for op code f
+    WHEN t.op_code = 'f' THEN 'FILLED HOLD'
   END AS "TransactionType",
   t.due_date_gmt::DATE AS "DueDate",
   i.last_checkin_gmt::DATE AS "CheckInDate",
@@ -50,5 +52,6 @@ ON
 t.stat_group_code_num = sg.code
 
 WHERE
-t.op_code IN ('o','r','u')
+--added op_code f for filled holds
+t.op_code IN ('o','r','u','f')
 AND t.transaction_gmt::DATE > CURRENT_DATE - INTERVAL '4 days'
