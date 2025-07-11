@@ -18,7 +18,10 @@ SELECT
   SPLIT_PART(SPLIT_PART(v.field_content,'from ',2),' to',1) AS origin_loc,
   si.code AS checkin_stat_group_code,
   h.pickup_location_code,
-  SUBSTRING(SPLIT_PART(v.field_content,'to ',2) FROM 1 FOR 3) AS destination_loc
+  SUBSTRING(SPLIT_PART(v.field_content,'to ',2) FROM 1 FOR 3) AS destination_loc,
+  h.on_holdshelf_gmt,
+  h.expire_holdshelf_gmt,
+  h.status AS hold_status
   
 FROM sierra_view.item_record i
 JOIN sierra_view.checkout o

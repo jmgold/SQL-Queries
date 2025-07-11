@@ -65,7 +65,7 @@ sierra_view.order_record_paid op
 ON
 o.id = op.order_record_id AND o.order_status_code = 'q'
 
-WHERE o.order_date_gmt::DATE < {{order_date}}
+WHERE rm.creation_date_gmt::DATE < {{order_date}}
 AND o.accounting_unit_code_num = {{accounting_unit}}
 AND order_status_code IN ('o','q','g','d')
 GROUP BY 1,2,3,4,5,6,7,8,9
