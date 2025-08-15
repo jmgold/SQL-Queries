@@ -33,63 +33,37 @@ SELECT
   i.checkout_total AS "TOT_CHKOUT",
   i.renewal_total AS "TOT_RENEW"
   
-FROM
-sierra_view.item_record i
-JOIN
-sierra_view.itype_property_myuser it
-ON
-i.itype_code_num = it.code
-AND SUBSTRING(i.location_code,1,3) NOT IN ('trn','hpl','int','knp','','zzz','cmc')
-JOIN
-sierra_view.record_metadata rmi
-ON
-i.id = rmi.id
-JOIN
-sierra_view.item_record_property ip
-ON
-i.id = ip.item_record_id
-JOIN
-sierra_view.location_myuser loc
-ON
-i.location_code = loc.code
-JOIN
-sierra_view.bib_record_item_record_link l
-ON
-i.id = l.item_record_id
-JOIN
-sierra_view.bib_record_property bp
-ON
-l.bib_record_id = bp.bib_record_id
-JOIN
-sierra_view.record_metadata rmb
-ON
-l.bib_record_id = rmb.id
-JOIN
-sierra_view.material_property_myuser mp
-ON
-bp.material_code = mp.code
-LEFT JOIN
-sierra_view.subfield num
-ON
-bp.bib_record_id = num.record_id AND num.marc_tag IN ('020','022','024') AND num.tag = 'a'
-JOIN
-sierra_view.item_status_property_myuser isp
-ON
-i.item_status_code = isp.code
-LEFT JOIN
-sierra_view.checkout o
-ON
-i.id = o.item_record_id
-LEFT JOIN
-sierra_view.varfield v
-ON
-i.id = v.record_id AND v.varfield_type_code = 'v'
+  FROM sierra_view.item_record i
+  JOIN sierra_view.record_metadata rmi
+  ON i.id = rmi.id
+  --Pull full file on Fridays, delta file other days
+    AND CASE
+      WHEN EXTRACT(DOW FROM CURRENT_DATE) = 5 THEN rmi.record_last_updated_gmt::DATE <= CURRENT_DATE
+      ELSE rmi.record_last_updated_gmt::DATE = CURRENT_DATE - INTERVAL '1 day'
+    END
+  JOIN sierra_view.item_record_property ip
+    ON i.id = ip.item_record_id
+  JOIN sierra_view.bib_record_item_record_link l
+    ON i.id = l.item_record_id
+  JOIN sierra_view.record_metadata rmb
+    ON l.bib_record_id = rmb.id
+  JOIN sierra_view.bib_record_property bp
+    ON l.bib_record_id = bp.bib_record_id
+  JOIN sierra_view.itype_property_myuser it
+    ON i.itype_code_num = it.code
+  JOIN sierra_view.location_myuser loc
+    ON i.location_code = loc.code
+  JOIN sierra_view.material_property_myuser mp
+    ON bp.material_code = mp.code
+  JOIN sierra_view.item_status_property_myuser isp
+    ON i.item_status_code = isp.code
+  LEFT JOIN sierra_view.subfield num
+    ON bp.bib_record_id = num.record_id AND num.marc_tag IN ('020','022','024') AND num.tag = 'a'
+  LEFT JOIN sierra_view.checkout o
+    ON i.id = o.item_record_id
+  LEFT JOIN sierra_view.varfield v
+    ON i.id = v.record_id AND v.varfield_type_code = 'v'
 
---Pull full list on Fridays, Delta files other days
-WHERE
-CASE
-  WHEN EXTRACT(DOW FROM CURRENT_DATE) = 5 THEN rmi.record_last_updated_gmt::DATE <= CURRENT_DATE
-  ELSE rmi.record_last_updated_gmt::DATE = CURRENT_DATE - INTERVAL '1 day'
-END
+  WHERE SUBSTRING(i.location_code,1,3) NOT IN ('trn','hpl','int','knp','','zzz','cmc')
 
-GROUP BY 1,2,3,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24
+  GROUP BY 1,2,3,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24

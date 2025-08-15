@@ -9,7 +9,7 @@ SELECT
   rm.record_type_code||rm.record_num||'a' AS item_number, 
   l2.name AS checkin_location,
   l.name AS destination,
-  to_date(SPLIT_PART(v.field_content, ' ', 3)||' '||SPLIT_PART(v.field_content, ' ', 2)||' '||SPLIT_PART(v.field_content, ' ', 4),'DD Mon YYYY') AS checkin_date
+  TO_DATE(REGEXP_REPLACE(v.field_content,'\s[0-9]{2}\:.*',''),'Dy mon DD YYYY') AS checkin_date
   
 FROM sierra_view.item_record i
 JOIN sierra_view.varfield v
