@@ -52,7 +52,7 @@ fp.id = fn.fund_property_id
 
 --set your date and accounting unit filters
 WHERE
-i.posted_data_gmt::DATE BETWEEN '2022-01-01' AND '2022-04-30'
-AND a.code_num = '2'
+i.posted_data_gmt::DATE BETWEEN '2025-07-01' AND '2025-07-31'
+AND a.code_num = '41'
  
-ORDER BY fn.name
+ORDER BY fn.name,i.paid_date_gmt

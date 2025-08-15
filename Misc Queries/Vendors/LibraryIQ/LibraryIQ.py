@@ -89,36 +89,34 @@ def runlargequery(csv_file):
     i.renewal_total AS "TOT_RENEW"
   
     FROM sierra_view.item_record i
-    JOIN sierra_view.itype_property_myuser it
-      ON i.itype_code_num = it.code
-      AND SUBSTRING(i.location_code,1,3) NOT IN ('trn','hpl','int','knp','','zzz','cmc')
     JOIN sierra_view.record_metadata rmi
       ON i.id = rmi.id
-    JOIN sierra_view.item_record_property ip
+      --Pull full file on Fridays, delta file other days
+	     AND rmi.record_last_updated_gmt::DATE <= CURRENT_DATE
+	  JOIN sierra_view.item_record_property ip
       ON i.id = ip.item_record_id
-    JOIN sierra_view.location_myuser loc
-      ON i.location_code = loc.code
     JOIN sierra_view.bib_record_item_record_link l
       ON i.id = l.item_record_id
-    JOIN sierra_view.bib_record_property bp
-      ON l.bib_record_id = bp.bib_record_id
     JOIN sierra_view.record_metadata rmb
       ON l.bib_record_id = rmb.id
+    JOIN sierra_view.bib_record_property bp
+      ON l.bib_record_id = bp.bib_record_id
+    JOIN sierra_view.itype_property_myuser it
+      ON i.itype_code_num = it.code
+    JOIN sierra_view.location_myuser loc
+      ON i.location_code = loc.code
     JOIN sierra_view.material_property_myuser mp
       ON bp.material_code = mp.code
-    LEFT JOIN sierra_view.subfield num
-      ON bp.bib_record_id = num.record_id AND num.marc_tag IN ('020','022','024') AND num.tag = 'a'
     JOIN sierra_view.item_status_property_myuser isp
       ON i.item_status_code = isp.code
+    LEFT JOIN sierra_view.subfield num
+      ON bp.bib_record_id = num.record_id AND num.marc_tag IN ('020','022','024') AND num.tag = 'a'
     LEFT JOIN sierra_view.checkout o
       ON i.id = o.item_record_id
     LEFT JOIN sierra_view.varfield v
       ON i.id = v.record_id AND v.varfield_type_code = 'v'
 
-    --Pull full file on Fridays, delta file other days
-    WHERE rmi.record_last_updated_gmt::DATE < CURRENT_DATE 
-
-    GROUP BY 1,2,3,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24  
+    WHERE SUBSTRING(i.location_code,1,3) NOT IN ('trn','hpl','int','knp','','zzz','cmc')  
     
     LIMIT 250000
     OFFSET {}""".format(offset)
@@ -177,36 +175,34 @@ def runlargequery(csv_file):
         i.renewal_total AS "TOT_RENEW"
   
         FROM sierra_view.item_record i
-        JOIN sierra_view.itype_property_myuser it
-          ON i.itype_code_num = it.code
-          AND SUBSTRING(i.location_code,1,3) NOT IN ('trn','hpl','int','knp','','zzz','cmc')
         JOIN sierra_view.record_metadata rmi
           ON i.id = rmi.id
-        JOIN sierra_view.item_record_property ip
+          --Pull full file on Fridays, delta file other days
+	         AND rmi.record_last_updated_gmt::DATE <= CURRENT_DATE
+	      JOIN sierra_view.item_record_property ip
           ON i.id = ip.item_record_id
-        JOIN sierra_view.location_myuser loc
-          ON i.location_code = loc.code
         JOIN sierra_view.bib_record_item_record_link l
           ON i.id = l.item_record_id
-        JOIN sierra_view.bib_record_property bp
-          ON l.bib_record_id = bp.bib_record_id
         JOIN sierra_view.record_metadata rmb
           ON l.bib_record_id = rmb.id
+        JOIN sierra_view.bib_record_property bp
+          ON l.bib_record_id = bp.bib_record_id
+        JOIN sierra_view.itype_property_myuser it
+          ON i.itype_code_num = it.code
+        JOIN sierra_view.location_myuser loc
+          ON i.location_code = loc.code
         JOIN sierra_view.material_property_myuser mp
           ON bp.material_code = mp.code
-        LEFT JOIN sierra_view.subfield num
-          ON bp.bib_record_id = num.record_id AND num.marc_tag IN ('020','022','024') AND num.tag = 'a'
         JOIN sierra_view.item_status_property_myuser isp
           ON i.item_status_code = isp.code
+        LEFT JOIN sierra_view.subfield num
+          ON bp.bib_record_id = num.record_id AND num.marc_tag IN ('020','022','024') AND num.tag = 'a'
         LEFT JOIN sierra_view.checkout o
           ON i.id = o.item_record_id
         LEFT JOIN sierra_view.varfield v
           ON i.id = v.record_id AND v.varfield_type_code = 'v'
 
-        --Pull full file on Fridays, delta file other days
-        WHERE rmi.record_last_updated_gmt::DATE < CURRENT_DATE 
-
-        GROUP BY 1,2,3,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24  
+        WHERE SUBSTRING(i.location_code,1,3) NOT IN ('trn','hpl','int','knp','','zzz','cmc')
     
         LIMIT 250000
         OFFSET {}""".format(offset)
@@ -261,7 +257,7 @@ def main():
     --Pull full data on Fridays, delta files other days
     WHERE
     CASE
-      WHEN EXTRACT(DOW FROM CURRENT_DATE) = 5 THEN rm.record_last_updated_gmt::DATE < CURRENT_DATE
+      WHEN EXTRACT(DOW FROM CURRENT_DATE) = 5 THEN rm.record_last_updated_gmt::DATE <= CURRENT_DATE
       ELSE rm.record_last_updated_gmt::DATE = CURRENT_DATE - INTERVAL '1 day'
     END
 
@@ -300,34 +296,34 @@ def main():
     i.renewal_total AS "TOT_RENEW"
   
     FROM sierra_view.item_record i
-    JOIN sierra_view.itype_property_myuser it
-      ON i.itype_code_num = it.code
-      AND SUBSTRING(i.location_code,1,3) NOT IN ('trn','hpl','int','knp','','zzz','cmc')
     JOIN sierra_view.record_metadata rmi
       ON i.id = rmi.id
-    JOIN sierra_view.item_record_property ip
+      --Pull full file on Fridays, delta file other days
+	     AND rmi.record_last_updated_gmt::DATE > CURRENT_DATE - INTERVAL '4 days'
+	  JOIN sierra_view.item_record_property ip
       ON i.id = ip.item_record_id
-    JOIN sierra_view.location_myuser loc
-      ON i.location_code = loc.code
     JOIN sierra_view.bib_record_item_record_link l
       ON i.id = l.item_record_id
-    JOIN sierra_view.bib_record_property bp
-      ON l.bib_record_id = bp.bib_record_id
     JOIN sierra_view.record_metadata rmb
       ON l.bib_record_id = rmb.id
+    JOIN sierra_view.bib_record_property bp
+      ON l.bib_record_id = bp.bib_record_id
+    JOIN sierra_view.itype_property_myuser it
+      ON i.itype_code_num = it.code
+    JOIN sierra_view.location_myuser loc
+      ON i.location_code = loc.code
     JOIN sierra_view.material_property_myuser mp
       ON bp.material_code = mp.code
-    LEFT JOIN sierra_view.subfield num
-      ON bp.bib_record_id = num.record_id AND num.marc_tag IN ('020','022','024') AND num.tag = 'a'
     JOIN sierra_view.item_status_property_myuser isp
       ON i.item_status_code = isp.code
+    LEFT JOIN sierra_view.subfield num
+      ON bp.bib_record_id = num.record_id AND num.marc_tag IN ('020','022','024') AND num.tag = 'a'
     LEFT JOIN sierra_view.checkout o
       ON i.id = o.item_record_id
     LEFT JOIN sierra_view.varfield v
       ON i.id = v.record_id AND v.varfield_type_code = 'v'
 
-    --Pull full file on Fridays, delta file other days
-    WHERE rmi.record_last_updated_gmt::DATE > CURRENT_DATE - INTERVAL '4 days'
+    WHERE SUBSTRING(i.location_code,1,3) NOT IN ('trn','hpl','int','knp','','zzz','cmc')
 
     GROUP BY 1,2,3,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24
     """
@@ -347,6 +343,7 @@ def main():
     WHERE h.expires_gmt::DATE > CURRENT_DATE
     GROUP BY 1,2
     """
+    
     patrons_query = """\
     SELECT
     rmp.record_type_code||rmp.record_num AS PatronNum,
@@ -386,7 +383,7 @@ def main():
     --Pull full file on Fridays, delta file other days
     WHERE 
     CASE
-      WHEN EXTRACT(DOW FROM CURRENT_DATE) = 5 THEN rmp.record_last_updated_gmt::DATE < CURRENT_DATE
+      WHEN EXTRACT(DOW FROM CURRENT_DATE) = 5 THEN rmp.record_last_updated_gmt::DATE <= CURRENT_DATE
       ELSE rmp.record_last_updated_gmt::DATE = CURRENT_DATE - INTERVAL '1 day'
     END
     """
@@ -429,12 +426,196 @@ def main():
       t.op_code IN ('o','r','u')
       AND t.transaction_gmt::DATE > CURRENT_DATE - INTERVAL '4 days'
     """
+    
+    fulfilled_holds_query = """\
+    SELECT
+    rm.record_type_code||rm.record_num AS "bibliographicRecordID",
+    t.id AS "holdID",
+    /*stat_group defines login where the transaction occured
+    how outreach or mobile device transactions are recorded will depend on customer setup*/
+    SUBSTRING(sg.location_code,1,3) AS "requestedLocation",
+    t.transaction_gmt AS "fulfilledDate",
+    CURRENT_DATE AS "reportDate"
+
+    FROM sierra_view.circ_trans t
+    JOIN sierra_view.record_metadata rm
+      ON t.bib_record_id = rm.id
+    JOIN sierra_view.statistic_group_myuser sg
+      ON t.stat_group_code_num = sg.code
+    JOIN sierra_view.bib_record_property bp
+      ON rm.id = bp.bib_record_id
+      AND bp.material_code NOT IN ('b','y','s','h','w','l')
+
+    WHERE 
+      /*op_code f = filled hold*/
+      t.op_code = 'f'
+      AND t.transaction_gmt::DATE > CURRENT_DATE - INTERVAL '4 days'
+
+    ORDER BY t.transaction_gmt
+    """
+    
+    requested_holds_query = """\
+    SELECT
+    rm.record_type_code||rm.record_num AS "bibliographicRecordID",
+    t.id AS "holdID",
+    /*
+    home_library_code is the default pickup location for the patron placing the hold
+    the patron does have the option to change it on the fly when placing the hold
+    */
+    SUBSTRING(p.home_library_code,1,3) AS "patronLocation",
+    t.transaction_gmt AS "requestedDate",
+    CURRENT_DATE AS "reportDate"
+
+    FROM sierra_view.circ_trans t
+    JOIN sierra_view.record_metadata rm
+      ON t.bib_record_id = rm.id
+    JOIN sierra_view.patron_record p
+      ON t.patron_record_id = p.id
+    JOIN sierra_view.bib_record_property bp
+      ON rm.id = bp.bib_record_id
+      AND bp.material_code NOT IN ('b','y','s','h','w','l')
+
+    WHERE 
+      /*
+      different types of holds are assigned different op_code values
+      looking for any starting with an n or h will capture all options
+      */
+      t.op_code ~ '^(n|h)'
+      AND t.transaction_gmt::DATE > CURRENT_DATE - INTERVAL '4 days'
+
+    ORDER BY t.transaction_gmt
+    """
+    
+    unfilled_holds_query = """\
+    SELECT
+    DISTINCT h.id AS "holdID",
+    rm.record_type_code||rm.record_num AS "bibliographicRecordID",
+    h.placed_gmt AS "requestedDate",
+    /*logic for using first 3 characters of location code to designate branch specific to Minuteman*/
+    SUBSTRING(h.pickup_location_code,1,3) AS "requestedLocation",
+    CURRENT_DATE AS "reportDate"
+ 
+    FROM sierra_view.hold h
+    /*Using or in the join to reconcile both bib holds and item holds to a bib record*/
+    JOIN sierra_view.bib_record_item_record_link li
+      ON h.record_id = li.bib_record_id OR h.record_id = li.item_record_id
+    JOIN sierra_view.record_metadata rm
+      ON li.bib_record_id = rm.id
+    JOIN sierra_view.bib_record_property bp
+      ON rm.id = bp.bib_record_id
+      AND bp.material_code NOT IN ('b','y','s','h','w','l')
+
+    WHERE
+      (h.expires_gmt > CURRENT_DATE OR h.expires_gmt IS NULL)
+      --limit results to just holds with a status of on hold
+      AND h.status = '0'
+
+    /*
+    Union to second query to account for volume level holds in addition to bib and item level ones
+    Minuteman does not use volume holds but meaningful for other customers
+    */
+
+    UNION
+
+    SELECT
+    DISTINCT h.id AS "holdID",
+    rm.record_type_code||rm.record_num AS "bibliographicRecordID",
+    h.placed_gmt AS "requestedDate",
+    SUBSTRING(h.pickup_location_code,1,3) AS "requestedLocation",
+    CURRENT_DATE AS "reportDate"
+ 
+    FROM sierra_view.hold h
+    JOIN sierra_view.bib_record_volume_record_link lv
+      ON h.record_id = lv.volume_record_id
+    JOIN sierra_view.record_metadata rm
+      ON lv.bib_record_id = rm.id
+    JOIN sierra_view.bib_record_property bp
+      ON rm.id = bp.bib_record_id
+      AND bp.material_code NOT IN ('b','y','s','h','w','l')
+  
+    WHERE  
+      (h.expires_gmt > CURRENT_DATE OR h.expires_gmt IS NULL)
+      --limit results to just holds with a status of on hold
+      AND h.status = '0'
+    """
+    
+    on_order_query = """\
+    --breaking out copy calculation to sub query to avoid one-to-many join errors
+    WITH copies_ordered AS(
+    SELECT
+    o.id AS order_record_id,
+    SUM(cmf.copies) AS copies
+  
+    FROM sierra_view.order_record o
+    /*
+    cmf table handles copies/locations/fund data, which may contain multiple values for a single record
+    table also contains an extraneous row in these case for a location called 'multi' that displays to staff
+    filtering those rows out to avoid duplicate data
+    */  
+      JOIN sierra_view.order_record_cmf cmf
+      ON o.id = cmf.order_record_id
+      AND o.order_status_code IN ('o','q')
+      AND cmf.location_code != 'multi'
+    GROUP BY 1
+    ),
+
+    copies_paid AS(
+    SELECT
+    o.id AS order_record_id,
+    SUM(COALESCE(op.copies,0)) AS copies_paid
+  
+    FROM sierra_view.order_record o
+    LEFT JOIN sierra_view.order_record_paid op
+      ON o.id = op.order_record_id AND o.order_status_code IN ('o','q')
+    GROUP BY 1
+    )
+
+    SELECT * FROM(
+    SELECT
+    rmb.record_type_code||rmb.record_num AS "bibliographicRecordID",
+    a.name AS "branchCode",
+    rmo.record_type_code||rmo.record_num AS "orderID",
+    --total copies ordered - copies that have been paid for
+    c.copies - cp.copies_paid AS "copies",
+    TO_CHAR(CURRENT_DATE,'YYYY-MM-DD') AS "reportDate"
+
+    FROM sierra_view.order_record o
+    JOIN sierra_view.record_metadata rmo
+      ON o.id = rmo.id
+    JOIN sierra_view.bib_record_order_record_link l
+      ON o.id = l.order_record_id
+    JOIN sierra_view.record_metadata rmb
+      ON l.bib_record_id = rmb.id
+    JOIN sierra_view.bib_record_property bp
+      ON rmb.id = bp.bib_record_id
+      AND bp.material_code NOT IN ('b','y','s','h','w','l')
+    /*
+    looking at accounting unit as an easy way to tie record to a single location
+    Single sites or libraries with a single accounting unit will need to look at order_record_cmf.location_code instead
+    */
+    JOIN sierra_view.accounting_unit_myuser a
+      ON o.accounting_unit_code_num = a.code
+    JOIN copies_ordered c
+      ON o.id = c.order_record_id
+    JOIN copies_paid cp
+      ON o.id = cp.order_record_id
+
+    WHERE 
+      /*Filtering to orders that are still on order or that have only been partially received*/
+      order_status_code IN ('o','q')
+    )inner_query
+    WHERE inner_query."copies" > 0
+    """
 
     bibs_file = 'Biblio_{}.csv'.format(date.today().strftime('%Y%m%d'))
     items_file = 'Items_{}.csv'.format(date.today().strftime('%Y%m%d'))
     holds_file = 'Holds_{}.csv'.format(date.today().strftime('%Y%m%d'))
     patrons_file = 'Patrons_{}.csv'.format(date.today().strftime('%Y%m%d'))
     circ_file = 'Circ_{}.csv'.format(date.today().strftime('%Y%m%d'))
+    fulfilled_holds_file = 'Holds_Fulfilled_{}.csv'.format(date.today().strftime('%Y%m%d'))
+    requested_holds_file = 'Holds_Requested_{}.csv'.format(date.today().strftime('%Y%m%d'))
+    unfilled_holds_file = 'Holds_Unfilled_{}.csv'.format(date.today().strftime('%Y%m%d'))
+    on_order_file = 'OrderedItems_{}.csv'.format(date.today().strftime('%Y%m%d'))
 
     bibs_csv = runquery(bibs_query,bibs_file)
     ftp_file(bibs_csv)
@@ -444,6 +625,14 @@ def main():
     ftp_file(patrons_csv)
     circ_csv = runquery(circ_query,circ_file)
     ftp_file(circ_csv)
+    fulfilled_holds_csv = runquery(fulfilled_holds_query,fulfilled_holds_file)
+    ftp_file(fulfilled_holds_csv)
+    requested_holds_csv = runquery(requested_holds_query,requested_holds_file)
+    ftp_file(requested_holds_csv)
+    unfilled_holds_csv = runquery(unfilled_holds_query,unfilled_holds_file)
+    ftp_file(unfilled_holds_csv)
+    on_order_csv = runquery(on_order_query,on_order_file)
+    ftp_file(on_order_csv)
     
     if datetime.now().weekday() == 4:
         items_csv = runlargequery(items_file)
