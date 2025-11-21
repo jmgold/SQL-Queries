@@ -13,6 +13,22 @@ WITH hold_count AS (
 	JOIN sierra_view.bib_record_item_record_link l
 	  ON h.record_id = l.item_record_id
 	  OR h.record_id = l.bib_record_id
+	JOIN sierra_view.bib_record_property b
+	  ON l.bib_record_id = b.bib_record_id
+	JOIN sierra_view.item_record i
+	  ON l.item_record_id = i.id
+		
+	WHERE b.material_code IN ({{mat_type}})
+	  AND i.location_code ~ '{{location}}' 
+    --location will take the form ^oln, which in this example looks for all locations starting with the string oln.
+	  AND i.item_status_code NOT IN ({{item_status_codes}})
+     AND {{age_level}}
+	   /*
+	   SUBSTRING(i.location_code,4,1) NOT IN ('y','j') --adult
+	   SUBSTRING(i.location_code,4,1) = 'j' --juv
+	   SUBSTRING(i.location_code,4,1) = 'y' --ya
+	   i.location_code ~ '\w' --all
+	   */
 
 	GROUP BY 1
 	HAVING COUNT(DISTINCT h.id) > 1
@@ -36,6 +52,17 @@ loan_periods AS (
 	   ON c.loanrule_code_num = l.loanrule_num
    JOIN sierra_view.item_record i
 	  ON c.item_record_id = i.id
+	
+	WHERE i.location_code ~ '{{location}}'
+	  AND i.item_status_code NOT IN ({{item_status_codes}})
+     AND {{age_level}}
+	  /*
+	  SUBSTRING(i.location_code,4,1) NOT IN ('y','j') --adult
+	  SUBSTRING(i.location_code,4,1) = 'j' --juv
+	  SUBSTRING(i.location_code,4,1) = 'y' --ya
+	  i.location_code ~ '\w' --all
+	  */  
+   
    GROUP BY i.itype_code_num
 ),
 -- Pre-filter and pre-compute ISBN/UPC to avoid correlated subquery
