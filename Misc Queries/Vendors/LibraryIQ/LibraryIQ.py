@@ -116,7 +116,8 @@ def runlargequery(csv_file):
     LEFT JOIN sierra_view.varfield v
       ON i.id = v.record_id AND v.varfield_type_code = 'v'
 
-    WHERE SUBSTRING(i.location_code,1,3) NOT IN ('trn','hpl','int','knp','','zzz','cmc')  
+    WHERE SUBSTRING(i.location_code,1,3) NOT IN ('trn','hpl','int','knp','','zzz','cmc')
+    GROUP BY 1,2,3,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24
     
     LIMIT 250000
     OFFSET {}""".format(offset)
@@ -203,6 +204,7 @@ def runlargequery(csv_file):
           ON i.id = v.record_id AND v.varfield_type_code = 'v'
 
         WHERE SUBSTRING(i.location_code,1,3) NOT IN ('trn','hpl','int','knp','','zzz','cmc')
+        GROUP BY 1,2,3,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24
     
         LIMIT 250000
         OFFSET {}""".format(offset)
