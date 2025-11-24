@@ -5,22 +5,35 @@ Minuteman Library Network
 Gathers the top titles in a subject, owned by a selected peer library that are not owned locally, 
 grouped by a choice of performance metrics
 */
-WITH hold_count AS
-	(SELECT
-	l.bib_record_id,
-	COUNT(DISTINCT h.id) AS count_holds_on_title
-	--reconciles bib,item and volume level holds
+WITH hold_count AS ( 
+  SELECT
+	 l.bib_record_id,
+	 COUNT(DISTINCT h.id) AS count_holds_on_title
 
-	FROM
-	sierra_view.hold h
-	JOIN
-	sierra_view.bib_record_item_record_link l
-	ON
-	h.record_id = l.item_record_id OR h.record_id = l.bib_record_id
+	 --reconciles bib,item and volume level holds
+	FROM sierra_view.hold h
+	JOIN sierra_view.bib_record_item_record_link l
+	  ON h.record_id = l.item_record_id
+	  OR h.record_id = l.bib_record_id
+	JOIN sierra_view.bib_record_property b
+	  ON l.bib_record_id = b.bib_record_id
+	JOIN sierra_view.item_record i
+	  ON l.item_record_id = i.id
+		
+	WHERE b.material_code IN ({{mat_type}})
+	  AND i.location_code ~ '{{location}}' 
+    --location will take the form ^oln, which in this example looks for all locations starting with the string oln.
+	  AND i.item_status_code NOT IN ({{item_status_codes}})
+     AND {{age_level}}
+	   /*
+	   SUBSTRING(i.location_code,4,1) NOT IN ('y','j') --adult
+	   SUBSTRING(i.location_code,4,1) = 'j' --juv
+	   SUBSTRING(i.location_code,4,1) = 'y' --ya
+	   i.location_code ~ '\w' --all
+	   */
 
 	GROUP BY 1
-	HAVING
-	COUNT(DISTINCT h.id) > 1
+	HAVING COUNT(DISTINCT h.id) > 1
 ),
 -- Pre-compute loan periods to avoid repeated subquery execution
 loan_periods AS (
@@ -41,6 +54,17 @@ loan_periods AS (
 	   ON c.loanrule_code_num = l.loanrule_num
    JOIN sierra_view.item_record i
 	  ON c.item_record_id = i.id
+	
+	WHERE i.location_code ~ '{{location}}'
+	  AND i.item_status_code NOT IN ({{item_status_codes}})
+     AND {{age_level}}
+	  /*
+	  SUBSTRING(i.location_code,4,1) NOT IN ('y','j') --adult
+	  SUBSTRING(i.location_code,4,1) = 'j' --juv
+	  SUBSTRING(i.location_code,4,1) = 'y' --ya
+	  i.location_code ~ '\w' --all
+	  */  
+   
    GROUP BY i.itype_code_num
 ),
 -- Pre-filter and pre-compute ISBN/UPC to avoid correlated subquery

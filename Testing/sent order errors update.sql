@@ -13,12 +13,13 @@ FROM(
     rm.record_type_code||rm.record_num||'a' AS order_num,
     rm.creation_date_gmt::DATE AS created_date,
     o.vendor_record_code AS vendor_code,
-    STRING_AGG(DISTINCT f.code,', ') AS fund,
-    STRING_AGG(DISTINCT cmf.location_code,', ') AS LOCATION,
-    STRING_AGG(DISTINCT cmf.copies::VARCHAR,', ') AS copies,
+    STRING_AGG(f.code,', ') AS fund,
+    STRING_AGG(cmf.location_code,', ') AS LOCATION,
+    STRING_AGG(cmf.copies::VARCHAR,', ') AS copies,
     'SENT MULTIPLE TIMES' AS error,
     b.best_title AS title,
-    STRING_AGG(DISTINCT isbn.content,', ') AS ISBN
+    STRING_AGG(isbn.content,', ') AS ISBN
+    ---pull ISBN, possibly from sent message
 
   FROM sierra_view.order_record o
   JOIN sierra_view.subfield sent1
@@ -34,7 +35,8 @@ FROM(
 	   AND (sent2.varfield_id != sent1.varfield_id OR sent2.display_order != sent1.display_order)
   JOIN sierra_view.subfield isbn
     ON (sent1.varfield_id = isbn.varfield_id OR sent2.varfield_id = isbn.varfield_id)
-      AND isbn.tag IS NULL
+      AND isbn.field_type_code = 'b'
+      AND isbn.tag = 'a'
   JOIN sierra_view.record_metadata rm
     ON o.id = rm.id
   JOIN sierra_view.bib_record_order_record_link l
@@ -50,10 +52,10 @@ FROM(
     ON cmf.fund_code::INT = f.code_num
 	 AND a.id = f.accounting_unit_id
 
-  WHERE o.accounting_unit_code_num = {{accounting_unit}}
-    {{#if include}}
+  WHERE o.accounting_unit_code_num = 4 --{{accounting_unit}}
+    --{{#if include}}
     AND o.order_status_code IN ('o','q')
-    {{/if include}}
+    --{{/if include}}
 
   GROUP BY 1,2,3,7,8
 
@@ -63,17 +65,19 @@ FROM(
     rm.record_type_code||rm.record_num||'a' AS order_num,
     rm.creation_date_gmt::DATE AS created_date,
     o.vendor_record_code AS vendor_code,
-    STRING_AGG(DISTINCT f.code,', ') AS fund,
-    STRING_AGG(DISTINCT cmf.location_code,', ') AS LOCATION,
-    STRING_AGG(DISTINCT cmf.copies::VARCHAR,', ') AS copies,
+    STRING_AGG(f.code,', ') AS fund,
+    STRING_AGG(cmf.location_code,', ') AS LOCATION,
+    STRING_AGG(cmf.copies::VARCHAR,', ') AS copies,
     'NOT SENT' AS error,
     b.best_title AS title,
     sent.field_content AS ISBN
+    --Pull ISBN from sent message if possible
 
   FROM sierra_view.order_record o
   JOIN sierra_view.varfield sent
     ON o.id = sent.record_id
 	   AND sent.varfield_type_code = 'b'
+	   --AND TO_DATE(SUBSTRING(sent.field_content, '\d{2}\-\d{2}\-\d{4}'),'MM-DD-YYYY') IS NOT NULL
 	   AND sent.occ_num = '0'
   JOIN sierra_view.record_metadata rm
     ON o.id = rm.id
@@ -94,14 +98,14 @@ FROM(
     ON cmf.fund_code::INT = f.code_num
 	 AND a.id = f.accounting_unit_id
 
-  WHERE o.accounting_unit_code_num = {{accounting_unit}}
+  WHERE o.accounting_unit_code_num = 4--{{accounting_unit}}
     --AND sent.id IS NULL
     AND sent.field_content !~ '\d{2}\-\d{2}\-\d{4}'
-    {{#if include}}
+    --{{#if include}}
     AND o.order_status_code IN ('o','q')
-    {{/if include}}
+    --{{/if include}}
 
   GROUP BY 1,2,3,7,8,9
 )inner_query
 
-WHERE inner_query.created_date BETWEEN {{start_date}} AND {{end_date}}
+WHERE inner_query.created_date BETWEEN '2025-07-01' AND '2025-10-31'--{{start_date}} AND {{end_date}}
