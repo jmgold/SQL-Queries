@@ -1,7 +1,8 @@
 /*
 Jeremy Goldstein
 Minuteman Library Network
-Gathers the top titles in the network ,that are not owned locally, within a call # range, grouped by a choice of performance metrics
+Gathers the top titles in the network ,that are not owned locally
+grouped by a choice of performance metrics
 */
 WITH hold_count AS ( 
   SELECT
