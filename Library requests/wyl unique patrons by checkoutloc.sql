@@ -7,7 +7,7 @@ Takes variables for transaction location and unit of time to group the report by
 */
 
 SELECT
-  to_char(t.transaction_gmt, 'MM-DD-YY') AS transaction_date,
+  TO_CHAR(t.transaction_gmt, 'MM-DD-YY') AS transaction_date,
   l.name AS checkout_location,
   COUNT(t.id) AS total_checkouts,
   COUNT(DISTINCT(t.patron_record_id)) AS total_unique_patrons,
