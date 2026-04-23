@@ -19,9 +19,9 @@ FROM (
     f.fund_code,
     fn.name AS fund,
     o.vendor_record_code AS vendor,
-    cmf.copies,
+    SUM(cmf.copies) AS copies,
     o.estimated_price::MONEY AS eprice,
-    ROUND(SUM(o.estimated_price * (cmf.copies - COALESCE(op.copies,0))),2)::MONEY AS encumbered_amt
+    ROUND(o.estimated_price * (SUM(cmf.copies) - COALESCE(op.copies,0)),2)::MONEY AS encumbered_amt
 
   FROM sierra_view.order_record o
   JOIN sierra_view.record_metadata rm
@@ -54,6 +54,6 @@ FROM (
     AND o.accounting_unit_code_num = {{accounting_unit}}
     AND o.order_status_code IN ('o','q','g','d')
   
-  GROUP BY 1,2,3,4,5,6,7,8,9
+  GROUP BY 1,2,3,4,5,6,7,9,o.estimated_price,op.copies
   ORDER BY 3,2
 )a
