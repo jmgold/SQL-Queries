@@ -24,11 +24,12 @@ FROM
     COALESCE(il.title,il.note) AS title,
     COALESCE(il.copies_paid_cnt, '1') AS copies,
     il.paid_amt::MONEY AS line_item_charge,
-    (i.discount_amt * (il.paid_amt / i.subtotal_amt))::MONEY AS service_charge,
-    (i.shipping_amt * (il.paid_amt / i.subtotal_amt))::MONEY AS shipping_charge,
-    (COALESCE(i.total_tax_amt,0) * (il.paid_amt / i.subtotal_amt))::MONEY AS tax,
-    ((i.discount_amt * (il.paid_amt / i.subtotal_amt)) + (i.shipping_amt * (il.paid_amt / i.subtotal_amt)) + (COALESCE(i.total_tax_amt,0) * (il.paid_amt / i.subtotal_amt)))::MONEY AS total_additional_charges,
-    (il.paid_amt + (i.discount_amt * (il.paid_amt / i.subtotal_amt)) + (i.shipping_amt * (il.paid_amt / i.subtotal_amt)) + (COALESCE(i.total_tax_amt,0) * (il.paid_amt / i.subtotal_amt)))::MONEY AS total_paid,
+    --using NULLIF logic to account for outlying case where subtotal = 0
+    (i.discount_amt * (il.paid_amt / NULLIF(SUM(i.subtotal_amt),0)))::MONEY AS service_charge,
+    (i.shipping_amt * (il.paid_amt / NULLIF(SUM(i.subtotal_amt),0)))::MONEY AS shipping_charge,
+    (COALESCE(i.total_tax_amt,0) * (il.paid_amt / NULLIF(SUM(i.subtotal_amt),0)))::MONEY AS tax,
+    ((i.discount_amt * (il.paid_amt / NULLIF(SUM(i.subtotal_amt),0))) + (i.shipping_amt * (il.paid_amt / NULLIF(SUM(i.subtotal_amt),0))) + (COALESCE(i.total_tax_amt,0) * (il.paid_amt / NULLIF(SUM(i.subtotal_amt),0))))::MONEY AS total_additional_charges,
+    (il.paid_amt + (i.discount_amt * (il.paid_amt / NULLIF(SUM(i.subtotal_amt),0))) + (i.shipping_amt * (il.paid_amt / NULLIF(SUM(i.subtotal_amt),0))) + (COALESCE(i.total_tax_amt,0) * (il.paid_amt / NULLIF(SUM(i.subtotal_amt),0))))::MONEY AS total_paid,
     fm.code AS fund,
     il.vendor_code AS vendor
   
@@ -48,6 +49,7 @@ FROM
 
   WHERE {{date_field}} BETWEEN {{start_date}}::DATE AND {{end_date}}::DATE
 	--i.paid_date_gmt or i.invoice_date_gmt
+  GROUP BY 1,2,3,4,5,6,7,8,9,15,16,i.discount_amt,il.paid_amt,i.shipping_amt,i.total_tax_amt,i.invoice_date_gmt, i.paid_date_gmt,il.line_cnt
 
   ORDER BY i.invoice_date_gmt, i.invoice_number_text, il.line_cnt
 )a
