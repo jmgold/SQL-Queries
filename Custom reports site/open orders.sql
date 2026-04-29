@@ -5,31 +5,42 @@ Minuteman Library Network
 Report identifies all order records that are currently contributing to the encumbrance totals with a given accounting unit and order date range
 */
 
-SELECT 
-  *,
-  '' AS "OPEN ORDERS",
-  '' AS "https://sic.minlib.net/reports/92"
-
-FROM (
+WITH partial_payments AS (
   SELECT
-    rm.record_type_code||rm.record_num||'a' AS order_number,
-    b.best_title AS title,
+    o.id,
+    SUM(op.copies) AS copies
+    
+  FROM sierra_view.order_record o
+  JOIN sierra_view.order_record_paid op
+    ON o.id = op.order_record_id
+
+  WHERE o.order_status_code = 'q'
+    AND o.accounting_unit_code_num = {{accounting_unit}}
+
+  GROUP BY 1
+),
+
+order_encumbrance AS (
+  SELECT
+    o.id,
     o.order_date_gmt::DATE AS order_date,
-    o.order_status_code AS status,
-    f.fund_code,
-    fn.name AS fund,
+    o.order_status_code,
     o.vendor_record_code AS vendor,
+    CASE
+      WHEN fp.is_active = TRUE THEN fm.code
+      ELSE fm.code||' (DELETED)'
+	 END AS code,
+    CASE
+      WHEN fp.is_active = TRUE THEN fn.name
+		ELSE fn.name|| '(DELETED)'
+	 END AS name,
+    o.estimated_price,
+    o.accounting_unit_code_num,
+    ROUND(o.estimated_price * (SUM(cmf.copies) - COALESCE(p.copies,0)),2)::MONEY AS encumbered_amt,
     SUM(cmf.copies) AS copies,
-    o.estimated_price::MONEY AS eprice,
-    ROUND(o.estimated_price * (SUM(cmf.copies) - COALESCE(op.copies,0)),2)::MONEY AS encumbered_amt
+	 SUM(cmf.copies) - COALESCE(p.copies,0) AS outstanding_copies
 
   FROM sierra_view.order_record o
-  JOIN sierra_view.record_metadata rm
-    ON o.id = rm.id
-  JOIN sierra_view.bib_record_order_record_link l
-    ON o.id = l.order_record_id
-  JOIN sierra_view.bib_record_property b
-    ON l.bib_record_id = b.bib_record_id
   JOIN sierra_view.order_record_cmf cmf
     ON o.id = cmf.order_record_id
 	 AND cmf.location_code != 'multi'
@@ -46,14 +57,46 @@ FROM (
 	 AND fp.fund_type_id = '1'
   JOIN sierra_view.fund_property_name fn
     ON fp.id = fn.fund_property_id
-  LEFT JOIN sierra_view.order_record_paid op
-    ON o.id = op.order_record_id
-	 AND o.order_status_code = 'q'
+  LEFT JOIN partial_payments p
+    ON o.id = p.id
+
+  WHERE o.accounting_unit_code_num = {{accounting_unit}}
+    AND o.order_status_code IN ('o','q','g','c')
+
+  GROUP BY 1,2,3,4,5,6,7,8,p.copies
+)
+
+SELECT 
+  *,
+  '' AS "OPEN ORDERS",
+  '' AS "https://sic.minlib.net/reports/92"
+
+FROM (
+  SELECT
+    rm.record_type_code||rm.record_num||'a' AS order_number,
+    b.best_title AS title,
+    o.order_date,
+    o.order_status_code AS status,
+    o.code AS fund_code,
+    o.name AS fund,
+    o.vendor,
+    o.copies,
+    o.outstanding_copies,
+    o.estimated_price::MONEY AS eprice,
+    o.encumbered_amt
+
+  FROM order_encumbrance o
+  JOIN sierra_view.record_metadata rm
+    ON o.id = rm.id
+  JOIN sierra_view.bib_record_order_record_link l
+    ON o.id = l.order_record_id
+  JOIN sierra_view.bib_record_property b
+    ON l.bib_record_id = b.bib_record_id
 
   WHERE rm.creation_date_gmt::DATE < {{order_date}}
     AND o.accounting_unit_code_num = {{accounting_unit}}
     AND o.order_status_code IN ('o','q','g','d')
   
-  GROUP BY 1,2,3,4,5,6,7,9,o.estimated_price,op.copies
+  --GROUP BY 1,2,3,4,5,6,7,9,10,11
   ORDER BY 3,2
 )a
