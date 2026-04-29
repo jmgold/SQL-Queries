@@ -116,8 +116,18 @@ FROM (
 	SELECT
 		id2reckey(hd.bib_id)||'a' AS bib_number,
 		brp.best_title AS title, 
-		brp.best_author AS author, 
-		brp.publish_year AS publication_year,
+		brp.best_author AS author,
+		--publish_year logic from Rebecca King, Thousand Oaks Library
+		CASE
+        -- valid 4-digit year
+		  WHEN brp.publish_year BETWEEN 1000 AND 2099 THEN brp.publish_year
+        -- possible corrupted YYYYMMDD → try first 2 digits as year
+		  WHEN brp.publish_year BETWEEN 10000000 AND 99999999 THEN LEFT(brp.publish_year::TEXT, 4)::INTEGER
+        -- possible truncated YYMM like 2603 → interpret as 2026
+		  WHEN brp.publish_year BETWEEN 0 AND 9999 AND LENGTH(brp.publish_year::text) = 4
+			 THEN 2000 + LEFT(brp.publish_year::text, 2)::INTEGER
+		  ELSE NULL
+	   END AS publication_year,
 		mp.name AS mat_type,
 		hd.item_count AS total_item_count, 
 		MAX(hd.avail_item_count) AS total_available_item_count,
