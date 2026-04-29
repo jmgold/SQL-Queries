@@ -73,6 +73,7 @@ FROM (
 
   WHERE f.acct_unit = {{accounting_unit}}
     AND f.fund_type = 'fbal'
+    AND fp.is_active = true
 
   GROUP BY 1,2,3
   ORDER BY 1

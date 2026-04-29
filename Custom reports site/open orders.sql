@@ -26,8 +26,14 @@ order_encumbrance AS (
     o.order_date_gmt::DATE AS order_date,
     o.order_status_code,
     o.vendor_record_code AS vendor,
-	 fm.code,
-	 fn.name,
+    CASE
+      WHEN fp.is_active = TRUE THEN fm.code
+      ELSE fm.code||' (DELETED)'
+	 END AS code,
+    CASE
+      WHEN fp.is_active = TRUE THEN fn.name
+		ELSE fn.name|| '(DELETED)'
+	 END AS name,
     o.estimated_price,
     o.accounting_unit_code_num,
     ROUND(o.estimated_price * (SUM(cmf.copies) - COALESCE(p.copies,0)),2)::MONEY AS encumbered_amt,
