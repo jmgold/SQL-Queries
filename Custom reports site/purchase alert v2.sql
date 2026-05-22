@@ -215,6 +215,7 @@ FROM (
 		ON hd.bib_id = ml.record_id
 	LEFT JOIN sierra_view.control_field f
 		ON hd.bib_id = f.record_id
+      AND f.control_num = 8
 	
 	GROUP BY brp.bib_record_id,1, 2, 3, 4, 5, 6, 8, 14, 16, 19
 	HAVING hd.local_holds >= {{min_local_holds}}
