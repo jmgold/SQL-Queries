@@ -18,7 +18,8 @@ FROM(
     STRING_AGG(DISTINCT cmf.copies::VARCHAR,', ') AS copies,
     'SENT MULTIPLE TIMES' AS error,
     b.best_title AS title,
-    STRING_AGG(DISTINCT isbn.content,', ') AS ISBN
+    STRING_AGG(DISTINCT isbn.content,', ') AS ISBN,
+    COALESCE(p.index_entry,'') AS po_number
 
   FROM sierra_view.order_record o
   JOIN sierra_view.subfield sent1
@@ -49,13 +50,16 @@ FROM(
   JOIN sierra_view.fund_master f
     ON cmf.fund_code::INT = f.code_num
 	 AND a.id = f.accounting_unit_id
+  LEFT JOIN sierra_view.phrase_entry p
+    ON o.id = p.record_id
+    AND p.varfield_type_code = 'p'
 
   WHERE o.accounting_unit_code_num = {{accounting_unit}}
     {{#if include}}
     AND o.order_status_code IN ('o','q')
     {{/if include}}
 
-  GROUP BY 1,2,3,7,8
+  GROUP BY 1,2,3,7,8,10
 
   UNION
 
@@ -68,7 +72,8 @@ FROM(
     STRING_AGG(DISTINCT cmf.copies::VARCHAR,', ') AS copies,
     'NOT SENT' AS error,
     b.best_title AS title,
-    sent.field_content AS ISBN
+    sent.field_content AS ISBN,
+    COALESCE(p.index_entry,'') AS po_number
 
   FROM sierra_view.order_record o
   JOIN sierra_view.varfield sent
@@ -93,6 +98,9 @@ FROM(
   JOIN sierra_view.fund_master f
     ON cmf.fund_code::INT = f.code_num
 	 AND a.id = f.accounting_unit_id
+  LEFT JOIN sierra_view.phrase_entry p
+    ON o.id = p.record_id
+    AND p.varfield_type_code = 'p'
 
   WHERE o.accounting_unit_code_num = {{accounting_unit}}
     --AND sent.id IS NULL
@@ -101,7 +109,7 @@ FROM(
     AND o.order_status_code IN ('o','q')
     {{/if include}}
 
-  GROUP BY 1,2,3,7,8,9
+  GROUP BY 1,2,3,7,8,9,10
 )inner_query
 
 WHERE inner_query.created_date BETWEEN {{start_date}} AND {{end_date}}

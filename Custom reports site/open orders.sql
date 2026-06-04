@@ -80,6 +80,7 @@ FROM (
     o.code AS fund_code,
     o.name AS fund,
     o.vendor,
+    COALESCE(p.index_entry,'') AS po_number,
     o.copies,
     o.outstanding_copies,
     o.estimated_price::MONEY AS eprice,
@@ -92,11 +93,13 @@ FROM (
     ON o.id = l.order_record_id
   JOIN sierra_view.bib_record_property b
     ON l.bib_record_id = b.bib_record_id
+  LEFT JOIN sierra_view.phrase_entry p
+    ON o.id = p.record_id
+    AND p.varfield_type_code = 'p'
 
   WHERE rm.creation_date_gmt::DATE < {{order_date}}
     AND o.accounting_unit_code_num = {{accounting_unit}}
     AND o.order_status_code IN ('o','q','g','d')
   
-  --GROUP BY 1,2,3,4,5,6,7,9,10,11
   ORDER BY 3,2
 )a
