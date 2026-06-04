@@ -26,20 +26,20 @@ loan_periods AS (
    SELECT
      i.itype_code_num,
      ROUND(AVG(EXTRACT(DAY FROM l.est_loan_period))) AS est_loan_period
-   FROM sierra_view.checkout c
+   FROM sierra_view.item_record i
+   JOIN sierra_view.checkout c
+     ON i.id = c.item_record_id
    JOIN (
      SELECT
-       f.loanrule_code_num AS loanrule_num,
-       MIN(AGE(f.due_gmt::date, f.checkout_gmt::date)) AS est_loan_period
-     FROM sierra_view.fine f
+       o.loanrule_code_num AS loanrule_num,
+       MIN(AGE(o.due_gmt::date, o.checkout_gmt::date)) AS est_loan_period
+     FROM sierra_view.checkout o
      
-	  WHERE f.loanrule_code_num NOT IN ('1','288','493','494','495','496','497','498','999')
-     GROUP BY f.loanrule_code_num
-     HAVING COUNT(f.loanrule_code_num) > 5
+	  WHERE o.loanrule_code_num NOT IN ('1','288','493','494','495','496','497','498','999')
+     GROUP BY o.loanrule_code_num
+     HAVING COUNT(o.loanrule_code_num) > 5
     ) l
 	   ON c.loanrule_code_num = l.loanrule_num
-   JOIN sierra_view.item_record i
-	  ON c.item_record_id = i.id
    GROUP BY i.itype_code_num
 ),
 -- Pre-filter and pre-compute ISBN/UPC to avoid correlated subquery
@@ -92,7 +92,16 @@ SELECT
     'b'||mb.record_num||'a' AS bib_number,
     b.best_title AS title,
     b.best_author AS author,
-    b.publish_year,
+    CASE
+      -- valid 4-digit year
+      WHEN b.publish_year BETWEEN 1000 AND 2099 THEN b.publish_year
+      -- possible corrupted YYYYMMDD → try first 2 digits as year
+      WHEN b.publish_year BETWEEN 10000000 AND 99999999 THEN LEFT(b.publish_year::TEXT, 4)::INTEGER
+      -- possible truncated YYMM like 2603 → interpret as 2026
+      WHEN b.publish_year BETWEEN 0 AND 9999 AND LENGTH(b.publish_year::text) = 4
+      THEN 2000 + LEFT(b.publish_year::text, 2)::INTEGER
+      ELSE NULL
+    END AS publish_year,
     CASE 
 	    WHEN '{{grouping}}' = 'Total Checkouts' THEN SUM(i.checkout_total) FILTER (WHERE i.location_code ~ '{{comp_location}}' AND m.creation_date_gmt < {{created_date}}::DATE)
 	    WHEN '{{grouping}}' = 'Total Checkouts: Last Year' THEN SUM(i.last_year_to_date_checkout_total) FILTER (WHERE i.location_code ~ '{{comp_location}}' AND m.creation_date_gmt < {{created_date}}::DATE)
