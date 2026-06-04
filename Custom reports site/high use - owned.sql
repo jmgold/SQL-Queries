@@ -9,20 +9,20 @@ WITH loan_periods AS (
    SELECT
      i.itype_code_num,
      ROUND(AVG(EXTRACT(DAY FROM l.est_loan_period))) AS est_loan_period
-   FROM sierra_view.checkout c
+   FROM sierra_view.item_record i
+   JOIN sierra_view.checkout c
+     ON i.id = c.item_record_id
    JOIN (
      SELECT
-       f.loanrule_code_num AS loanrule_num,
-       MIN(AGE(f.due_gmt::date, f.checkout_gmt::date)) AS est_loan_period
-     FROM sierra_view.fine f
+       o.loanrule_code_num AS loanrule_num,
+       MIN(AGE(o.due_gmt::date, o.checkout_gmt::date)) AS est_loan_period
+     FROM sierra_view.checkout o
      
-	  WHERE f.loanrule_code_num NOT IN ('1','288','493','494','495','496','497','498','999')
-     GROUP BY f.loanrule_code_num
-     HAVING COUNT(f.loanrule_code_num) > 5
+	  WHERE o.loanrule_code_num NOT IN ('1','288','493','494','495','496','497','498','999')
+     GROUP BY o.loanrule_code_num
+     HAVING COUNT(o.loanrule_code_num) > 5
     ) l
 	   ON c.loanrule_code_num = l.loanrule_num
-   JOIN sierra_view.item_record i
-	  ON c.item_record_id = i.id
    GROUP BY i.itype_code_num
 )
 

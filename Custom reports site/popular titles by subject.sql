@@ -59,30 +59,19 @@ loan_periods AS (
      i.itype_code_num,
      ROUND(AVG(EXTRACT(DAY FROM l.est_loan_period))) AS est_loan_period
    FROM sierra_view.item_record i
-	JOIN sierra_view.checkout c
-	  ON i.id = c.item_record_id
+   JOIN sierra_view.checkout c
+     ON i.id = c.item_record_id
    JOIN (
      SELECT
-       f.loanrule_code_num AS loanrule_num,
-       MIN(AGE(f.due_gmt::date, f.checkout_gmt::date)) AS est_loan_period
-     FROM sierra_view.fine f
+       o.loanrule_code_num AS loanrule_num,
+       MIN(AGE(o.due_gmt::date, o.checkout_gmt::date)) AS est_loan_period
+     FROM sierra_view.checkout o
      
-	  WHERE f.loanrule_code_num NOT IN ('1','288','493','494','495','496','497','498','999')
-     GROUP BY f.loanrule_code_num
-     HAVING COUNT(f.loanrule_code_num) > 5
+	  WHERE o.loanrule_code_num NOT IN ('1','288','493','494','495','496','497','498','999')
+     GROUP BY o.loanrule_code_num
+     HAVING COUNT(o.loanrule_code_num) > 5
     ) l
 	   ON c.loanrule_code_num = l.loanrule_num
-	
-	WHERE i.location_code ~ '{{location}}'
-	  AND i.item_status_code NOT IN ({{item_status_codes}})
-     AND {{age_level}}
-	  /*
-	  SUBSTRING(i.location_code,4,1) NOT IN ('y','j') --adult
-	  SUBSTRING(i.location_code,4,1) = 'j' --juv
-	  SUBSTRING(i.location_code,4,1) = 'y' --ya
-	  i.location_code ~ '\w' --all
-	  */  
-   
    GROUP BY i.itype_code_num
 ),
 -- Pre-filter and pre-compute ISBN/UPC to avoid correlated subquery
@@ -104,44 +93,53 @@ SELECT
   *,
   '' AS "POPULAR TITLES BY SUBJECT",
   '' AS "https://sic.minlib.net/reports/82"
-  FROM (
-    SELECT
-      rmb.record_type_code||rmb.record_num||'a' AS bib_number,
-      b.best_title AS title,
-      b.best_author AS author,
-      b.publish_year,
-      {{grouping}},
-      /*
-      Grouping options
-      ROUND(AVG((CAST(((i.checkout_total + i.renewal_total) * loan.est_loan_period) AS NUMERIC (12,2))/(CURRENT_DATE - m.creation_date_gmt::DATE)) * 100),2) AS time_checked_out_pct
-      ROUND(CAST(SUM(i.checkout_total) + SUM(i.renewal_total) AS NUMERIC (12,2))/CAST(COUNT (i.id) AS NUMERIC (12,2)), 2) AS turnover
-      SUM(i.checkout_total + i.renewal_total) AS total_circulation
-      SUM(i.checkout_total) AS total_checkouts
-      SUM(i.year_to_date_checkout_total) AS total_year_to_date_checkouts
-      SUM(i.last_year_to_date_checkout_total) AS total_last_year_to_date_checkouts
-      COALESCE(h.count_holds_on_title,0) AS total_holds
-      SUM(i.year_to_date_checkout_total + i.last_year_to_date_checkout_total) AS checkout_total
-      */
-      COUNT (i.id) AS item_total,
-      isbn.isbn_upc AS "isbn/upc"
+FROM (
+  SELECT
+    rmb.record_type_code||rmb.record_num||'a' AS bib_number,
+    b.best_title AS title,
+    b.best_author AS author,
+    CASE
+    -- valid 4-digit year
+    WHEN b.publish_year BETWEEN 1000 AND 2099 THEN b.publish_year
+    -- possible corrupted YYYYMMDD → try first 2 digits as year
+    WHEN b.publish_year BETWEEN 10000000 AND 99999999 THEN LEFT(b.publish_year::TEXT, 4)::INTEGER
+    -- possible truncated YYMM like 2603 → interpret as 2026
+    WHEN b.publish_year BETWEEN 0 AND 9999 AND LENGTH(b.publish_year::text) = 4
+    THEN 2000 + LEFT(b.publish_year::text, 2)::INTEGER
+    ELSE NULL
+    END AS publish_year,
+    {{grouping}},
+    /*
+    Grouping options
+    ROUND(AVG((CAST(((i.checkout_total + i.renewal_total) * loan.est_loan_period) AS NUMERIC (12,2))/(CURRENT_DATE - m.creation_date_gmt::DATE)) * 100),2) AS time_checked_out_pct
+    ROUND(CAST(SUM(i.checkout_total) + SUM(i.renewal_total) AS NUMERIC (12,2))/CAST(COUNT (i.id) AS NUMERIC (12,2)), 2) AS turnover
+    SUM(i.checkout_total + i.renewal_total) AS total_circulation
+    SUM(i.checkout_total) AS total_checkouts
+    SUM(i.year_to_date_checkout_total) AS total_year_to_date_checkouts
+    SUM(i.last_year_to_date_checkout_total) AS total_last_year_to_date_checkouts
+    COALESCE(h.count_holds_on_title,0) AS total_holds
+    SUM(i.year_to_date_checkout_total + i.last_year_to_date_checkout_total) AS checkout_total
+    */
+    COUNT (i.id) AS item_total,
+    isbn.isbn_upc AS "isbn/upc"
 
-    FROM subject s
-    JOIN sierra_view.bib_record_property b
-      ON s.id = b.bib_record_id
-    JOIN sierra_view.record_metadata rmb
-      ON b.bib_record_id = rmb.id
-    JOIN sierra_view.bib_record_item_record_link l
-      ON b.bib_record_id = l.bib_record_id
-    JOIN sierra_view.item_record i
-      ON i.id = l.item_record_id
-    JOIN sierra_view.record_metadata m
-      ON i.id = m.id
-    JOIN loan_periods loan
-      ON i.itype_code_num = loan.itype_code_num
-    LEFT JOIN hold_count AS h
-      ON b.bib_record_id = h.bib_record_id
-    LEFT JOIN isbn_data isbn
-      ON b.bib_record_id = isbn.record_id
+  FROM subject s
+  JOIN sierra_view.bib_record_property b
+    ON s.id = b.bib_record_id
+  JOIN sierra_view.record_metadata rmb
+    ON b.bib_record_id = rmb.id
+  JOIN sierra_view.bib_record_item_record_link l
+    ON b.bib_record_id = l.bib_record_id
+  JOIN sierra_view.item_record i
+    ON i.id = l.item_record_id
+  JOIN sierra_view.record_metadata m
+    ON i.id = m.id
+  JOIN loan_periods loan
+    ON i.itype_code_num = loan.itype_code_num
+  LEFT JOIN hold_count AS h
+    ON b.bib_record_id = h.bib_record_id
+  LEFT JOIN isbn_data isbn
+    ON b.bib_record_id = isbn.record_id
 
   GROUP BY 2,3,1,4,7,h.count_holds_on_title
   ORDER BY 5 DESC
