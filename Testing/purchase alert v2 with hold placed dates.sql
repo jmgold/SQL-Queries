@@ -4,68 +4,35 @@ Minuteman Library Network
 
 On Demand Purchase Alert
 */
-
---user to gather copies ordered by location from cmf table
-WITH orders_by_loc AS(
+WITH orders AS (
   SELECT
-    bo.bib_record_id,
-    cmf.location_code,
-    SUM(cmf.copies) AS order_copies
-       
-  FROM sierra_view.order_record o
-  JOIN sierra_view.order_record_cmf cmf
-    ON o.id = cmf.order_record_id
-  JOIN sierra_view.bib_record_order_record_link bo
-    ON o.id=bo.order_record_id
-       
-  WHERE (o.order_status_code  = 'o' OR (o.order_status_code = 'a' AND o.received_date_gmt::DATE >= CURRENT_DATE - INTERVAL '14 days'))
-    AND cmf.location_code ~ {{location}}
-    --location will take the form ^oln, which in this example looks for all locations starting with the string oln.
-  GROUP BY 1,2
-),
-
-orders AS (
-   SELECT
-	 CASE
-      WHEN COUNT(DISTINCT ol.location_code) > 1 THEN COUNT(cmf.order_record_id) FILTER(WHERE o.order_status_code = 'o') / COUNT(DISTINCT ol.location_code)
-		ELSE COUNT(cmf.order_record_id) FILTER(WHERE o.order_status_code = 'o')
-	 END AS order_count,
-    CASE
-      WHEN COUNT(DISTINCT ol.location_code) > 1 THEN SUM(cmf.copies) FILTER (WHERE o.order_status_code = 'o') / COUNT(DISTINCT ol.location_code)
-      ELSE SUM(cmf.copies) FILTER (WHERE o.order_status_code = 'o')
-	 END AS order_copies,
-    CASE
-      WHEN COUNT(DISTINCT ol.location_code) > 1 THEN SUM(cmf.copies) FILTER(WHERE o.order_status_code = 'a' AND o.received_date_gmt::DATE >= CURRENT_DATE - INTERVAL '14 days') / COUNT(DISTINCT ol.location_code)
-	   ELSE SUM(cmf.copies) FILTER(WHERE o.order_status_code = 'a' AND o.received_date_gmt::DATE >= CURRENT_DATE - INTERVAL '14 days')
-	 END AS processing_copies,
-    STRING_AGG(DISTINCT ol.location_code||' ('||ol.order_copies||')',',') AS order_locations,
+    COUNT(oc.order_record_id) FILTER(WHERE o.order_status_code = 'o') AS order_count,
+    SUM(oc.copies) FILTER (WHERE o.order_status_code = 'o') AS order_copies,
+    SUM(oc.copies) FILTER(WHERE o.order_status_code = 'a' AND o.received_date_gmt::DATE >= CURRENT_DATE - INTERVAL '14 days') AS processing_copies,
     bro.bib_record_id AS bib_id
-       
-  FROM sierra_view.order_record o
-  JOIN sierra_view.order_record_cmf cmf
-   ON o.id = cmf.order_record_id
-  JOIN sierra_view.bib_record_order_record_link bro
-   ON o.id=bro.order_record_id
-  JOIN orders_by_loc ol
-    ON bro.bib_record_id = ol.bib_record_id
-       
-  WHERE (o.order_status_code  = 'o' OR (o.order_status_code = 'a' AND o.received_date_gmt::DATE >= CURRENT_DATE - INTERVAL '14 days'))
-    AND cmf.location_code ~ {{location}}
-   --location will take the form ^oln, which in this example looks for all locations starting with the string oln.
-  GROUP BY 5
+        
+	FROM sierra_view.order_record o
+	JOIN sierra_view.order_record_cmf oc
+	  ON o.id = oc.order_record_id
+	JOIN sierra_view.bib_record_order_record_link bro
+	  ON o.id=bro.order_record_id
+        
+	WHERE o.order_status_code IN ('o','a')
+	  AND oc.location_code ~ '^ws' /*{{location}}*/	
+	  --location will take the form ^oln, which in this example looks for all locations starting with the string oln.
+   GROUP BY bro.bib_record_id
 ),
 
 hold_data AS (
   SELECT 
     b.id AS bib_id, 
 	 COUNT(DISTINCT h.id) AS hold_count,
-    orders.order_locations AS order_locations,
-	 COUNT(DISTINCT h.id) FILTER(WHERE h.pickup_location_code ~ {{location}}) AS local_holds,
+	 COUNT(DISTINCT h.id) FILTER(WHERE h.pickup_location_code ~ '^ws' /*{{location}}*/) AS local_holds,
 	 --location will take the form ^oln, which in this example looks for all locations starting with the string oln.
 	 COUNT(DISTINCT i.id) AS item_count,
 	 COUNT(DISTINCT ia.id) AS avail_item_count, 
-	 COUNT(DISTINCT ia.id) FILTER(WHERE ia.location_code ~ {{location}} AND rmia.creation_date_gmt::DATE >= CURRENT_DATE - INTERVAL '14 days') AS in_process_item_count,
-	 COUNT(DISTINCT ia.id) FILTER(WHERE ia.location_code ~ {{location}}) AS local_avail_item_count,
+	 COUNT(DISTINCT ia.id) FILTER(WHERE ia.location_code ~ '^ws' /*{{location}}*/ AND rmia.creation_date_gmt::DATE >= CURRENT_DATE - INTERVAL '14 days') AS in_process_item_count,
+	 COUNT(DISTINCT ia.id) FILTER(WHERE ia.location_code ~ '^ws' /*{{location}}*/) AS local_avail_item_count,
 	 --location will take the form ^oln, which in this example looks for all locations starting with the string oln.
 	 MAX(orders.order_count) AS order_count,
 	 CASE
@@ -76,7 +43,9 @@ hold_data AS (
       WHEN MAX(orders.processing_copies) IS NULL THEN 0
     	ELSE MAX(orders.processing_copies)
     END AS processing_copies,
-	 MODE() WITHIN GROUP (ORDER BY SUBSTRING(i.location_code,4,1)) AS age_level
+	 MODE() WITHIN GROUP (ORDER BY SUBSTRING(i.location_code,4,1)) AS age_level,
+	 MIN(h.placed_gmt::DATE) FILTER (WHERE h.pickup_location_code ~ 'ws') AS min_hold_placed,
+	 MAX(h.placed_gmt::DATE) FILTER (WHERE h.pickup_location_code ~ 'ws') AS max_hold_placed
 
   FROM sierra_view.bib_record b
   LEFT JOIN sierra_view.bib_record_item_record_link bri
@@ -91,9 +60,9 @@ hold_data AS (
     ON ia.id=bri.item_record_id
 	 AND ia.item_status_code IN ('-','t','p','!')
 	 AND (
-	   (ia.location_code !~ {{location}}
+	   (ia.location_code !~ '^ws' /*{{location}}*/
 	     AND ia.itype_code_num NOT IN ('5','21','109','133','160','183','239','240','241','244','248','249')) 
-	   OR ia.location_code ~ {{location}}
+	   OR ia.location_code ~ '^ws' /*{{location}}*/
 		--location will take the form ^oln, which in this example looks for all locations starting with the string oln.
 	   )
   LEFT JOIN sierra_view.record_metadata rmia
@@ -103,7 +72,7 @@ hold_data AS (
 
   WHERE h.status='0'
 		
-  GROUP BY 1,3
+  GROUP BY b.id
   HAVING COUNT(DISTINCT h.id)>0
 )
 
@@ -138,13 +107,14 @@ SELECT
 	local_hold_count,
 	local_demand_ratio,
 	CASE
-		WHEN CAST(local_hold_count AS NUMERIC(12, 2)) / CAST({{hold_threshold}} AS NUMERIC(12, 2)) - local_available_item_count - local_order_copies - local_copies_in_process < 0 THEN 0
-		ELSE ROUND(CAST(local_hold_count AS NUMERIC(12, 2)) / CAST({{hold_threshold}} AS NUMERIC(12, 2)) - local_available_item_count - local_order_copies - local_copies_in_process,1)
+		WHEN CAST(local_hold_count AS NUMERIC(12, 2)) / CAST(3 /*{{hold_threshold}}*/ AS NUMERIC(12, 2)) - local_available_item_count - local_order_copies - local_copies_in_process < 0 THEN 0
+		ELSE ROUND(CAST(local_hold_count AS NUMERIC(12, 2)) / CAST(3 /*{{hold_threshold}}*/ AS NUMERIC(12, 2)) - local_available_item_count - local_order_copies - local_copies_in_process,1)
 	END AS suggested_purchase_qty,
 	url,
-	order_locations,
 	isbn_upc,
-	is_fiction
+	is_fiction,
+	min_hold_placed,
+	max_hold_placed
 	
 FROM (
 	SELECT
@@ -184,7 +154,7 @@ FROM (
 				)
 			) AS NUMERIC(12,2)),2)
   		END AS total_demand_ratio,
-		COUNT(DISTINCT ir.id) FILTER(WHERE ir.location_code ~ {{location}}) AS local_item_count,
+		COUNT(DISTINCT ir.id) FILTER(WHERE ir.location_code ~ '^ws' /*{{location}}*/) AS local_item_count,
 		MAX(hd.local_avail_item_count) AS local_available_item_count,
 		MAX(hd.order_copies) AS local_order_copies,
 		CASE
@@ -211,7 +181,6 @@ FROM (
 			) AS NUMERIC(12,2)),2)
    	END AS local_demand_ratio,
 		'https://catalog.minlib.net/Record/'||id2reckey(hd.bib_id) AS url,
-    	hd.order_locations,
 		(SELECT
 			COALESCE(STRING_AGG(REGEXP_REPLACE(REPLACE(REGEXP_REPLACE(v.field_content,'(\|a|:)','','g'),'|q',' '),'(\|c|\|2|\|d).*?(\||$)',''),', '),'') AS isbns
 		
@@ -233,7 +202,9 @@ FROM (
 			WHEN hd.age_level = 'y' THEN 'YA'
 			WHEN hd.age_level IS NULL THEN 'UNKNOWN'
 			ELSE 'ADULT'
-		END AS age_level
+		END AS age_level,
+	   hd.min_hold_placed,
+	   hd.max_hold_placed
 
 	FROM sierra_view.bib_record_property brp
 	JOIN hold_data hd
@@ -252,15 +223,15 @@ FROM (
 		ON hd.bib_id = f.record_id
       AND f.control_num = 8
 	
-	GROUP BY brp.bib_record_id,1, 2, 3, 4, 5, 6, 8, 14, 16, 17, 20
-	HAVING hd.local_holds >= {{min_local_holds}}
+	GROUP BY brp.bib_record_id,1, 2, 3, 4, 5, 6, 8, 14, 16, 19, 20, 21
+	HAVING hd.local_holds >= 1 --{{min_local_holds}}
 
 	)inner_query
 
 ORDER BY
 	1,2, 
 	CASE
-		WHEN CAST(local_hold_count AS NUMERIC(12, 2)) / CAST({{hold_threshold}} AS NUMERIC(12, 2))  - local_available_item_count - local_order_copies - local_copies_in_process < 0 THEN 0
-		ELSE ROUND(CAST(local_hold_count AS NUMERIC(12, 2)) / CAST({{hold_threshold}} AS NUMERIC(12, 2)) - local_available_item_count - local_order_copies - local_copies_in_process,1)
+		WHEN CAST(local_hold_count AS NUMERIC(12, 2)) / CAST(3/*{{hold_threshold}}*/ AS NUMERIC(12, 2))  - local_available_item_count - local_order_copies - local_copies_in_process < 0 THEN 0
+		ELSE ROUND(CAST(local_hold_count AS NUMERIC(12, 2)) / CAST(3/*{{hold_threshold}}*/ AS NUMERIC(12, 2)) - local_available_item_count - local_order_copies - local_copies_in_process,1)
 	END DESC
 )a

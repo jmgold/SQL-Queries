@@ -7,6 +7,7 @@ Pulls FTP info fields from vendor records to assist with troubleshooting
 
 SELECT
   v.accounting_unit_code_num,
+  a.name AS acq_unit,
   v.code,
   SPLIT_PART(var.field_content,'$',1) AS URL,
   SPLIT_PART(var.field_content,'$',2) AS user_name,
@@ -15,5 +16,7 @@ SELECT
 FROM sierra_view.vendor_record v
 JOIN sierra_view.varfield var
   ON v.id = var.record_id AND var.varfield_type_code = 'g'
+JOIN sierra_view.accounting_unit_myuser a
+  ON v.accounting_unit_code_num = a.code
 
-ORDER BY 1,2
+ORDER BY 1,3

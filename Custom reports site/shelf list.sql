@@ -24,8 +24,9 @@ FROM (
     i.itype_code_num,
     it.name AS itype_name,
     CASE
-	   WHEN co.id IS NOT NULL THEN 'CHECKED OUT'
-	   ELSE st.name
+	   WHEN co.id IS NULL THEN st.name
+		WHEN co.id IS NOT NULL AND st.code != '-' THEN st.name
+		ELSE 'CHECKED OUT'
     END AS item_status,
     i.price::MONEY AS price,
     i.last_checkin_gmt::DATE AS last_checkin,
